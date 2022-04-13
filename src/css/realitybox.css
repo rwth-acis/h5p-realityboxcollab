@@ -1,0 +1,434 @@
+.h5p-realitybox,
+.h5p-realitybox *,
+.h5p-realitybox--modal,
+.h5p-realitybox--modal * {
+  box-sizing: border-box;
+}
+
+/* styling of preview box */
+
+.h5p-realitybox .h5p-realitybox--preview {
+  width: 100%;
+  max-width: 450px;
+  height: 300px;
+  max-height: 90%;
+  position: relative;
+  margin: 1rem auto;
+}
+
+.h5p-realitybox .h5p-realitybox--preview .h5p-babylonbox--canvas {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.h5p-realitybox .h5p-realitybox--preview .preview--cta {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 0 1rem 1rem 1rem;
+  width: 100%;
+  background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.2));
+  z-index: 2;
+}
+
+.button.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 250px;
+  text-align: center;
+  color: #fff;
+  border: none;
+  background-color: #2880d0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 18px;
+}
+
+.button.cta:hover {
+  cursor: pointer;
+  background-color: #2778c1;
+}
+
+.h5p-realitybox .h5p-realitybox--preview .preview--vr-badge {
+  display: flex;
+  font-size: 15px;
+  align-items: center;
+  height: 25px;
+  width: 30px;
+  border-radius: 2px;
+  background-color: #fff;
+  justify-content: center;
+  color: grey;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* styling of viewer */
+
+.h5p-realitybox--modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  padding: 0.75rem;
+  z-index: 9900;
+}
+
+.h5p-realitybox--modal .viewer {
+  background-color: #000;
+}
+
+.h5p-realitybox--modal .viewer,
+.h5p-realitybox--modal .viewer .viewer--content,
+.h5p-realitybox--modal .viewer .viewer--content .h5p-babylonbox--canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.h5p-realitybox--modal .viewer .viewer--header {
+  position: absolute;
+  top: 0;
+  left: 15px;
+  right: 15px;
+  display: flex;
+  align-items: stretch;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 0 0 5px 5px;
+  height: 40px;
+  color: #fff;
+  z-index: 3;
+}
+
+.h5p-realitybox--modal .viewer .viewer--header .item,
+.h5p-realitybox--modal .viewer .viewer--aside .aside--header .item  {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+.h5p-realitybox--modal .viewer .viewer--header .item .button {
+  background: none;
+  border: none;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30.5px;
+  padding: 0 0.75rem;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.h5p-realitybox--modal .viewer .viewer--header .item .button.icon {
+  width: 30.5px;
+  padding: 0;
+}
+
+.h5p-realitybox--modal .viewer .viewer--header .item .button.dark {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.h5p-realitybox--modal .viewer .viewer--header .item .button:hover,
+.h5p-realitybox--modal .viewer .viewer--header .item .button:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+}
+
+.h5p-realitybox--modal .viewer .viewer--header .item .button:focus {
+    box-shadow: 0 0 0 2px #fff, 0 0 3px 5px rgba(0, 0, 0, 0.5);
+    outline: 2px dotted transparent;
+    outline-offset: 2px;
+}
+
+.h5p-realitybox--modal .viewer .viewer--header .item.title,
+.h5p-realitybox--modal .viewer .viewer--aside .aside--header .item.title {
+  flex: 1 1 auto;
+  font-weight: 600;
+}
+
+.h5p-realitybox--modal .viewer .viewer--content {
+  position: relative;
+  z-index: 1;
+}
+
+.h5p-realitybox--modal .viewer .viewer--content .title-display {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background-color: rgba(42, 42, 42, 0.75);
+  color: #fff;
+  padding: 0.2rem 0.4rem;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+.h5p-realitybox--modal .viewer .viewer--aside {
+  position: absolute;
+  top: 0;
+  right: calc(-1 * 100% + 2rem);
+  width: calc(100% - 2rem);
+  max-width: 450px;
+  height: 100%;
+  background-color: #fff;
+  padding-top: 40px;
+  z-index: 2;
+}
+
+.h5p-realitybox--modal .viewer .viewer--aside.is-shown {
+  box-shadow: -8px 0 15px 0 rgba(0, 0, 0, 0.2);
+}
+
+.h5p-realitybox--modal .viewer .viewer--aside .aside--header {
+  height: 40px;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: stretch;
+}
+
+.h5p-realitybox--modal .viewer .viewer--aside .aside--header .item {
+  padding: 0;
+}
+
+.h5p-realitybox--modal .viewer .viewer--aside .aside--header .item.title {
+  font-weight: normal;
+}
+
+.h5p-realitybox--modal .viewer .viewer--aside .aside--header .item  button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  width: 30px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  font-size: 17px;
+  color: #000;
+}
+
+.h5p-realitybox--modal .viewer .viewer--aside .aside--header .item  button:hover,
+.h5p-realitybox--modal .viewer .viewer--aside .aside--header .item  button:focus {
+  background-color: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.h5p-realitybox--modal .viewer .viewer--aside .aside--content {
+  height: calc(100% - 41px);
+  padding: 0.5rem 1.25rem;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.h5p-realitybox--modal .viewer kbd {
+  margin: 0 0.1em;
+  padding: 0.1em 0.6em;
+  border-radius: 3px;
+  border: 1px solid rgb(204, 204, 204);
+  color: rgb(51, 51, 51);
+  line-height: 1.4;
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 10px;
+  display: inline-block;
+  box-shadow: 0px 1px 0px rgba(0,0,0,0.2), inset 0px 0px 0px 2px #ffffff;
+  background-color: rgb(247, 247, 247);
+  -moz-box-shadow: 0 1px 0px rgba(0, 0, 0, 0.2), 0 0 0 2px #ffffff inset;
+  -webkit-box-shadow: 0 1px 0px rgba(0, 0, 0, 0.2), 0 0 0 2px #ffffff inset;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  text-shadow: 0 1px 0 #fff;
+}
+
+/* styling of tooltip inside of viewer */
+.h5p-realitybox--modal .viewer .tooltip--info .tippy-content {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.h5p-realitybox--modal .viewer .tooltip--info .tippy-content div {
+  transform: translateY(0.5px);
+}
+
+.h5p-realitybox--modal .viewer .tooltip--info .tippy-content div:last-child {
+  margin-left: 0.5rem;
+  transform: none;
+}
+
+.h5p-realitybox--modal .viewer .tooltip--cta .tippy-content div {
+  margin-bottom: 0.5rem;
+}
+
+.h5p-realitybox--modal .viewer .tooltip--cta .tippy-content div button.got-it {
+  background-color: #457bc1;
+}
+
+.h5p-realitybox--modal .viewer .tooltip--cta .tippy-content div button.got-it:hover {
+  background-color: #215ca8;
+}
+
+/* tippy.js dark theme */
+
+.tippy-box[data-theme~='dark'] {
+  background-color: #000;
+  color: #fff;
+}
+
+.tippy-box[data-theme~='dark'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: #000;
+}
+
+.tippy-box[data-theme~='dark'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: #000;
+}
+
+.tippy-box[data-theme~='dark'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: #000;
+}
+
+.tippy-box[data-theme~='dark'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: #000;
+}
+
+/* styling of detail section */
+
+.h5p-realitybox .welcome {
+  padding: 0 1rem 1rem 1rem;
+  text-align: justify;
+}
+
+/* styling for vr mode */
+
+body.in-vr-mode {
+  position: fixed !important;
+}
+
+/* styling of popup */
+
+.viewer--popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  z-index: 9910;
+}
+
+.viewer--popup .outer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.viewer--popup .container {
+  width: 100%;
+  max-width: 800px;
+  background: #fff;
+  box-sizing: border-box;
+  padding: 1.25rem;
+  box-shadow: 0 0 15px 5px rgba(0,0,0,0.25);
+}
+
+.viewer--popup .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.viewer--popup .header button.trigger--popup-close {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  color: #000;
+}
+
+.viewer--popup .header button.trigger--popup-close:hover,
+.viewer--popup .header button.trigger--popup-close:focus {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* styling of VR popup */
+
+.viewer--popup .vr-popup--content .tabs {
+  display: flex;
+  width: 100%;
+  max-width: 300px;
+  margin: 1rem auto;
+}
+
+.viewer--popup .vr-popup--content .tab {
+  flex: 1 1 auto;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-right: none;
+  cursor: pointer;
+  border-radius: 0;
+  color: #000;
+}
+
+.viewer--popup .vr-popup--content .tab:hover, .tab:focus {
+  background: rgba(0, 0, 0, 0.075);
+}
+
+.viewer--popup .vr-popup--content .tab:last-child {
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.viewer--popup .vr-popup--content .tab.active {
+  background: royalblue;
+  color: #fff;
+  pointer-events: none;
+}
+
+.viewer--popup .vr-popup--content .tab.active + .tab {
+  border-left: none;
+}
+
+.kewar {
+  overflow: hidden !important;
+}
+
+.viewer--popup .vr-popup--content .url-input {
+  display: block;
+  margin: 0 auto;
+  max-width: calc(100% - 10px);
+}
+
+/* styling of annotation title tooltip */
+
+.h5p-realitybox--tooltip {
+  position: fixed;
+  padding: 0.2rem 0.4rem;
+  background: rgba(42, 42, 42, 0.5);
+  color: #fff;
+  font-size: 13px;
+  border-radius: 4px;
+  z-index: 9901;
+  pointer-events: none;
+}
