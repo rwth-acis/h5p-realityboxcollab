@@ -5,7 +5,10 @@ H5P.RealityBoxCollab = (function ($) {
   }
 
   RealityBoxCollab.prototype.attach = async function ($container) {
-
+    const realitybox = H5P.newRunnable({
+      library: 'H5P.Realitybox 1.0',
+      params
+    }, this.id, undefined, undefined, {parent: this});
   }
 
   return RealityBoxCollab;

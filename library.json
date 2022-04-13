@@ -1,13 +1,13 @@
 {
-  "title": "RealityBox",
-  "description": "Embed interactive virtual reality viewer",
+  "title": "RealityBox Collaboration",
+  "description": "",
   "majorVersion": 1,
   "minorVersion": 0,
   "patchVersion": 0,
   "runnable": 1,
-  "author": "Johannes Ballmann",
+  "author": "Konstantin Kühlem",
   "license": "MIT",
-  "machineName": "H5P.RealityBox",
+  "machineName": "H5P.RealityBoxCollab",
   "coreApi": {
     "majorVersion": 1,
     "minorVersion": 0
@@ -24,6 +24,11 @@
     }
   ],
   "preloadedDependencies": [
+    {
+      "machineName": "H5P.Realitybox",
+      "majorVersion": 1,
+      "minorVersion": 0
+    },
      {
        "machineName": "H5P.BabylonBox",
        "majorVersion": 1,
@@ -31,8 +36,8 @@
      },
      {
        "machineName": "H5P.KewArCode",
-       "majorVersion": 0,
-       "minorVersion": 2
+       "majorVersion": 1,
+       "minorVersion": 0
      }
   ],
   "editorDependencies": [
