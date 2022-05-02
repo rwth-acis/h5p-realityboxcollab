@@ -1,0 +1,15 @@
+#collabtoolbar {
+  /* Above other items */
+  position: absolute;
+  z-index: 10;
+  
+  /* Center */
+  top: 10%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  
+  width: 300px;
+  padding: 10px;
+  border: 3px solid gray;
+}

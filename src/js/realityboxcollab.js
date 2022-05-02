@@ -1,5 +1,7 @@
 //import { HemisphericLight, Vector3, Vector4 } from 'babylonjs';
 
+import Toolbar from "./toolbar";
+
 H5P.RealityBoxCollab = (function ($) {
 
   function RealityBoxCollab(options, id) {
@@ -14,11 +16,16 @@ H5P.RealityBoxCollab = (function ($) {
 
     await this.realitybox.attach($container);
 
-    // Tests
-    const box = BABYLON.MeshBuilder.CreateBox("test-box", {
-      size: 20
-    }, this.realitybox._viewer._babylonBox.scene);
-    box.material = new BABYLON.StandardMaterial("mat");
+    this.realitybox._viewer = new Proxy(this.realitybox._viewer, {
+      set: function (target, key, value) {
+          if (key === "$el") {
+            this._toolbar = new Toolbar(value);
+          }
+          target[key] = value;
+          return true;
+      }
+    });
+   
   }
 
   return RealityBoxCollab;
