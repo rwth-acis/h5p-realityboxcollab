@@ -1,6 +1,8 @@
 //import { HemisphericLight, Vector3, Vector4 } from 'babylonjs';
 
-import Toolbar from "./toolbar";
+import Toolbar from "./gui/toolbar";
+import Chat from "./gui/chat";
+import Settings from "./gui/settings";
 
 H5P.RealityBoxCollab = (function ($) {
 
@@ -20,6 +22,8 @@ H5P.RealityBoxCollab = (function ($) {
       set: function (target, key, value) {
           if (key === "$el") {
             this._toolbar = new Toolbar(value);
+            this._chat = new Chat(value);
+            this._settings = new Settings(value);
           }
           target[key] = value;
           return true;

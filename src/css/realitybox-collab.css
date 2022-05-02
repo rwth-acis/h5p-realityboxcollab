@@ -1,4 +1,4 @@
-#collabtoolbar {
+#collabToolbar {
   /* Above other items */
   position: absolute;
   z-index: 10;
@@ -10,6 +10,40 @@
   transform: translate(-50%, -50%);
   
   width: 300px;
+  padding: 10px;
+  border: 3px solid gray;
+}
+
+#collabChat {
+  /* Above other items */
+  position: absolute;
+  z-index: 10;
+  
+  /* Center */
+  top: 50%;
+  left: 10%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  
+  width: 300px;
+  height: 300px;
+  padding: 10px;
+  border: 3px solid gray;
+}
+
+#collabSettings {
+  /* Above other items */
+  position: absolute;
+  z-index: 10;
+  
+  /* Center */
+  top: 50%;
+  right: 10%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  
+  width: 300px;
+  height: 300px;
   padding: 10px;
   border: 3px solid gray;
 }
