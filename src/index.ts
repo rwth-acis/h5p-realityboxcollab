@@ -22,8 +22,7 @@ H5P.RealityBoxCollab = class extends H5P.ContentType(true) {
     this.options = options.realityboxcollab;
   }
 
-  attach = async function($container: JQuery) {
-    console.log("XXX");
+  async attach($container: JQuery) {
     this.realitybox = H5P.newRunnable({
       library: 'H5P.RealityBox 1.0',
       params: { realitybox: this.options },
