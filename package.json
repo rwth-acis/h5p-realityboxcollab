@@ -6,6 +6,7 @@
   "scripts": {
     "build": "(if exist dist rmdir /Q /S dist) && node_modules\\.bin\\cross-env NODE_ENV=production ./node_modules/.bin/webpack",
     "build:watch": "node_modules\\.bin\\webpack --watch",
+    "server": "node node_modules/y-websocket/bin/server.js",
     "check": "node_modules\\.bin\\eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
   "keywords": [],
@@ -49,6 +50,8 @@
     "jquery": "^3.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "tippy.js": "^6.2.7"
+    "tippy.js": "^6.2.7",
+    "y-websocket": "^1.4.3",
+    "yjs": "^13.5.38"
   }
 }

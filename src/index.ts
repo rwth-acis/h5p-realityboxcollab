@@ -1,4 +1,4 @@
-import * as $ from 'jquery';
+import * as $ from 'jquery'; // Needed for JQuery to be loaded
 import './css/material-icons/material-icons.css';
 import './css/realitybox.css';
 import './css/realitybox-collab.css';
