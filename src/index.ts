@@ -5,6 +5,7 @@ import './css/realitybox-collab.css';
 import { Settings } from './ts/gui/Settings';
 import { Chat } from './ts/gui/Chat';
 import { Toolbar } from './ts/gui/Toolbar';
+import { Room } from './ts/networking/Room';
 
 declare let H5P: any;
 H5P = H5P || {};
@@ -14,9 +15,10 @@ H5P.RealityBoxCollab = class extends H5P.ContentType(true) {
   realitybox: any;
   options: any;
   toolbar: Toolbar;
-  setttings: Settings;
+  settings: Settings;
   chat: Chat;
-  
+  room: Room;
+
   constructor(options: any, private id: any) {
     super();
     this.options = options.realityboxcollab;
@@ -32,15 +34,23 @@ H5P.RealityBoxCollab = class extends H5P.ContentType(true) {
     await this.realitybox.attach($container);
 
     this.realitybox._viewer = new Proxy(this.realitybox._viewer, {
-      set: function (target, key, value) {
-        if (key === "$el") {
-          this.toolbar = new Toolbar(value);
-          this.chat = new Chat(value);
-          this.settings = new Settings(value);
-        }
-        target[key] = value;
-        return true;
-      }
+      set: this.onPropertySet.bind(this)
     });
+
+  }
+
+  onPropertySet(target: any, key: string, value: any)  {
+      if (key === "$el") {
+        this.toolbar = new Toolbar(value);
+        this.chat = new Chat(value);
+        this.settings = new Settings(value);
+        this.debug();
+      }
+      target[key] = value;
+      return true;
+  }
+
+  debug() {
+    this.room = new Room([this.toolbar, this.chat, this.settings]);
   }
 }

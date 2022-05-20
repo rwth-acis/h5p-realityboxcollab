@@ -1,12 +1,15 @@
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
+import { NetworkListener } from "./NetworkListener";
+import { User } from "./User";
 
 export class Room {
-    doc: Y.Doc;
+    private doc: Y.Doc;
+    user: User;
 
-    constructor() {
+    constructor(private listeners: NetworkListener[]) {
         this.doc = new Y.Doc();
-        const wsProvider = new WebsocketProvider('ws://localhost:1234', 'room', this.doc);
+        const wsProvider = new WebsocketProvider('ws://localhost:1234', 'roomname', this.doc);
         wsProvider.on('status', (event: any) => {
             if (event.status === "connected") {
                 this.onConnect();
@@ -18,12 +21,30 @@ export class Room {
     }
 
     onConnect() {
-        this.doc.getMap().set(Math.random() + "", "a");
-        Y.applyUpdate(this.doc, Y.encodeStateAsUpdate(this.doc));
-        console.log(this.doc.getMap().toJSON());
+        this.user = new User("Test User");
+        let users: User[] = (this.doc.getMap().get("users") as User[]) || [];
+        users.push(this.user);
+        this.doc.getMap().set("users", users);
+        this.applyUpdate();
+        
+        for (let l of this.listeners) {
+            l.currentRoom = this;
+            l.onRoomChanged();
+        }
+    }
+
+    getOtherUsers(): User[] {
+        let users: User[] = (this.doc.getMap().get("users") as User[]) || [];
+        return users.filter(user => user !== this.user);
     }
 
     onDisconnect() {
 
+    }
+
+    applyUpdate() {
+        console.log("== Apply Updates ==")
+        Y.applyUpdate(this.doc, Y.encodeStateAsUpdate(this.doc));
+        console.log(this.doc.getMap().toJSON());
     }
 }

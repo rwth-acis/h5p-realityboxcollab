@@ -8,6 +8,9 @@ export class Settings extends AbstractGuiElement {
     html += "</div>";
 
     super(container, html);
-    console.log(this.element);
+  }
+
+  onRoomChanged(): void {
+    
   }
 }

@@ -13,6 +13,10 @@ export class Toolbar extends AbstractGuiElement {
     super(container, Toolbar.html());
   }
 
+  onRoomChanged(): void {
+    
+  }
+
   static html(): string {
     let html = "<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'><div id='collabToolbar' class='guiElement'>";
     for (let tool of this.TOOLS) {

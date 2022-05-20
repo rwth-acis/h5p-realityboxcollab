@@ -1,11 +1,14 @@
 import * as $ from 'jquery';
+import { NetworkListener } from '../networking/NetworkListener';
+import { Room } from '../networking/Room';
 
-export abstract class AbstractGuiElement {
-    element: JQuery;
-    container: JQuery;
+export abstract class AbstractGuiElement extends NetworkListener {
+  element: JQuery;
+  container: JQuery;
 
-    constructor($container: JQuery, html: string) {
-        this.element = $(html).appendTo($container);
-        this.container = $container;
-      }
+  constructor($container: JQuery, html: string) {
+    super();
+    this.element = $(html).appendTo($container);
+    this.container = $container;
+  }
 }
