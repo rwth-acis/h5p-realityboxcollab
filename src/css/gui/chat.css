@@ -1,0 +1,23 @@
+#chatMessageField {
+    height: 75%;
+    border: 1px solid black;
+    overflow-y: scroll;
+}
+
+.chatMessage {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    width: 200px;
+}
+
+.ownChatMessage {
+    float: right;
+}
+
+.chatUsername {
+    text-decoration: underline;
+    margin-bottom: -2px;
+}

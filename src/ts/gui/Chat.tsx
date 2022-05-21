@@ -24,21 +24,36 @@ export class Chat extends AbstractGuiElement {
   }
 
   onChatSend() {
-    let msg = (document.getElementById("chatInput") as HTMLInputElement).value;
-    console.log(msg);
-    this.sendMessage(msg);
+    console.log($("#chatInput").val());
+    this.sendMessage($("#chatInput").val() as string);
   }
 
 
   onRoomChanged(): void {
-    this.sendMessage("Welcome to this room! 123");
+    this.addMessage("Welcome to this room!", false, "System");
   }
 
   sendMessage(msg: string) {
-    $("#chatMessageField").append(msg);
-    $("#chatMessageField").append("<br>");
+    this.addMessage(msg, true, "You");
     this.currentRoom.user.messages.push(new ChatMessage(msg));
     this.currentRoom.applyUpdate();
+  }
+
+  private addMessage(msg: string, own: boolean, username: string) {
+    let div = document.createElement("div");
+    div.classList.add("chatMessage");
+    if (own)
+      div.classList.add("ownChatMessage");
+
+    ReactDOM.render(
+      <>
+        <p className="chatUsername">{username}</p>
+        <p>{msg}</p>
+      </>
+      , div
+    );
+
+    $("#chatMessageField").append(div);
   }
 }
 
