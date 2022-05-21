@@ -1,14 +1,15 @@
 import * as $ from 'jquery';
+import { ReactElement } from 'react';
+import ReactDOM = require('react-dom');
 import { NetworkListener } from '../networking/NetworkListener';
-import { Room } from '../networking/Room';
 
 export abstract class AbstractGuiElement extends NetworkListener {
-  element: JQuery;
-  container: JQuery;
+  root: HTMLDivElement;
 
-  constructor($container: JQuery, html: string) {
+  constructor($container: JQuery, react: ReactElement) {
     super();
-    this.element = $(html).appendTo($container);
-    this.container = $container;
+    this.root = document.createElement("div");
+    ReactDOM.render(react, this.root);
+    $container.append(this.root);
   }
 }
