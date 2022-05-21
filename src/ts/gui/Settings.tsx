@@ -10,7 +10,7 @@ export class Settings extends AbstractGuiElement {
 
   createElement(): ReactElement {
     return <div id='collabSettings' className='guiElement'>
-      <h1>Settings</h1>
+      <h1 className='elementHeading'>Settings</h1>
     </div>
   }
 

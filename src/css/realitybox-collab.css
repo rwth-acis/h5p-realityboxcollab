@@ -33,3 +33,7 @@
   transform: translate(-50%, -50%);
   background-color: whitesmoke;
 }
+
+.elementHeading {
+  margin-top: -3px;
+}

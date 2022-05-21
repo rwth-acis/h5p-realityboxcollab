@@ -4,7 +4,7 @@ import { NetworkListener } from "./NetworkListener";
 import { User } from "./User";
 
 export class Room {
-    private doc: Y.Doc;
+    doc: Y.Doc;
     user: User;
 
     constructor(private listeners: NetworkListener[]) {
@@ -21,7 +21,7 @@ export class Room {
     }
 
     onConnect() {
-        this.user = new User("Test User");
+        this.user = new User("User " + Math.round(100 * Math.random()));
         let users: User[] = (this.doc.getMap().get("users") as User[]) || [];
         users.push(this.user);
         this.doc.getMap().set("users", users);
