@@ -6,6 +6,7 @@ import { Settings } from './ts/gui/Settings';
 import { Chat } from './ts/gui/Chat';
 import { Toolbar } from './ts/gui/Toolbar';
 import { Room } from './ts/networking/Room';
+import { AbstractGuiElement } from './ts/gui/AbstractGuiElement';
 
 declare let H5P: any;
 H5P = H5P || {};
@@ -18,6 +19,7 @@ H5P.RealityBoxCollab = class extends H5P.ContentType(true) {
   settings: Settings;
   chat: Chat;
   room: Room;
+  elements: AbstractGuiElement[];
 
   constructor(options: any, private id: any) {
     super();
@@ -39,18 +41,20 @@ H5P.RealityBoxCollab = class extends H5P.ContentType(true) {
 
   }
 
-  onPropertySet(target: any, key: string, value: any)  {
-      if (key === "$el") {
-        this.toolbar = new Toolbar(value);
-        this.chat = new Chat(value);
-        this.settings = new Settings(value);
-        this.debug();
-      }
-      target[key] = value;
-      return true;
+  onPropertySet(target: any, key: string, value: any) {
+    if (key === "$el") {
+      this.toolbar = new Toolbar(value);
+      this.chat = new Chat(value);
+      this.settings = new Settings(value);
+      this.elements = [this.toolbar, this.chat, this.settings];
+      this.elements.forEach(e => e.init());
+      this.debug();
+    }
+    target[key] = value;
+    return true;
   }
 
   debug() {
-    this.room = new Room([this.toolbar, this.chat, this.settings]);
+    this.room = new Room(this.elements);
   }
 }

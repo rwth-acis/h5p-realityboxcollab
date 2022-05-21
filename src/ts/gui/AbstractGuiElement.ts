@@ -6,10 +6,15 @@ import { NetworkListener } from '../networking/NetworkListener';
 export abstract class AbstractGuiElement extends NetworkListener {
   root: HTMLDivElement;
 
-  constructor($container: JQuery, react: ReactElement) {
+  constructor(private container: JQuery) {
     super();
-    this.root = document.createElement("div");
-    ReactDOM.render(react, this.root);
-    $container.append(this.root);
   }
+
+  init() { // Not in constructor to ensure class fields are loaded for extending classes
+    this.root = document.createElement("div");
+    ReactDOM.render(this.createElement(), this.root);
+    this.container.append(this.root);
+  }
+
+  abstract createElement(): ReactElement
 }
