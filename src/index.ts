@@ -1,8 +1,7 @@
 import * as $ from 'jquery'; // Needed for JQuery to be loaded
 import './css/material-icons/material-icons.css';
 import './css/realitybox.css';
-import './css/gui/chat.css';
-import './css/realitybox-collab.css';
+import './css/realitybox-collab.scss';
 import { Settings } from './ts/gui/Settings';
 import { Chat } from './ts/gui/Chat';
 import { Toolbar } from './ts/gui/Toolbar';

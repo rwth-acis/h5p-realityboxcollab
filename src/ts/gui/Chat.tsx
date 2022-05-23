@@ -15,7 +15,6 @@ export class Chat extends AbstractGuiElement {
 
   createElement(): ReactElement {
     return <span>
-      <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' />
       <div id='collabChat' className='guiElement'>
         <h1 className='elementHeading'>Chat</h1>
         <div id="chatMessageField">
