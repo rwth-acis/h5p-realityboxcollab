@@ -7,9 +7,9 @@ export class Room {
     doc: Y.Doc;
     user: User;
 
-    constructor(private listeners: NetworkListener[]) {
+    constructor(private listeners: NetworkListener[], public name: string, create: boolean) {
         this.doc = new Y.Doc();
-        const wsProvider = new WebsocketProvider('ws://localhost:1234', 'roomname', this.doc);
+        const wsProvider = new WebsocketProvider('ws://localhost:1234', name, this.doc);
         wsProvider.on('status', (event: any) => {
             if (event.status === "connected") {
                 this.onConnect();

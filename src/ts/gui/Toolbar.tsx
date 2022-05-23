@@ -48,7 +48,7 @@ export class Toolbar extends AbstractGuiElement {
   }
 
   onRoomChanged(): void {
-    this.tools.forEach(t => t.onRoomChanged());
+    this.tools.forEach(t => {t.onRoomChanged(); t.active = false;});
   }
 
 }
