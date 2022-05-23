@@ -12,6 +12,10 @@ export abstract class AbstractGuiElement extends NetworkListener {
 
   init() { // Not in constructor to ensure class fields are loaded for extending classes
     this.root = document.createElement("div");
+    this.updateView();
+  }
+
+  updateView() {
     ReactDOM.render(this.createElement(), this.root);
     this.container.append(this.root);
   }

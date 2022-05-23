@@ -15,9 +15,6 @@ H5P.RealityBoxCollab = class extends H5P.ContentType(true) {
 
   realitybox: any;
   options: any;
-  toolbar: Toolbar;
-  settings: Settings;
-  chat: Chat;
   room: Room;
   elements: AbstractGuiElement[];
 
@@ -43,10 +40,7 @@ H5P.RealityBoxCollab = class extends H5P.ContentType(true) {
 
   onPropertySet(target: any, key: string, value: any) {
     if (key === "$el") {
-      this.toolbar = new Toolbar(value);
-      this.chat = new Chat(value);
-      this.settings = new Settings(value);
-      this.elements = [this.toolbar, this.chat, this.settings];
+      this.elements = [new Toolbar(value), new Chat(value), new Settings(value)];
       this.elements.forEach(e => e.init());
       this.debug();
     }

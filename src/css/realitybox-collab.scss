@@ -1,8 +1,10 @@
 @import "../../node_modules/bootstrap/scss/bootstrap";
-$fa-font-path: '~../../node_modules/@fortawesome/fontawesome-free/webfonts';
+$fa-font-path: "~../../node_modules/@fortawesome/fontawesome-free/webfonts";
 @import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
 @import "../../node_modules/@fortawesome/fontawesome-free/scss/solid";
 @import "./gui/chat";
+
+$background: whitesmoke;
 
 #collabToolbar {
   top: 10%;
@@ -10,7 +12,6 @@ $fa-font-path: '~../../node_modules/@fortawesome/fontawesome-free/webfonts';
   margin-right: -50%;
   transform: translate(-50%, -50%);
 
-  width: 300px;
   padding: 10px;
 }
 
@@ -37,9 +38,21 @@ $fa-font-path: '~../../node_modules/@fortawesome/fontawesome-free/webfonts';
   z-index: 10;
   border: 3px solid black;
   transform: translate(-50%, -50%);
-  background-color: whitesmoke;
+  background-color: $background;
 }
 
 .elementHeading {
   margin-top: -3px;
+}
+
+.toolbarBtn {
+  font-size: 30px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: none;
+  background: $background;
+}
+
+.toolbarBtnActive {
+  color: red;
 }
