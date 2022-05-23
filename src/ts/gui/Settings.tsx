@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import React = require('react');
-import { RealityBoxCollab } from '../..';
 import { Room } from '../networking/Room';
+import { RealityBoxCollab } from '../RealityboxCollab';
 import { AbstractGuiElement } from './AbstractGuiElement';
 
 export class Settings extends AbstractGuiElement {
