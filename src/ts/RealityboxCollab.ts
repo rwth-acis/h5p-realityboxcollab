@@ -4,6 +4,7 @@ import { Chat } from './gui/Chat';
 import { Toolbar } from './gui/Toolbar';
 import { Room } from './networking/Room';
 import { AbstractGuiElement } from './gui/AbstractGuiElement';
+import { Realitybox } from './RealityboxTypes';
 
 
 declare let H5P: any;
@@ -12,7 +13,7 @@ H5P = H5P || {};
 export class RealityBoxCollab {
     static instance: RealityBoxCollab;
 
-    realitybox: any;
+    realitybox: Realitybox;
     options: any;
     elements: AbstractGuiElement[];
     room: Room;
@@ -34,6 +35,7 @@ export class RealityBoxCollab {
 
         await this.realitybox.attach($container);
 
+        this.realitybox.viewer = this.realitybox._viewer;
         this.realitybox._viewer = new Proxy(this.realitybox._viewer, {
             set: this.onPropertySet.bind(this)
         });
