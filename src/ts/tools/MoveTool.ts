@@ -31,4 +31,8 @@ export class MoveTool extends AbstractTool {
     onRoomChanged(): void {
 
     }
+
+    canActivate(): boolean {
+        return true; // Temp
+    }
 }

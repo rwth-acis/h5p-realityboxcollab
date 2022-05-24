@@ -17,4 +17,8 @@ export class AnnotationTool extends AbstractTool {
     onRoomChanged(): void {
         
     }
+
+    canActivate(): boolean {
+        return false; // Temp
+    }
 }

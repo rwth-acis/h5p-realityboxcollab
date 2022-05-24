@@ -17,4 +17,8 @@ export class PointerTool extends AbstractTool {
     onRoomChanged(): void {
         
     }
+
+    canActivate(): boolean {
+        return true; // Temp
+    }
 }
