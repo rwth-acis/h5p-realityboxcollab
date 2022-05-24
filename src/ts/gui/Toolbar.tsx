@@ -11,14 +11,16 @@ import { AbstractGuiElement } from "./AbstractGuiElement";
 
 export class Toolbar extends AbstractGuiElement {
 
-  tools: AbstractTool[] = [
-    new OrbitTool(), new FirstPersonTool(), new MoveTool(),
-    new PointerTool(), new AnnotationTool(), new DrawTool()
-  ];
+  tools: AbstractTool[];
   activeTool: AbstractTool;
 
   constructor(container: JQuery) {
     super(container);
+
+    this.tools = [
+      new OrbitTool(), new FirstPersonTool(), new MoveTool(container),
+      new PointerTool(), new AnnotationTool(), new DrawTool()
+    ];
 
     if (this.tools[0].canActivate()) {
       this.activeTool = this.tools[0];
@@ -41,6 +43,7 @@ export class Toolbar extends AbstractGuiElement {
   toolClicked(tool: AbstractTool, evt: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
     if (this.activeTool && this.activeTool != tool) {
       this.activeTool.active = false;
+      this.activeTool.onDeactivate();
     }
 
     if (!tool.active) {
