@@ -15,7 +15,7 @@ export interface BabylonBox {
     webXRSupported: boolean;
     scene: BABYLON.Scene;
     engine: BABYLON.Engine;
-    camera: BABYLON.Camera;
+    camera: any;
     model: RealityboxModel;
 }
 
