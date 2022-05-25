@@ -15,6 +15,7 @@ export class Toolbar extends AbstractGuiElement {
                 if (tool.canActivate()) { // Find first tool, which can be activated
                     this.activeTool = tool;
                     this.activeTool.active = true;
+                    this.activeTool.onActivate();
                     break;
                 }
             }
