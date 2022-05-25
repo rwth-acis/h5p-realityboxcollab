@@ -11,14 +11,7 @@ export class Toolbar extends AbstractGuiElement {
         super(container);
 
         if (this.alwaysActive) {
-            for (let tool of this.tools) {
-                if (tool.canActivate()) { // Find first tool, which can be activated
-                    this.activeTool = tool;
-                    this.activeTool.active = true;
-                    this.activeTool.onActivate();
-                    break;
-                }
-            }
+            this.selectFirst();
         }
     }
 
@@ -58,5 +51,20 @@ export class Toolbar extends AbstractGuiElement {
 
     onRoomChanged(): void {
         this.tools.forEach(t => { t.onRoomChanged(); t.active = false; });
+
+        if (this.alwaysActive)
+            this.selectFirst();
+        this.updateView();
+    }
+
+    selectFirst() {
+        for (let tool of this.tools) {
+            if (tool.canActivate()) { // Find first tool, which can be activated
+                this.activeTool = tool;
+                this.activeTool.active = true;
+                this.activeTool.onActivate();
+                break;
+            }
+        }
     }
 }
