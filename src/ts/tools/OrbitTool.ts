@@ -7,11 +7,11 @@ export class OrbitTool extends AbstractTool {
     }
 
     onActivate(): void {
-        console.log("Orbit Tool activated");
+        
     }
     
     onDeactivate(): void {
-        console.log("Orbit Tool deactivated");
+        
     }
 
     onRoomChanged(): void {

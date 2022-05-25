@@ -1,10 +1,16 @@
 import * as $ from 'jquery'; // Needed for JQuery to be loaded
 import { Settings } from './gui/Settings';
 import { Chat } from './gui/Chat';
-import { Toolbar } from './gui/Toolbar';
 import { Room } from './networking/Room';
 import { AbstractGuiElement } from './gui/AbstractGuiElement';
 import { Realitybox } from './RealityboxTypes';
+import { PointerTool } from './tools/PointerTool';
+import { AnnotationTool } from './tools/AnnotationTool';
+import { DrawTool } from './tools/DrawTool';
+import { MoveTool } from './tools/MoveTool';
+import { FirstPersonTool } from './tools/FirstPersonTool';
+import { OrbitTool } from './tools/OrbitTool';
+import { Toolbar } from './gui/Toolbar';
 
 
 declare let H5P: any;
@@ -43,10 +49,20 @@ export class RealityBoxCollab {
 
     onPropertySet(target: any, key: string, value: any) {
         if (key === "$el") {
-            this.elements = [new Toolbar(value), new Chat(value), new Settings(value)];
-            this.elements.forEach(e => e.init());
+            this.buildComponents(value);
         }
         target[key] = value;
         return true;
+    }
+
+    buildComponents(container: JQuery) {
+        let toolbar = new Toolbar(container, "collabToolbar", false, [
+            new MoveTool(container), new PointerTool(), new AnnotationTool(), new DrawTool()
+        ]);
+        let viewToolbar = new Toolbar(container, "collabViewToolbar", true, [
+            new OrbitTool(), new FirstPersonTool()
+        ]);
+        this.elements = [viewToolbar, toolbar, new Chat(container), new Settings(container)];
+        this.elements.forEach(e => e.init());
     }
 }
