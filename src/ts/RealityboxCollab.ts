@@ -11,6 +11,8 @@ import { MoveTool } from './tools/MoveTool';
 import { FirstPersonTool } from './tools/FirstPersonTool';
 import { OrbitTool } from './tools/OrbitTool';
 import { Toolbar } from './gui/Toolbar';
+import { BabylonViewer } from './gui/BabylonViewer';
+import { NetworkListener } from './networking/NetworkListener';
 
 
 declare let H5P: any;
@@ -21,7 +23,8 @@ export class RealityBoxCollab {
 
     realitybox: Realitybox;
     options: any;
-    elements: AbstractGuiElement[];
+    guiElements: AbstractGuiElement[];
+    otherElements: NetworkListener[];
     room: Room;
 
     constructor(options: any, private id: any) {
@@ -62,7 +65,8 @@ export class RealityBoxCollab {
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, [
             new OrbitTool(), new FirstPersonTool()
         ]);
-        this.elements = [viewToolbar, toolbar, new Chat(container), new Settings(container)];
-        this.elements.forEach(e => e.init());
+        this.guiElements = [viewToolbar, toolbar, new Chat(container), new Settings(container)];
+        this.otherElements = [new BabylonViewer()];
+        this.guiElements.forEach(e => e.init());
     }
 }

@@ -12,6 +12,19 @@ export class Room {
         const wsProvider = new WebsocketProvider('ws://localhost:1234', name, this.doc);
         wsProvider.on('status', (event: any) => {
             if (event.status === "connected") {
+                this.user = {
+                    username: "User " + Math.round(100 * Math.random()),
+                    role: create ? Role.HOST : Role.USER
+                };
+                this.users = this.doc.getArray("users");
+                if (create) {
+                    this.users.delete(0, this.users.length); // Debug
+                }
+                this.users.push([this.user]);
+                this.users.observeDeep((e, a) => {
+console.log(e);
+                });
+
                 this.onConnect();
             }
             else if (event.status === "disconnected") {
@@ -21,18 +34,16 @@ export class Room {
     }
 
     onConnect() {
-        this.user = {
-            username: "User " + Math.round(100 * Math.random()),
-            role: Role.HOST
-        };
-        this.users = this.doc.getArray("users");
-        this.users.push([this.user]);
-
         for (let l of this.listeners) {
             l.currentRoom = this;
             l.onRoomChanged();
         }
     }
+
+    applyUpdate() {
+        Y.applyUpdate(this.doc, Y.encodeStateAsUpdate(this.doc));
+    }
+
 
     onDisconnect() {
 

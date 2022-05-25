@@ -16,14 +16,15 @@ export class Settings extends AbstractGuiElement {
       <h1 className='elementHeading'>Settings</h1>
       {!this.currentRoom &&
         <>
-          <button onClick={e => this.createRoom()}>Create Room</button>
-          <button>Join Room</button>
+          <button onClick={e => this.joinRoom(true)}>Create Room</button>
+          <button onClick={e => this.joinRoom(false)}>Join Room</button>
         </>
       }
       {this.currentRoom &&
         <>
           You are in room {this.currentRoom.name}<br></br>
-          {this.currentRoom.users.length} users are in this room
+          {this.currentRoom.users.length} users are in this room<br></br>
+          Role: {this.currentRoom.user.role}
         </>
       }
     </div>
@@ -37,10 +38,10 @@ export class Settings extends AbstractGuiElement {
     });
   }
 
-  createRoom() {
+  joinRoom(create: boolean) {
     let name = prompt("Enter a name for the new room");
     if (name) {
-      RealityBoxCollab.instance.room = new Room(RealityBoxCollab.instance.elements, name, true);
+      RealityBoxCollab.instance.room = new Room([...RealityBoxCollab.instance.guiElements, ...RealityBoxCollab.instance.otherElements], name, create);
     }
   }
 }
