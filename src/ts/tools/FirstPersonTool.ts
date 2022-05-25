@@ -16,7 +16,7 @@ export class FirstPersonTool extends AbstractTool {
     // Camera Settings
     moveSpeed: number = 1.2;
     mouseSpeed: number = 1.2;
-    moveShiftFactor: number = 5;
+    moveShiftFactor: number = 3;
 
     camera: BABYLON.FreeCamera;
     pressedKeys: boolean[] = [];
@@ -35,6 +35,8 @@ export class FirstPersonTool extends AbstractTool {
         }
 
         this.camera.position = scene.activeCamera.position;
+        this.camera.rotation = scene.activeCamera.absoluteRotation.toEulerAngles();
+        this.camera.rotation.z = 0;
         scene.activeCamera = this.camera;
     }
     createComponents() {
@@ -60,8 +62,7 @@ export class FirstPersonTool extends AbstractTool {
             this.computeDirection(dir, this.KEY_D, this.KEY_A, BABYLON.Vector3.Right());
             this.computeDirection(dir, this.KEY_E, this.KEY_Q, BABYLON.Vector3.Up());
 
-            dir.normalize();
-            dir.scale(this.moveSpeed * (this.getKey(this.KEY_SHIFT) ? this.moveShiftFactor : 1));
+            dir = dir.normalize().scale(this.moveSpeed * (this.getKey(this.KEY_SHIFT) ? this.moveShiftFactor : 1));
             this.camera.position.addInPlaceFromFloats(dir.x, dir.y, dir.z);
 
             return scene;
