@@ -20,7 +20,8 @@ export class Chat extends AbstractGuiElement {
         <div id="chatMessageField">
 
         </div>
-        <input id="chatInput"></input><button onClick={this.onChatSend.bind(this)}>Send</button>
+        <input id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.onChatSend();}}></input>
+        <button disabled={this.currentRoom == undefined} onClick={this.onChatSend.bind(this)}>Send</button>
       </div>
     </span>
   }
@@ -38,11 +39,15 @@ export class Chat extends AbstractGuiElement {
         });
       }
     });
+
+    this.updateView();
   }
 
   onChatSend() {
-    console.log($("#chatInput").val());
+    if (!this.currentRoom) return;
+
     this.sendMessage($("#chatInput").val() as string);
+    $("#chatInput").val("");
   }
 
   sendMessage(msg: string) {
