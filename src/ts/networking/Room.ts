@@ -22,8 +22,10 @@ export class Room {
                 }
                 this.users.push([this.user]);
                 this.users.observeDeep((e, a) => {
-console.log(e);
+                    console.log("Change:");
+                    console.log(e);
                 });
+                this.user.position = new BABYLON.Vector3(1, 2, 3);
 
                 this.onConnect();
             }

@@ -4,6 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
+    "start": "npm run build:watch",
     "build": "(if exist dist rmdir /Q /S dist) && node_modules\\.bin\\cross-env NODE_ENV=production ./node_modules/.bin/webpack",
     "build:watch": "node_modules\\.bin\\webpack --watch",
     "server": "node node_modules/y-websocket/bin/server.js",

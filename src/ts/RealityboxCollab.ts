@@ -63,7 +63,7 @@ export class RealityBoxCollab {
             new MoveTool(container), new PointerTool(), new AnnotationTool(), new DrawTool()
         ]);
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, [
-            new OrbitTool(), new FirstPersonTool()
+            new FirstPersonTool(), new OrbitTool()
         ]);
         this.guiElements = [viewToolbar, toolbar, new Chat(container), new Settings(container)];
         this.otherElements = [new BabylonViewer()];
