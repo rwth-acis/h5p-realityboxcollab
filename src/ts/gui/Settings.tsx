@@ -1,6 +1,7 @@
 import { ReactElement } from 'react';
 import React = require('react');
-import { Room } from '../networking/Room';
+import { YArrayEvent } from 'yjs';
+import { Room, User } from '../networking/Room';
 import { RealityBoxCollab } from '../RealityboxCollab';
 import { AbstractGuiElement } from './AbstractGuiElement';
 
@@ -21,7 +22,8 @@ export class Settings extends AbstractGuiElement {
       }
       {this.currentRoom &&
         <>
-          You are in room {this.currentRoom.name}
+          You are in room {this.currentRoom.name}<br></br>
+          {this.currentRoom.users.length} users are in this room
         </>
       }
     </div>
@@ -29,12 +31,16 @@ export class Settings extends AbstractGuiElement {
 
   onRoomChanged(): void {
     super.updateView();
+
+    this.currentRoom.users.observe((evt: YArrayEvent<User>) => {
+      super.updateView();
+    });
   }
 
   createRoom() {
     let name = prompt("Enter a name for the new room");
     if (name) {
-      RealityBoxCollab.instance.room = new Room(RealityBoxCollab.instance.elements,name, true);
+      RealityBoxCollab.instance.room = new Room(RealityBoxCollab.instance.elements, name, true);
     }
   }
 }
