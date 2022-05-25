@@ -23,7 +23,7 @@ export class Settings extends AbstractGuiElement {
       {this.currentRoom &&
         <>
           You are in room {this.currentRoom.name}<br></br>
-          {this.currentRoom.users.length} users are in this room<br></br>
+          {this.currentRoom.usernames.length} users are in this room<br></br>
           Role: {this.currentRoom.user.role}
         </>
       }
@@ -33,7 +33,7 @@ export class Settings extends AbstractGuiElement {
   onRoomChanged(): void {
     super.updateView();
 
-    this.currentRoom.users.observe((evt: YArrayEvent<User>) => {
+    this.currentRoom.usernames.observe((evt, t) => {
       super.updateView();
     });
   }

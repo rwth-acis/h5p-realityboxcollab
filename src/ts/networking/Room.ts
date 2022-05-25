@@ -3,9 +3,11 @@ import { WebsocketProvider } from "y-websocket";
 import { NetworkListener } from "./NetworkListener";
 
 export class Room {
+    
     doc: Y.Doc;
     user: User;
-    users: Y.Array<User>;
+    usernames: Y.Array<string>;
+    userData: Y.Map<User>;
 
     constructor(private listeners: NetworkListener[], public name: string, create: boolean) {
         this.doc = new Y.Doc();
@@ -14,18 +16,17 @@ export class Room {
             if (event.status === "connected") {
                 this.user = {
                     username: "User " + Math.round(100 * Math.random()),
+                    position: null,
                     role: create ? Role.HOST : Role.USER
                 };
-                this.users = this.doc.getArray("users");
+                this.usernames = this.doc.getArray("usernames");
                 if (create) {
-                    this.users.delete(0, this.users.length); // Debug
+                    this.usernames.delete(0, this.usernames.length); // Debug
                 }
-                this.users.push([this.user]);
-                this.users.observeDeep((e, a) => {
-                    console.log("Change:");
-                    console.log(e);
-                });
-                this.user.position = new BABYLON.Vector3(1, 2, 3);
+                this.usernames.push([this.user.username]);
+
+                this.userData = this.doc.getMap("userdata");
+                this.onUserUpdated();
 
                 this.onConnect();
             }
@@ -42,10 +43,9 @@ export class Room {
         }
     }
 
-    applyUpdate() {
-        Y.applyUpdate(this.doc, Y.encodeStateAsUpdate(this.doc));
+    onUserUpdated() {
+        this.userData.set(this.user.username, this.user);
     }
-
 
     onDisconnect() {
 
@@ -55,7 +55,7 @@ export class Room {
 export interface User {
     username: string;
     role: Role;
-    position?: BABYLON.Vector3;
+    position: BABYLON.Vector3;
 }
 
 export enum Role {
