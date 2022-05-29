@@ -1,6 +1,7 @@
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { NetworkListener } from "./NetworkListener";
+import { RoomInformation } from "./RoomManager";
 
 export class Room {
     
@@ -9,9 +10,9 @@ export class Room {
     usernames: Y.Array<string>;
     userData: Y.Map<User>;
 
-    constructor(private listeners: NetworkListener[], public name: string, create: boolean) {
+    constructor(private listeners: NetworkListener[], public roomInfo: RoomInformation, create: boolean) {
         this.doc = new Y.Doc();
-        const wsProvider = new WebsocketProvider('ws://localhost:1234', name, this.doc);
+        const wsProvider = new WebsocketProvider('ws://localhost:1234', "room:" + roomInfo.name, this.doc);
         wsProvider.on('status', (event: any) => {
             if (event.status === "connected") {
                 this.user = {

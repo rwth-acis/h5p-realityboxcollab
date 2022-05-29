@@ -1,9 +1,9 @@
 import { ReactElement } from 'react';
-import React = require('react');
-import { YArrayEvent } from 'yjs';
-import { Room, User } from '../networking/Room';
+import { Room } from '../networking/Room';
+import { RoomInformation } from '../networking/RoomManager';
 import { RealityBoxCollab } from '../RealityboxCollab';
 import { AbstractGuiElement } from './AbstractGuiElement';
+import React = require('react');
 
 export class Settings extends AbstractGuiElement {
 
@@ -15,19 +15,28 @@ export class Settings extends AbstractGuiElement {
     return <div id='collabSettings' className='guiElement'>
       <h1 className='elementHeading'>Settings</h1>
       {!this.currentRoom &&
-        <>
-          <button onClick={e => this.joinRoom(true)}>Create Room</button>
-          <button onClick={e => this.joinRoom(false)}>Join Room</button>
-        </>
+        this.viewNotInRoom()
       }
       {this.currentRoom &&
-        <>
-          You are in room {this.currentRoom.name}<br></br>
-          {this.currentRoom.usernames.length} users are in this room<br></br>
-          Role: {this.currentRoom.user.role}
-        </>
+        this.viewInRoom()
       }
     </div>
+  }
+
+  viewNotInRoom(): React.ReactNode {
+    return <>
+      <button className='btn btn-primary' onClick={e => this.joinRoom(true)}>Create Room</button>
+      <br></br>
+      <button style={{marginTop: "10px"}} className='btn btn-primary' onClick={e => this.joinRoom(false)}>Join Room</button>
+    </>;
+  }
+
+  viewInRoom(): React.ReactNode {
+    return <>
+      You are in room {this.currentRoom.roomInfo.name}<br></br>
+      {this.currentRoom.usernames.length} users are in this room<br></br>
+      Role: {this.currentRoom.user.role}
+    </>;
   }
 
   onRoomChanged(): void {
@@ -39,9 +48,30 @@ export class Settings extends AbstractGuiElement {
   }
 
   joinRoom(create: boolean) {
-    let name = prompt("Enter a name for the new room");
-    if (name) {
-      RealityBoxCollab.instance.room = new Room([...RealityBoxCollab.instance.guiElements, ...RealityBoxCollab.instance.otherElements], name, create);
+    const manager = RealityBoxCollab.instance.roomManager;
+    let info: RoomInformation;
+
+    if (create) {
+      let name = prompt("Enter a name for the new room");
+      if (name) {
+        info = manager.createRoom(name, "");
+        if (!info) {
+          alert("Unable to create room: Name already in use");
+          return;
+        }
+      }
     }
+    else {
+      let name = prompt("Enter the name of the room");
+      if (name) {
+        info = manager.getRoom(name);
+        if (!info) {
+          alert("This room does not exist");
+          return;
+        }
+      }
+    }
+
+    RealityBoxCollab.instance.room = new Room([...RealityBoxCollab.instance.guiElements, ...RealityBoxCollab.instance.otherElements], info, create);
   }
 }

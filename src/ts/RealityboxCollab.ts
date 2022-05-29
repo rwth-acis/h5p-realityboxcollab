@@ -13,6 +13,7 @@ import { OrbitTool } from './tools/OrbitTool';
 import { Toolbar } from './gui/Toolbar';
 import { BabylonViewer } from './gui/BabylonViewer';
 import { NetworkListener } from './networking/NetworkListener';
+import { RoomManager } from './networking/RoomManager';
 
 
 declare let H5P: any;
@@ -25,6 +26,7 @@ export class RealityBoxCollab {
     options: any;
     guiElements: AbstractGuiElement[];
     otherElements: NetworkListener[];
+    roomManager: RoomManager;
     room: Room;
 
     constructor(options: any, private id: any) {
@@ -33,6 +35,8 @@ export class RealityBoxCollab {
             throw new Error("Instance already definied");
         }
         RealityBoxCollab.instance = this;
+        
+        this.roomManager = new RoomManager();
     }
 
     async attach($container: JQuery) {

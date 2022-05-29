@@ -23,8 +23,8 @@ export class Chat extends AbstractGuiElement {
         <div id="chatMessageField">
 
         </div>
-        <input id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.onChatSend(); }}></input>
-        <button disabled={this.currentRoom == undefined} onClick={this.onChatSend.bind(this)}>Send</button>
+        <input style={{width: "80%"}} id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.onChatSend(); }}></input>
+        <button className="btn btn-primary" style={{float: "right"}} disabled={this.currentRoom == undefined} onClick={this.onChatSend.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
       </div>
     </span>
   }
