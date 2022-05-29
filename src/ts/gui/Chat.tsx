@@ -5,9 +5,12 @@ import * as Y from "yjs";
 import { AbstractGuiElement } from "./AbstractGuiElement";
 import React = require("react");
 
+/**
+ * Gui View for the Chat window
+ */
 export class Chat extends AbstractGuiElement {
-  chatMessages: Y.Array<ChatMessage>;
-  ownMessages: ChatMessage[] = [];
+  chatMessages: Y.Array<ChatMessage>; // The chat messages of the room
+  ownMessages: ChatMessage[]; // The messages this user has send
 
   constructor(container: JQuery) {
     super(container);
@@ -20,13 +23,14 @@ export class Chat extends AbstractGuiElement {
         <div id="chatMessageField">
 
         </div>
-        <input id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.onChatSend();}}></input>
+        <input id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.onChatSend(); }}></input>
         <button disabled={this.currentRoom == undefined} onClick={this.onChatSend.bind(this)}>Send</button>
       </div>
     </span>
   }
 
   onRoomChanged(): void {
+    this.ownMessages = [];
     this.chatMessages = this.currentRoom.doc.getArray("chatMessages");
     this.chatMessages.delete(0, this.chatMessages.length); // Debug: Remove all messages
 
@@ -43,7 +47,7 @@ export class Chat extends AbstractGuiElement {
     this.updateView();
   }
 
-  onChatSend() {
+  private onChatSend() {
     if (!this.currentRoom) return;
 
     this.sendMessage($("#chatInput").val() as string);
