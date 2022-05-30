@@ -10,7 +10,6 @@ import React = require("react");
  */
 export class Chat extends AbstractGuiElement {
   chatMessages: Y.Array<ChatMessage>; // The chat messages of the room
-  ownMessages: ChatMessage[]; // The messages this user has send
 
   constructor(container: JQuery) {
     super(container);
@@ -23,14 +22,13 @@ export class Chat extends AbstractGuiElement {
         <div id="chatMessageField">
 
         </div>
-        <input style={{width: "80%"}} id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.onChatSend(); }}></input>
-        <button className="btn btn-primary" style={{float: "right"}} disabled={this.currentRoom == undefined} onClick={this.onChatSend.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
+        <input style={{ width: "80%" }} id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.sendInput(); }}></input>
+        <button className="btn btn-primary" style={{ float: "right" }} disabled={this.currentRoom == undefined} onClick={this.sendInput.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
       </div>
     </span>
   }
 
   onRoomChanged(): void {
-    this.ownMessages = [];
     this.chatMessages = this.currentRoom.doc.getArray("chatMessages");
     this.chatMessages.delete(0, this.chatMessages.length); // Debug: Remove all messages
 
@@ -38,8 +36,7 @@ export class Chat extends AbstractGuiElement {
       if (evt.changes.delta[0] && evt.changes.delta[0].insert) {
         let added = evt.changes.delta[0].insert as ChatMessage[];
         added.forEach(cm => {
-          if (!this.ownMessages.find(own => chatMessageEquals(own, cm)))
-            this.addMessage(cm, false);
+            this.addMessage(cm);
         });
       }
     });
@@ -47,21 +44,31 @@ export class Chat extends AbstractGuiElement {
     this.updateView();
   }
 
-  private onChatSend() {
+  /**
+   * Send the current input of the input field.
+   */
+  private sendInput(): void {
     if (!this.currentRoom) return;
 
-    this.sendMessage($("#chatInput").val() as string);
+    this.sendMessage(createMessage($("#chatInput").val() as string, this.currentRoom.user.username));
     $("#chatInput").val("");
   }
 
-  sendMessage(msg: string) {
-    let cm = createMessage(msg, this.currentRoom.user.username);
-    this.ownMessages.push(cm);
-    this.addMessage(cm, true);
+  /**
+   * Send a message to the chat. The messages will propagate to the other users
+   * @param cm The chatmesssage to send
+   */
+  sendMessage(cm: ChatMessage) {
+    this.addMessage(cm);
     this.chatMessages.insert(0, [cm]);
   }
 
-  private addMessage(cm: ChatMessage, own: boolean) {
+  /**
+   * Add a chatmessage to the chat gui
+   * @param cm The chat message to add
+   */
+  private addMessage(cm: ChatMessage) {
+    let own = cm.username === this.currentRoom.user.username;
     let div = document.createElement("div");
     div.classList.add("chatContainer");
 
@@ -77,20 +84,25 @@ export class Chat extends AbstractGuiElement {
   }
 }
 
+/**
+ * Represents a single chatmessage. Used for exchange between the clients
+ */
 export interface ChatMessage {
   time: number;
   message: string;
   username: string;
 }
 
-function createMessage(message: string, username: string): ChatMessage {
+/**
+ * Create a chat message dated at this instant.
+ * @param message The chat message to send
+ * @param username The username of the user or system
+ * @returns The created chatmessage instance
+ */
+export function createMessage(message: string, username: string): ChatMessage {
   return {
     time: Date.now(),
     message: message,
     username: username
   };
-}
-
-function chatMessageEquals(a: ChatMessage, b: ChatMessage): boolean {
-  return a.message === b.message && a.time == b.time && a.username == b.username;
 }

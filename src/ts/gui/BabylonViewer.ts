@@ -2,6 +2,9 @@ import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
 
+/**
+ * This class represents all important logic which has to do with the babylon scene, which is not in its own tool
+ */
 export class BabylonViewer extends NetworkListener {
     scene: BABYLON.Scene;
     meshes: Map<string, UserMesh> = new Map();
@@ -17,7 +20,10 @@ export class BabylonViewer extends NetworkListener {
 
     // Creating lines for pointer: https://doc.babylonjs.com/divingDeeper/mesh/creation/set
 
-    onRender() {
+    /**
+     * Called on every frame before rendering
+     */
+    private onRender(): void {
         if (!this.currentRoom) return;
 
         this.currentRoom.user.position = this.scene.activeCamera.position;
@@ -63,22 +69,6 @@ class UserMesh {
             tessellation: undefined
         }, scene);
         this.mesh.material = user.role == Role.HOST ? UserMesh.matHost : UserMesh.matUser;
-
-        /*var plane = BABYLON.Mesh.CreatePlane("plane", 2, scene);
-        plane.parent = this.mesh;
-        plane.position.y = 2;
-        var advancedTexture = AdvancedDynamicTexture.CreateForMesh(plane);
-
-        var button1 = Button.CreateSimpleButton("but1", this.user.username);
-        button1.width = 1;
-        button1.height = 0.4;
-        button1.color = "gray";
-        button1.fontSize = 50;
-        button1.background = "green";
-        button1.onPointerUpObservable.add(function () {
-            alert("you did it!");
-        });
-        advancedTexture.addControl(button1);*/
     }
 
     static createMats(scene: BABYLON.Scene) {
