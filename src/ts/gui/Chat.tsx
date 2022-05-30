@@ -36,7 +36,7 @@ export class Chat extends AbstractGuiElement {
       if (evt.changes.delta[0] && evt.changes.delta[0].insert) {
         let added = evt.changes.delta[0].insert as ChatMessage[];
         added.forEach(cm => {
-            this.addMessage(cm);
+          this.addMessage(cm);
         });
       }
     });
@@ -50,7 +50,7 @@ export class Chat extends AbstractGuiElement {
   private sendInput(): void {
     if (!this.currentRoom) return;
 
-    this.sendMessage(createMessage($("#chatInput").val() as string, this.currentRoom.user.username));
+    this.sendMessage(Chat.createMessage($("#chatInput").val() as string, this.currentRoom.user.username));
     $("#chatInput").val("");
   }
 
@@ -83,6 +83,20 @@ export class Chat extends AbstractGuiElement {
 
     $("#chatMessageField").append(div);
   }
+
+  /**
+   * Create a chat message dated at this instant.
+   * @param message The chat message to send
+   * @param username The username of the user or system
+   * @returns The created chatmessage instance
+   */
+  static createMessage(message: string, username: string): ChatMessage {
+    return {
+      time: Date.now(),
+      message: message,
+      username: username
+    };
+  }
 }
 
 /**
@@ -92,18 +106,4 @@ export interface ChatMessage {
   time: number;
   message: string;
   username: string;
-}
-
-/**
- * Create a chat message dated at this instant.
- * @param message The chat message to send
- * @param username The username of the user or system
- * @returns The created chatmessage instance
- */
-export function createMessage(message: string, username: string): ChatMessage {
-  return {
-    time: Date.now(),
-    message: message,
-    username: username
-  };
 }

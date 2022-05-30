@@ -2,6 +2,8 @@ import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { NetworkListener } from "./NetworkListener";
 import { RoomInformation } from "./RoomManager";
+import { RealityBoxCollab } from "../RealityboxCollab";
+import { Chat } from "../gui/Chat";
 
 export class Room {
 
@@ -36,6 +38,9 @@ export class Room {
             l.currentRoom = this;
             l.onRoomChanged();
         }
+
+        let join = `User ${this.user.username} joined the room`;
+        RealityBoxCollab.instance.chat.sendMessage(Chat.createMessage(join,"Room " + this.roomInfo.name));
     }
 
     onUserUpdated() {

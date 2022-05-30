@@ -26,6 +26,7 @@ export class RealityBoxCollab {
     options: any;
     guiElements: AbstractGuiElement[];
     otherElements: NetworkListener[];
+    chat: Chat;
     roomManager: RoomManager;
     room: Room;
 
@@ -69,7 +70,8 @@ export class RealityBoxCollab {
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, [
             new FirstPersonTool(), new OrbitTool()
         ]);
-        this.guiElements = [viewToolbar, toolbar, new Chat(container), new Settings(container)];
+        this.chat = new Chat(container);
+        this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(container)];
         this.otherElements = [new BabylonViewer()];
         this.guiElements.forEach(e => e.init());
     }
