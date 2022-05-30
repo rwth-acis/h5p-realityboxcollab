@@ -34,7 +34,7 @@ export class Settings extends AbstractGuiElement {
   viewInRoom(): React.ReactNode {
     return <>
       You are in room {this.currentRoom.roomInfo.name}<br></br>
-      {this.currentRoom.usernames.length} users are in this room<br></br>
+      {this.currentRoom.users.size} users are in this room<br></br>
       Role: {this.currentRoom.user.role}
     </>;
   }
@@ -42,7 +42,7 @@ export class Settings extends AbstractGuiElement {
   onRoomChanged(): void {
     super.updateView();
 
-    this.currentRoom.usernames.observe((evt, t) => {
+    this.currentRoom.users.observe((evt, t) => {
       super.updateView();
     });
   }

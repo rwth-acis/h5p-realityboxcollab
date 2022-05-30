@@ -29,10 +29,10 @@ export class BabylonViewer extends NetworkListener {
         this.currentRoom.user.position = this.scene.activeCamera.position;
         this.currentRoom.onUserUpdated();
 
-        this.currentRoom.usernames.toArray()
-            .filter(name => name != this.currentRoom.user.username)
-            .forEach(name => {
-                let user: User = this.currentRoom.userData.get(name);
+        this.currentRoom.users
+            .forEach(user => {
+                if (user.username === this.currentRoom.user.username) return;
+                
                 let mesh: UserMesh = this.meshes.get(user.username);
                 if (!mesh) this.meshes.set(user.username, mesh = new UserMesh(user, this.scene));
 

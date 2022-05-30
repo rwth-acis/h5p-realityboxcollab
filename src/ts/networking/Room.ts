@@ -4,31 +4,25 @@ import { NetworkListener } from "./NetworkListener";
 import { RoomInformation } from "./RoomManager";
 
 export class Room {
-    
+
     doc: Y.Doc;
     user: User;
-    usernames: Y.Array<string>;
-    userData: Y.Map<User>;
+    users: Y.Map<User>;
 
     constructor(private listeners: NetworkListener[], public roomInfo: RoomInformation, create: boolean) {
         this.doc = new Y.Doc();
         const wsProvider = new WebsocketProvider('ws://localhost:1234', "room:" + roomInfo.name, this.doc);
         wsProvider.on('status', (event: any) => {
             if (event.status === "connected") {
+                this.users = this.doc.getMap("userdata");
+                let username: string = this.askUsername();
                 this.user = {
-                    username: "User " + Math.round(100 * Math.random()),
+                    username: username,
                     position: null,
                     role: create ? Role.HOST : Role.USER
                 };
-                this.usernames = this.doc.getArray("usernames");
-                if (create) {
-                    this.usernames.delete(0, this.usernames.length); // Debug
-                }
-                this.usernames.push([this.user.username]);
 
-                this.userData = this.doc.getMap("userdata");
                 this.onUserUpdated();
-
                 this.onConnect();
             }
             else if (event.status === "disconnected") {
@@ -45,11 +39,25 @@ export class Room {
     }
 
     onUserUpdated() {
-        this.userData.set(this.user.username, this.user);
+        this.users.set(this.user.username, this.user);
     }
 
     onDisconnect() {
 
+    }
+
+    private askUsername(): string {
+        while (true) {
+            let username = prompt("Please enter a username");
+            if (username) {
+                if (this.users.get(username)) {
+                    alert(`Username "${username}" already taken`);
+                }
+                else {
+                    return username;
+                }
+            }
+        }
     }
 }
 

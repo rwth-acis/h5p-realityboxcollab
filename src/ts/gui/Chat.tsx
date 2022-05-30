@@ -55,11 +55,12 @@ export class Chat extends AbstractGuiElement {
   }
 
   /**
-   * Send a message to the chat. The messages will propagate to the other users
+   * Send a message to the chat. The messages will propagate to the other users. 
+   * The message will not be explicitly added to the chat gui. 
+   * The message will be added when the listener for the shared messages fires.
    * @param cm The chatmesssage to send
    */
   sendMessage(cm: ChatMessage) {
-    this.addMessage(cm);
     this.chatMessages.insert(0, [cm]);
   }
 
