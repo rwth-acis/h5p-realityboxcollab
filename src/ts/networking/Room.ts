@@ -18,29 +18,26 @@ export class Room {
         this.creator = create;
         this.wsProvider = new WebsocketProvider('ws://localhost:1234', "room:" + roomInfo.name, this.doc);
         this.wsProvider.on('status', (event: any) => {
-            this.onWsStatusChanged(event);
+            if (event.status === "connected") {
+                this.onConnect();
+            }
+            else if (event.status === "disconnected") {
+                this.onDisconnect();
+            }
         });
     }
 
-    private onWsStatusChanged(event: any): void {
-        if (event.status === "connected") {
-            this.users = this.doc.getMap("userdata");
-            let username: string = this.askUsername();
-            this.user = {
-                username: username,
-                position: null,
-                role: this.creator ? Role.HOST : Role.USER
-            };
-
-            this.onUserUpdated();
-            this.onConnect();
-        }
-        else if (event.status === "disconnected") {
-            this.onDisconnect();
-        }
-    }
-
     onConnect(): void {
+        this.users = this.doc.getMap("userdata");
+        let username: string = this.askUsername();
+        this.user = {
+            username: username,
+            position: null,
+            role: this.creator ? Role.HOST : Role.USER
+        };
+
+        this.onUserUpdated();
+
         for (let l of this.listeners) {
             l.currentRoom = this;
             l.onRoomChanged();
@@ -67,6 +64,10 @@ export class Room {
         }
     }
 
+    /**
+     * Send a message as this room.
+     * @param msg The message to send
+     */
     sendRoomMessage(msg: string): void {
         RealityBoxCollab.instance.chat.sendMessage(Chat.createMessage(msg, "Room " + this.roomInfo.name));
     }

@@ -29,7 +29,7 @@ export class Chat extends AbstractGuiElement {
   }
 
   onRoomChanged(): void {
-    if (!this.currentRoom){
+    if (!this.currentRoom) {
       $("#chatMessageField").empty();
       return;
     }
@@ -77,10 +77,14 @@ export class Chat extends AbstractGuiElement {
     let own = cm.username === this.currentRoom.user.username;
     let div = document.createElement("div");
     div.classList.add("chatContainer");
+    let date: Date = new Date(cm.time);
 
     ReactDOM.render(
       <div className={own ? 'ownChatMessage chatMessage' : 'chatMessage'}>
-        <p className="chatUsername">{cm.username}</p>
+        <div className="chatHeader">
+          <p className="chatUsername">{cm.username}</p>
+          <p className="chatTime">{date.getHours()}:{date.getMinutes()}</p>
+        </div>
         <p>{cm.message}</p>
       </div>
       , div

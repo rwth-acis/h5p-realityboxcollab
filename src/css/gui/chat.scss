@@ -21,9 +21,19 @@
 .chatUsername {
     text-decoration: underline;
     margin-bottom: -2px;
+    float: left;
 }
 
 .chatContainer {
     overflow: hidden;
     margin-bottom: -13px;
+}
+
+.chatTime {
+    float: right;
+    color: gray;
+}
+
+.chatHeader {
+    min-height: 30px;
 }
