@@ -10,45 +10,65 @@ export class Room {
     doc: Y.Doc;
     user: User;
     users: Y.Map<User>;
+    wsProvider: WebsocketProvider;
+    creator: boolean;
 
     constructor(private listeners: NetworkListener[], public roomInfo: RoomInformation, create: boolean) {
         this.doc = new Y.Doc();
-        const wsProvider = new WebsocketProvider('ws://localhost:1234', "room:" + roomInfo.name, this.doc);
-        wsProvider.on('status', (event: any) => {
-            if (event.status === "connected") {
-                this.users = this.doc.getMap("userdata");
-                let username: string = this.askUsername();
-                this.user = {
-                    username: username,
-                    position: null,
-                    role: create ? Role.HOST : Role.USER
-                };
-
-                this.onUserUpdated();
-                this.onConnect();
-            }
-            else if (event.status === "disconnected") {
-                this.onDisconnect();
-            }
+        this.creator = create;
+        this.wsProvider = new WebsocketProvider('ws://localhost:1234', "room:" + roomInfo.name, this.doc);
+        this.wsProvider.on('status', (event: any) => {
+            this.onWsStatusChanged(event);
         });
     }
 
-    onConnect() {
+    private onWsStatusChanged(event: any): void {
+        if (event.status === "connected") {
+            this.users = this.doc.getMap("userdata");
+            let username: string = this.askUsername();
+            this.user = {
+                username: username,
+                position: null,
+                role: this.creator ? Role.HOST : Role.USER
+            };
+
+            this.onUserUpdated();
+            this.onConnect();
+        }
+        else if (event.status === "disconnected") {
+            this.onDisconnect();
+        }
+    }
+
+    onConnect(): void {
         for (let l of this.listeners) {
             l.currentRoom = this;
             l.onRoomChanged();
         }
 
-        let join = `User ${this.user.username} joined the room`;
-        RealityBoxCollab.instance.chat.sendMessage(Chat.createMessage(join,"Room " + this.roomInfo.name));
+        this.sendRoomMessage(`User ${this.user.username} joined the room`);
     }
 
-    onUserUpdated() {
+    onUserUpdated(): void {
         this.users.set(this.user.username, this.user);
     }
 
-    onDisconnect() {
+    disconnect(): void {
+        this.sendRoomMessage(`User ${this.user.username} left the room`);
+        this.users.delete(this.user.username);
+        this.wsProvider.disconnect();
+        this.onDisconnect();
+    }
 
+    onDisconnect(): void {
+        for (let l of this.listeners) {
+            l.currentRoom = null;
+            l.onRoomChanged();
+        }
+    }
+
+    sendRoomMessage(msg: string): void {
+        RealityBoxCollab.instance.chat.sendMessage(Chat.createMessage(msg, "Room " + this.roomInfo.name));
     }
 
     private askUsername(): string {

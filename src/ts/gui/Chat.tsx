@@ -29,6 +29,11 @@ export class Chat extends AbstractGuiElement {
   }
 
   onRoomChanged(): void {
+    if (!this.currentRoom){
+      $("#chatMessageField").empty();
+      return;
+    }
+
     this.chatMessages = this.currentRoom.doc.getArray("chatMessages");
     this.chatMessages.delete(0, this.chatMessages.length); // Debug: Remove all messages
 

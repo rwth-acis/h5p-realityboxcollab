@@ -27,7 +27,7 @@ export class Settings extends AbstractGuiElement {
     return <>
       <button className='btn btn-primary' onClick={e => this.joinRoom(true)}>Create Room</button>
       <br></br>
-      <button style={{marginTop: "10px"}} className='btn btn-primary' onClick={e => this.joinRoom(false)}>Join Room</button>
+      <button style={{ marginTop: "10px" }} className='btn btn-primary' onClick={e => this.joinRoom(false)}>Join Room</button>
     </>;
   }
 
@@ -36,11 +36,15 @@ export class Settings extends AbstractGuiElement {
       You are in room {this.currentRoom.roomInfo.name}<br></br>
       {this.currentRoom.users.size} users are in this room<br></br>
       Role: {this.currentRoom.user.role}
+      <br></br>
+      <button className='btn btn-primary' onClick={e => this.currentRoom.disconnect()}>Leave Room</button>
     </>;
   }
 
   onRoomChanged(): void {
     super.updateView();
+
+    if (!this.currentRoom) return;
 
     this.currentRoom.users.observe((evt, t) => {
       super.updateView();
@@ -72,6 +76,8 @@ export class Settings extends AbstractGuiElement {
       }
     }
 
-    RealityBoxCollab.instance.room = new Room([...RealityBoxCollab.instance.guiElements, ...RealityBoxCollab.instance.otherElements], info, create);
+    if (info) {
+      RealityBoxCollab.instance.room = new Room([...RealityBoxCollab.instance.guiElements, ...RealityBoxCollab.instance.otherElements], info, create);
+    }
   }
 }
