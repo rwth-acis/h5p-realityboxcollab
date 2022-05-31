@@ -18,8 +18,6 @@ export class BabylonViewer extends NetworkListener {
         });
     }
 
-    // Creating lines for pointer: https://doc.babylonjs.com/divingDeeper/mesh/creation/set
-
     /**
      * Called on every frame before rendering
      */
