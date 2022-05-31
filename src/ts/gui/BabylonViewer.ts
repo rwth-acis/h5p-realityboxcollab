@@ -32,7 +32,7 @@ export class BabylonViewer extends NetworkListener {
         this.currentRoom.users
             .forEach(user => {
                 if (user.username === this.currentRoom.user.username) return;
-                
+
                 let mesh: UserMesh = this.meshes.get(user.username);
                 if (!mesh) this.meshes.set(user.username, mesh = new UserMesh(user, this.scene));
 
@@ -40,10 +40,22 @@ export class BabylonViewer extends NetworkListener {
 
                 mesh.mesh.position = user.position;
             });
+
+        if (this.meshes.size > this.currentRoom.users.size - 1) {
+            this.meshes.forEach(mesh => {
+                if (!this.currentRoom.users.get(mesh.user.username)) {
+                    this.meshes.delete(mesh.user.username);
+                    this.scene.removeMesh(mesh.mesh);
+                }
+            });
+        }
     }
 
     onRoomChanged(): void {
-
+        this.meshes.forEach(mesh => {
+            this.scene.removeMesh(mesh.mesh);
+        });
+        this.meshes.clear();
     }
 
 }
@@ -58,7 +70,7 @@ class UserMesh {
     static matHost: BABYLON.StandardMaterial;
     static matUser: BABYLON.StandardMaterial;
 
-    constructor(private user: User, scene: BABYLON.Scene) {
+    constructor(public user: User, scene: BABYLON.Scene) {
         if (!UserMesh.matHost) UserMesh.createMats(scene);
 
         this.mesh = BABYLON.MeshBuilder.CreateCapsule(user.username, {
