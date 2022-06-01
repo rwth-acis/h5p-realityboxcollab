@@ -4,6 +4,7 @@ import { NetworkListener } from "./NetworkListener";
 import { RoomInformation } from "./RoomManager";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { Chat } from "../gui/Chat";
+import { PointerInfo } from "../tools/PointerTool";
 
 export class Room {
 
@@ -91,6 +92,7 @@ export interface User {
     username: string;
     role: Role;
     position: BABYLON.Vector3;
+    pointer?: PointerInfo;
 }
 
 export enum Role {
