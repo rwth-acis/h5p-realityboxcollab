@@ -34,13 +34,14 @@ export class PointerTool extends AbstractTool {
 
         this.currentRoom.users.forEach((user: User, username: string) => {
             let pointer = this.pointers.get(username);
-            if (!pointer) {
-                this.pointers.set(username, pointer = new Pointer(this.mat, scene));
-            }
+
             if (user.pointer) {
+                // Create Pointer
+                if (!pointer) this.pointers.set(username, pointer = new Pointer(this.mat, scene));
+                
                 pointer.update(user.pointer);
             }
-            else {
+            else if (pointer) {
                 this.pointers.delete(username);
                 pointer.removeFromScene();
             }
@@ -90,7 +91,7 @@ export class PointerTool extends AbstractTool {
     }
 
     canActivate(): boolean {
-        return true; // Temp
+        return this.currentRoom != null;
     }
 }
 
@@ -124,7 +125,8 @@ class Pointer {
         }, this.scene);
         this.line.material = this.mat;
 
-        this.sphere.position.set(info.target.x, info.target.y, info.target.z);
+        let target = vec(info.target);
+        this.sphere.position.set(target.x, target.y, target.z);
     }
 
     removeFromScene() {
@@ -133,6 +135,11 @@ class Pointer {
     }
 }
 
+/**
+ * Only _x, _y and _z will be exchanged via yjs
+ * @param vec The vector exchanged via yjs
+ * @returns A proper Vector3 instance
+ */
 function vec(vec: BABYLON.Vector3): BABYLON.Vector3 {
     return new BABYLON.Vector3(vec._x, vec._y, vec._z);
 }
