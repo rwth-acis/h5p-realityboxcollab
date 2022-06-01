@@ -5,11 +5,15 @@ export class PointerTool extends AbstractTool {
 
     static readonly LINE_COLOR = new BABYLON.Color4(1, 0, 0);
 
-    line: BABYLON.LinesMesh;
+    line: BABYLON.Mesh;
     sphere: BABYLON.Mesh;
+    mat: BABYLON.StandardMaterial;
 
     constructor() {
         super("Pointer Tool", "fa-solid fa-person-chalkboard");
+
+        this.mat = new BABYLON.StandardMaterial("matPointerBall", RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene);
+        this.mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
     }
 
     onActivate(): void {
@@ -18,7 +22,7 @@ export class PointerTool extends AbstractTool {
             .registerBeforeRender(() => {
                 const cam = scene.activeCamera;
                 let pos = cam.position.clone();
-                pos.y -= 0.4;
+                pos.y -= 1.4;
 
                 // https://doc.babylonjs.com/divingDeeper/mesh/interactions/picking_collisions
                 let hit = scene.pickWithRay(new BABYLON.Ray(cam.position, cam.getDirection(BABYLON.Vector3.Forward())),
@@ -32,20 +36,19 @@ export class PointerTool extends AbstractTool {
                     target = pos;
                 }
 
-                this.line = BABYLON.MeshBuilder.CreateLines("pointer", {
-                    points: [pos, target],
+                this.line = BABYLON.MeshBuilder.CreateTube("tube", {
+                    path: [pos, target],
+                    radius: 0.1,
                     updatable: true,
-                    colors: [PointerTool.LINE_COLOR, PointerTool.LINE_COLOR],
-                    instance: this.line // Update this line, instead of creating new
+                    instance: this.line
                 }, scene);
+                this.line.material = this.mat;
                 if (!this.sphere) {
                     this.sphere = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
                         diameter: 3
                     }, scene);
 
-                    let mat = new BABYLON.StandardMaterial("matPointerBall", scene);
-                    mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-                    this.sphere.material = mat;
+                    this.sphere.material = this.mat;
                 }
                 this.sphere.position.set(target.x, target.y, target.z);
             });
