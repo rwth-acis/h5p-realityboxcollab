@@ -23,6 +23,10 @@ export class Settings extends AbstractGuiElement {
     </div>
   }
 
+  /**
+   * View for the settings when not currently in a remote room (<=> when in a local room)
+   * @returns The view 
+   */
   viewNotInRoom(): React.ReactNode {
     return <>
       <button className='btn btn-primary' onClick={e => this.joinRoom(true)}>Create Room</button>
@@ -31,6 +35,10 @@ export class Settings extends AbstractGuiElement {
     </>;
   }
 
+  /**
+   * View for the settings when currently connected to a remote room
+   * @returns The view
+   */
   viewInRoom(): React.ReactNode {
     return <>
       You are in room {this.currentRoom.roomInfo.name}<br></br>
