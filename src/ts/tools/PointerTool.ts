@@ -116,14 +116,14 @@ class Pointer {
         if (!info.active) return;
 
         this.line = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: [vec(info.pos), vec(info.target)],
+            path: [createVector(info.pos), createVector(info.target)],
             radius: 0.1,
             updatable: true,
             instance: this.line
         }, this.scene);
         this.line.material = this.mat;
 
-        let target = vec(info.target);
+        let target = createVector(info.target);
         this.sphere.position.set(target.x, target.y, target.z);
     }
 
@@ -138,6 +138,6 @@ class Pointer {
  * @param vec The vector exchanged via yjs
  * @returns A proper Vector3 instance
  */
-function vec(vec: BABYLON.Vector3): BABYLON.Vector3 {
+export function createVector(vec: BABYLON.Vector3): BABYLON.Vector3 {
     return new BABYLON.Vector3(vec._x, vec._y, vec._z);
 }

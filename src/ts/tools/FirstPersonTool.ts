@@ -77,7 +77,6 @@ export class FirstPersonTool extends AbstractTool {
             }
         });
 
-        // https://doc.babylonjs.com/divingDeeper/scene/interactWithScenes
         scene.onPointerObservable.add(e => {
             if (!this.active) return;
 
@@ -112,8 +111,7 @@ export class FirstPersonTool extends AbstractTool {
     }
 
     onDeactivate(): void {
-        let scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
-
+        const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
         scene.activeCamera = scene.cameras[0];
     }
 
@@ -122,6 +120,6 @@ export class FirstPersonTool extends AbstractTool {
     }
 
     canActivate(): boolean {
-        return true; // Temp
+        return true;
     }
 }

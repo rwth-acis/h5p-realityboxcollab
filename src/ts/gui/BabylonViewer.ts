@@ -1,6 +1,8 @@
+import * as Y from "yjs";
 import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
+import { createVector } from "../tools/PointerTool";
 
 /**
  * This class represents all important logic which has to do with the babylon scene, which is not in its own tool
@@ -8,6 +10,9 @@ import { RealityBoxCollab } from "../RealityboxCollab";
 export class BabylonViewer extends NetworkListener {
     scene: BABYLON.Scene;
     meshes: Map<string, UserMesh> = new Map();
+    models: BABYLON.Mesh[];
+    remoteModelInfo: Y.Map<ModelInformation>;
+    localModelInfo: Map<string, ModelInformation> = new Map();
 
     constructor() {
         super();
@@ -16,14 +21,14 @@ export class BabylonViewer extends NetworkListener {
         this.scene.registerBeforeRender(() => {
             this.onRender();
         });
+
+        this.models = [RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env];
     }
 
     /**
      * Called on every frame before rendering
      */
     private onRender(): void {
-        if (!this.currentRoom) return;
-
         this.currentRoom.user.position = this.scene.activeCamera.position;
         this.currentRoom.onUserUpdated();
 
@@ -47,6 +52,23 @@ export class BabylonViewer extends NetworkListener {
                 }
             });
         }
+
+        this.models.forEach(mesh => {
+            let remote = this.remoteModelInfo.get(mesh.name);
+            let local = this.localModelInfo.get(mesh.name);
+            let now = getInformation(mesh);
+            if (!local) this.localModelInfo.set(mesh.name, local = now);
+            if (!remote) this.remoteModelInfo.set(mesh.name, remote = now);
+
+            if (!informationEquals(remote, local)) { // Remote changes
+                applyInformation(mesh, remote);
+            }
+            else if (!informationEquals(local, now)) { // Local changes
+                this.remoteModelInfo.set(mesh.name, now);
+            }
+
+            this.localModelInfo.set(mesh.name, now);
+        });
     }
 
     onRoomChanged(): void {
@@ -54,6 +76,7 @@ export class BabylonViewer extends NetworkListener {
             this.scene.removeMesh(mesh.mesh);
         });
         this.meshes.clear();
+        this.remoteModelInfo = this.currentRoom.doc.getMap("models");
     }
 
 }
@@ -90,3 +113,40 @@ class UserMesh {
     }
 
 }
+
+export interface ModelInformation {
+    position: BABYLON.Vector3;
+    rotation: BABYLON.Quaternion;
+    scale: BABYLON.Vector3;
+}
+
+function applyInformation(mesh: BABYLON.Mesh, info: ModelInformation): void {
+    mesh.position = createVector(info.position);
+    mesh.rotationQuaternion = createQuaternion(info.rotation);
+    mesh.scaling = createVector(info.scale);
+}
+
+function getInformation(mesh: BABYLON.Mesh): ModelInformation {
+    return {
+        position: mesh.position.clone(),
+        rotation: mesh.rotationQuaternion.clone(),
+        scale: mesh.scaling.clone()
+    };
+}
+
+function informationEquals(a: ModelInformation, b: ModelInformation): boolean {
+    return vecEquals(a.position, b.position) && quatEquals(a.rotation, b.rotation) && vecEquals(a.scale, b.scale);
+}
+
+function vecEquals(a: BABYLON.Vector3, b: BABYLON.Vector3): boolean {
+    return a._x == b._x && a._y == b._y && a._z == b._z;
+}
+
+function createQuaternion(q: BABYLON.Quaternion): BABYLON.Quaternion {
+    return new BABYLON.Quaternion(q._x, q._y, q._z, q._w);
+}
+
+function quatEquals(a: BABYLON.Quaternion, b: BABYLON.Quaternion) {
+    return a._x == b._x && a._y == b._y && a._z == b._z && a._w == b._w;
+}
+
