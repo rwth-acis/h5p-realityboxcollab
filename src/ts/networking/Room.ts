@@ -12,29 +12,40 @@ export class Room {
     user: User;
     users: Y.Map<User>;
     wsProvider: WebsocketProvider;
-    creator: boolean;
 
-    constructor(private listeners: NetworkListener[], public roomInfo: RoomInformation, create: boolean) {
+    /**
+     * Create a new room
+     * @param listeners The listeners which will be notified on room change
+     * @param roomInfo The room info for the room to create or join
+     * @param isCreator Whether this user is the creator of the room
+     * @param isLocal Whether this room is a local / pseudo room
+     */
+    constructor(private listeners: NetworkListener[], public roomInfo: RoomInformation, public isCreator: boolean, public isLocal: boolean) {
         this.doc = new Y.Doc();
-        this.creator = create;
-        this.wsProvider = new WebsocketProvider('ws://localhost:1234', "room:" + roomInfo.name, this.doc);
-        this.wsProvider.on('status', (event: any) => {
-            if (event.status === "connected") {
-                this.onConnect();
-            }
-            else if (event.status === "disconnected") {
-                this.onDisconnect();
-            }
-        });
+
+        if (!isLocal) {
+            this.wsProvider = new WebsocketProvider('ws://localhost:1234', "room:" + roomInfo.name, this.doc);
+            this.wsProvider.on('status', (event: any) => {
+                if (event.status === "connected") {
+                    this.onConnect();
+                }
+                else if (event.status === "disconnected") {
+                    this.onDisconnect();
+                }
+            });
+        }
+        else {
+            this.onConnect();
+        }
     }
 
     onConnect(): void {
         this.users = this.doc.getMap("userdata");
-        let username: string = this.askUsername();
+        let username: string = this.isLocal ? "Local User" : this.askUsername();
         this.user = {
             username: username,
             position: null,
-            role: this.creator ? Role.HOST : Role.USER
+            role: this.isCreator ? Role.HOST : Role.USER
         };
 
         this.onUserUpdated();
@@ -52,6 +63,8 @@ export class Room {
     }
 
     disconnect(): void {
+        if (this.isLocal) return;
+
         this.sendRoomMessage(`User ${this.user.username} left the room`);
         this.users.delete(this.user.username);
         this.wsProvider.disconnect();
@@ -59,10 +72,8 @@ export class Room {
     }
 
     onDisconnect(): void {
-        for (let l of this.listeners) {
-            l.currentRoom = null;
-            l.onRoomChanged();
-        }
+        RealityBoxCollab.instance.room = RealityBoxCollab.instance.localRoom;
+        RealityBoxCollab.instance.room.onConnect();
     }
 
     /**
@@ -96,5 +107,5 @@ export interface User {
 }
 
 export enum Role {
-    HOST, USER
+    HOST, CO_HOST, USER
 }

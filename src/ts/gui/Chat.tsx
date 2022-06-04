@@ -23,19 +23,16 @@ export class Chat extends AbstractGuiElement {
 
         </div>
         <input style={{ width: "80%" }} id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.sendInput(); }}></input>
-        <button className="btn btn-primary" style={{ float: "right" }} disabled={this.currentRoom == undefined} onClick={this.sendInput.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
+        <button className="btn btn-primary" style={{ float: "right" }} disabled={!this.currentRoom.isLocal} onClick={this.sendInput.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
       </div>
     </span>
   }
 
   onRoomChanged(): void {
-    if (!this.currentRoom) {
-      $("#chatMessageField").empty();
-      return;
-    }
-
+    $("#chatMessageField").empty();
     this.chatMessages = this.currentRoom.doc.getArray("chatMessages");
-    this.chatMessages.delete(0, this.chatMessages.length); // Debug: Remove all messages
+
+    if (this.currentRoom.isLocal) { this.updateView(); return; }
 
     this.chatMessages.observe((evt: Y.YArrayEvent<ChatMessage>) => {
       if (evt.changes.delta[0] && evt.changes.delta[0].insert) {
@@ -53,7 +50,7 @@ export class Chat extends AbstractGuiElement {
    * Send the current input of the input field.
    */
   private sendInput(): void {
-    if (!this.currentRoom) return;
+    if (this.currentRoom.isLocal) return;
 
     this.sendMessage(Chat.createMessage($("#chatInput").val() as string, this.currentRoom.user.username));
     $("#chatInput").val("");
@@ -70,10 +67,12 @@ export class Chat extends AbstractGuiElement {
   }
 
   /**
-   * Add a chatmessage to the chat gui
+   * Add a chatmessage to the chat gui. The message will not be added, if the user is in their local room
    * @param cm The chat message to add
    */
   private addMessage(cm: ChatMessage) {
+    if (this.currentRoom.isLocal) return;
+
     let own = cm.username === this.currentRoom.user.username;
     let div = document.createElement("div");
     div.classList.add("chatContainer");

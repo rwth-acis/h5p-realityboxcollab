@@ -19,6 +19,6 @@ export class OrbitTool extends AbstractTool {
     }
 
     canActivate(): boolean {
-        return true; // Temp
+        return true;
     }
 }

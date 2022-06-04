@@ -1,19 +1,18 @@
-import * as $ from 'jquery'; // Needed for JQuery to be loaded
-import { Settings } from './gui/Settings';
-import { Chat } from './gui/Chat';
-import { Room } from './networking/Room';
 import { AbstractGuiElement } from './gui/AbstractGuiElement';
+import { BabylonViewer } from './gui/BabylonViewer';
+import { Chat } from './gui/Chat';
+import { Settings } from './gui/Settings';
+import { Toolbar } from './gui/Toolbar';
+import { NetworkListener } from './networking/NetworkListener';
+import { Room } from './networking/Room';
+import { RoomManager } from './networking/RoomManager';
 import { Realitybox } from './RealityboxTypes';
-import { PointerTool } from './tools/PointerTool';
 import { AnnotationTool } from './tools/AnnotationTool';
 import { DrawTool } from './tools/DrawTool';
-import { MoveTool } from './tools/MoveTool';
 import { FirstPersonTool } from './tools/FirstPersonTool';
+import { MoveTool } from './tools/MoveTool';
 import { OrbitTool } from './tools/OrbitTool';
-import { Toolbar } from './gui/Toolbar';
-import { BabylonViewer } from './gui/BabylonViewer';
-import { NetworkListener } from './networking/NetworkListener';
-import { RoomManager } from './networking/RoomManager';
+import { PointerTool } from './tools/PointerTool';
 
 
 declare let H5P: any;
@@ -29,6 +28,7 @@ export class RealityBoxCollab {
     chat: Chat;
     roomManager: RoomManager;
     room: Room;
+    localRoom: Room;
 
     constructor(options: any, private id: any) {
         this.options = options.realityboxcollab;
@@ -36,7 +36,7 @@ export class RealityBoxCollab {
             throw new Error("Instance already definied");
         }
         RealityBoxCollab.instance = this;
-        
+
         this.roomManager = new RoomManager();
     }
 
@@ -70,9 +70,18 @@ export class RealityBoxCollab {
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, [
             new FirstPersonTool(), new OrbitTool()
         ]);
+
         this.chat = new Chat(container);
         this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(container)];
         this.otherElements = [new BabylonViewer()];
         this.guiElements.forEach(e => e.init());
+        
+        this.room = this.localRoom = new Room(this.getListeners(), {
+            name: "Local Room",
+            password: ""
+        }, true, true);
+    }
+    getListeners(): NetworkListener[] {
+        return [...this.guiElements, ...this.otherElements];
     }
 }

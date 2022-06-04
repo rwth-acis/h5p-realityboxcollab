@@ -40,6 +40,6 @@ export class MoveTool extends AbstractMultiTool {
     }
 
     canActivate(): boolean {
-        return true; // Temp
+        return true;
     }
 }

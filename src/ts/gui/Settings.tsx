@@ -14,10 +14,10 @@ export class Settings extends AbstractGuiElement {
   createElement(): ReactElement {
     return <div id='collabSettings' className='guiElement'>
       <h1 className='elementHeading'>Settings</h1>
-      {!this.currentRoom &&
+      {this.currentRoom.isLocal &&
         this.viewNotInRoom()
       }
-      {this.currentRoom &&
+      {!this.currentRoom.isLocal &&
         this.viewInRoom()
       }
     </div>
@@ -43,8 +43,6 @@ export class Settings extends AbstractGuiElement {
 
   onRoomChanged(): void {
     super.updateView();
-
-    if (!this.currentRoom) return;
 
     this.currentRoom.users.observe((evt, t) => {
       super.updateView();
@@ -77,7 +75,7 @@ export class Settings extends AbstractGuiElement {
     }
 
     if (info) {
-      RealityBoxCollab.instance.room = new Room([...RealityBoxCollab.instance.guiElements, ...RealityBoxCollab.instance.otherElements], info, create);
+      RealityBoxCollab.instance.room = new Room(RealityBoxCollab.instance.getListeners(), info, create, false);
     }
   }
 }

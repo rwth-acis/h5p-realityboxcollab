@@ -26,8 +26,6 @@ export class PointerTool extends AbstractTool {
     }
 
     private onRender(scene: BABYLON.Scene) {
-        if (!this.currentRoom) return;
-
         if (this.active) {
             this.updateOwnPointer(scene);
         }
@@ -38,7 +36,7 @@ export class PointerTool extends AbstractTool {
             if (user.pointer) {
                 // Create Pointer
                 if (!pointer) this.pointers.set(username, pointer = new Pointer(this.mat, scene));
-                
+
                 pointer.update(user.pointer);
             }
             else if (pointer) {
@@ -76,7 +74,6 @@ export class PointerTool extends AbstractTool {
         }
         this.currentRoom.user.pointer = info;
         this.currentRoom.onUserUpdated();
-        console.log(info.active);
     }
 
     onDeactivate(): void {
@@ -87,11 +84,12 @@ export class PointerTool extends AbstractTool {
     }
 
     onRoomChanged(): void {
-
+        this.pointers.forEach(p => p.removeFromScene());
+        this.pointers.clear();
     }
 
     canActivate(): boolean {
-        return this.currentRoom != null;
+        return true;
     }
 }
 

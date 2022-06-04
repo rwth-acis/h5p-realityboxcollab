@@ -19,12 +19,11 @@ export abstract class AbstractGuiElement extends NetworkListener {
   }
 
   /**
-   * Initialize this GuiElement and attach to the container given in the constructor. This method will call {@link AbstractGuiElement.updateView}.
+   * Initialize this GuiElement and attach to the container given in the constructor. This method will not call {@link AbstractGuiElement.updateView} by itself.
    */
   init() { // Not in constructor to ensure class fields are loaded for extending classes
     this.root = document.createElement("div");
     this.container.append(this.root);
-    this.updateView();
   }
 
   /**
