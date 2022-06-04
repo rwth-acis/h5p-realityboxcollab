@@ -23,7 +23,7 @@ export class Chat extends AbstractGuiElement {
 
         </div>
         <input style={{ width: "80%" }} id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.sendInput(); }}></input>
-        <button className="btn btn-primary" style={{ float: "right" }} disabled={!this.currentRoom.isLocal} onClick={this.sendInput.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
+        <button className="btn btn-primary" style={{ float: "right" }} disabled={this.currentRoom.isLocal} onClick={this.sendInput.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
       </div>
     </span>
   }
@@ -89,7 +89,10 @@ export class Chat extends AbstractGuiElement {
       , div
     );
 
-    $("#chatMessageField").append(div);
+    const container = $("#chatMessageField");
+
+    container.append(div);
+    container.scrollTop(container[0].scrollHeight);
   }
 
   /**

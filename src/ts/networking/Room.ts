@@ -5,6 +5,7 @@ import { RoomInformation } from "./RoomManager";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { Chat } from "../gui/Chat";
 import { PointerInfo } from "../tools/PointerTool";
+import { HostUpdater } from "./HostUpdater";
 
 export class Room {
 
@@ -12,6 +13,7 @@ export class Room {
     user: User;
     users: Y.Map<User>;
     wsProvider: WebsocketProvider;
+    hostUpdater: HostUpdater;
 
     /**
      * Create a new room
@@ -56,9 +58,14 @@ export class Room {
         }
 
         this.sendRoomMessage(`User ${this.user.username} joined the room`);
+
+        if (this.user.role == Role.HOST && !this.isLocal) {
+            this.hostUpdater = new HostUpdater(this);
+        }
     }
 
     onUserUpdated(): void {
+        this.user.lastUpdate = Date.now();
         this.users.set(this.user.username, this.user);
     }
 
@@ -72,6 +79,9 @@ export class Room {
     }
 
     onDisconnect(): void {
+        if (this.hostUpdater) {
+            this.hostUpdater.clear();
+        }
         RealityBoxCollab.instance.room = RealityBoxCollab.instance.localRoom;
         RealityBoxCollab.instance.room.onConnect();
     }
@@ -83,6 +93,7 @@ export class Room {
     sendRoomMessage(msg: string): void {
         RealityBoxCollab.instance.chat.sendMessage(Chat.createMessage(msg, "Room " + this.roomInfo.name));
     }
+
 
     private askUsername(): string {
         while (true) {
@@ -99,10 +110,12 @@ export class Room {
     }
 }
 
+
 export interface User {
     username: string;
     role: Role;
     position: BABYLON.Vector3;
+    lastUpdate?: number;
     pointer?: PointerInfo;
 }
 
