@@ -82,7 +82,7 @@ export class Chat extends AbstractGuiElement {
       <div className={own ? 'ownChatMessage chatMessage' : 'chatMessage'}>
         <div className="chatHeader">
           <p className="chatUsername">{cm.username}</p>
-          <p className="chatTime">{date.getHours()}:{date.getMinutes()}</p>
+          <p className="chatTime">{date.getHours() < 10 ? "0" + date.getHours() : date.getHours()}:{date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()}</p>
         </div>
         <p>{cm.message}</p>
       </div>
