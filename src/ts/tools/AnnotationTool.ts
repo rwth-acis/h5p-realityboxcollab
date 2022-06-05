@@ -6,19 +6,15 @@ export class AnnotationTool extends AbstractTool {
         super("Annotation Tool", "fa-solid fa-note-sticky");
     }
 
-    onActivate(): void {
+    override onActivate(): void {
         
     }
     
-    onDeactivate(): void {
+    override onDeactivate(): void {
         
     }
 
-    onRoomChanged(): void {
+    override onRoomChanged(): void {
         
-    }
-
-    canActivate(): boolean {
-        return false; // Temp
     }
 }

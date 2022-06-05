@@ -15,7 +15,7 @@ export class Toolbar extends AbstractGuiElement {
         }
     }
 
-    createElement(): ReactElement {
+    override createElement(): ReactElement {
         return <div id={this.className} className='guiElement'>
             {this.tools.map(tool =>
                 <button className={tool.active ? "toolbarBtnActive toolbarBtn" : "toolbarBtn"} disabled={!tool.canActivate()}
@@ -49,7 +49,7 @@ export class Toolbar extends AbstractGuiElement {
         super.updateView();
     }
 
-    onRoomChanged(): void {
+    override onRoomChanged(): void {
         this.tools.forEach(t => { t.onRoomChanged(); t.currentRoom = this.currentRoom; t.active = false; });
 
         if (this.alwaysActive)
@@ -57,7 +57,7 @@ export class Toolbar extends AbstractGuiElement {
         this.updateView();
     }
 
-    selectFirst() {
+    selectFirst(): void {
         for (let tool of this.tools) {
             if (tool.canActivate()) { // Find first tool, which can be activated
                 this.activeTool = tool;

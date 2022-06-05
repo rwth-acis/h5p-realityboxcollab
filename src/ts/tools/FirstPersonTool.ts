@@ -27,7 +27,7 @@ export class FirstPersonTool extends AbstractTool {
         super("First Person Tool", "fa-solid fa-eye");
     }
 
-    onActivate(): void {
+    override onActivate(): void {
         let scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
         if (!this.camera) {
@@ -39,7 +39,8 @@ export class FirstPersonTool extends AbstractTool {
         this.camera.rotation.z = 0;
         scene.activeCamera = this.camera;
     }
-    createComponents() {
+
+    createComponents(): void {
         let scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
         this.camera = new BABYLON.FreeCamera("First Person Camera", new BABYLON.Vector3(), scene, false);
@@ -50,7 +51,7 @@ export class FirstPersonTool extends AbstractTool {
                     RealityBoxCollab.instance.realitybox.viewer._$canvas.removeClass("nocursor");
                     this.cursor = false;
                 }
-                return;
+                return scene;
             }
 
             this.cursor = true;
@@ -100,7 +101,7 @@ export class FirstPersonTool extends AbstractTool {
         return this.pressedKeys[code];
     }
 
-    computeDirection(dir: BABYLON.Vector3, a: number, b: number, ref: BABYLON.Vector3) {
+    computeDirection(dir: BABYLON.Vector3, a: number, b: number, ref: BABYLON.Vector3): void {
         if (this.getKey(a) !== this.getKey(b)) { // A xor D
             let v = this.camera.getDirection(ref);
             if (this.pressedKeys[b]) {
@@ -110,16 +111,12 @@ export class FirstPersonTool extends AbstractTool {
         }
     }
 
-    onDeactivate(): void {
+    override onDeactivate(): void {
         const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
         scene.activeCamera = scene.cameras[0];
     }
 
-    onRoomChanged(): void {
+    override onRoomChanged(): void {
 
-    }
-
-    canActivate(): boolean {
-        return true;
     }
 }

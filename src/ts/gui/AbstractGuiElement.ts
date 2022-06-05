@@ -21,7 +21,7 @@ export abstract class AbstractGuiElement extends NetworkListener {
   /**
    * Initialize this GuiElement and attach to the container given in the constructor. This method will not call {@link AbstractGuiElement.updateView} by itself.
    */
-  init() { // Not in constructor to ensure class fields are loaded for extending classes
+  init(): void { // Not in constructor to ensure class fields are loaded for extending classes
     this.root = document.createElement("div");
     this.container.append(this.root);
   }
@@ -29,7 +29,7 @@ export abstract class AbstractGuiElement extends NetworkListener {
   /**
    * Update this GuiElement by calling {@link AbstractGuiElement.createElement} and then re-rendering the view.
    */
-  updateView() {
+  updateView(): void {
     ReactDOM.render(this.createElement(), this.root);
   }
 

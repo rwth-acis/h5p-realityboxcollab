@@ -11,13 +11,13 @@ export class RoomManager {
     constructor() {
         this.doc = new Y.Doc();
         const wsProvider = new WebsocketProvider('ws://localhost:1234', "RealityboxCollabRooms", this.doc);
-        
+
         wsProvider.on('status', (event: any) => {
             if (event.status === "connected") {
                 this.rooms = this.doc.getMap("rooms");
             }
             else if (event.status === "disconnected") {
-                
+
             }
         });
     }
@@ -26,13 +26,12 @@ export class RoomManager {
      * Create a new room
      * @param name The name for the room
      * @param password The password used to join the room
-     * @returns The RoomInformation for the newly created room
-     * @throws Error, if a room with this name already exists
+     * @returns The RoomInformation for the newly created room 
+     * or null if no room could be created because the name is already in use
      */
     createRoom(name: string, password: string): RoomInformation {
-        if (this.getRoom(name)) {
-            throw new Error(`A room with the name ${name} already exists`);
-        }
+        if (this.getRoom(name)) return null;
+        
         let info: RoomInformation = {
             name: name,
             password: password

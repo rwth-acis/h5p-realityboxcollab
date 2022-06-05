@@ -6,19 +6,15 @@ export class DrawTool extends AbstractTool {
         super("Draw Tool", "fa-solid fa-pen");
     }
 
-    onActivate(): void {
+    override onActivate(): void {
         
     }
     
-    onDeactivate(): void {
+    override onDeactivate(): void {
         
     }
 
-    onRoomChanged(): void {
+    override onRoomChanged(): void {
         
-    }
-
-    canActivate(): boolean {
-        return true; // Temp
     }
 }

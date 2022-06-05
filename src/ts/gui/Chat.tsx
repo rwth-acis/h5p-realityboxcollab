@@ -15,7 +15,7 @@ export class Chat extends AbstractGuiElement {
     super(container);
   }
 
-  createElement(): ReactElement {
+  override createElement(): ReactElement {
     return <span>
       <div id='collabChat' className='guiElement'>
         <h1 className='elementHeading'>Chat</h1>
@@ -28,7 +28,7 @@ export class Chat extends AbstractGuiElement {
     </span>
   }
 
-  onRoomChanged(): void {
+  override onRoomChanged(): void {
     $("#chatMessageField").empty();
     this.chatMessages = this.currentRoom.doc.getArray("chatMessages");
 
@@ -70,7 +70,7 @@ export class Chat extends AbstractGuiElement {
    * Add a chatmessage to the chat gui. The message will not be added, if the user is in their local room
    * @param cm The chat message to add
    */
-  private addMessage(cm: ChatMessage) {
+  private addMessage(cm: ChatMessage): void {
     if (this.currentRoom.isLocal) return;
 
     let own = cm.username === this.currentRoom.user.username;

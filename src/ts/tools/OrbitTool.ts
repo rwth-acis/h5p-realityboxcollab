@@ -6,19 +6,16 @@ export class OrbitTool extends AbstractTool {
         super("Orbit Tool", "fa-solid fa-circle-notch");
     }
 
-    onActivate(): void {
-        
-    }
-    
-    onDeactivate(): void {
-        
+    override  onActivate(): void {
+
     }
 
-    onRoomChanged(): void {
-        
+    override onDeactivate(): void {
+
     }
 
-    canActivate(): boolean {
-        return true;
+    override onRoomChanged(): void {
+
     }
+
 }

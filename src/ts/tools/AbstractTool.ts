@@ -10,5 +10,5 @@ export abstract class AbstractTool extends NetworkListener {
 
     abstract onActivate(): void
     abstract onDeactivate(): void;
-    abstract canActivate(): boolean;
+    canActivate(): boolean {return true;};
 }

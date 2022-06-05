@@ -6,6 +6,8 @@
       "module": "commonjs",
       "target": "es5",
       "jsx": "react",
-      "allowJs": true
+      "allowJs": true,
+      "noImplicitOverride": true,
+      "noImplicitReturns": true
     }
   }

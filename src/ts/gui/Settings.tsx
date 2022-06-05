@@ -1,9 +1,10 @@
 import { ReactElement } from 'react';
-import { Room } from '../networking/Room';
+import { Role, Room, RoomSettings } from '../networking/Room';
 import { RoomInformation } from '../networking/RoomManager';
 import { RealityBoxCollab } from '../RealityboxCollab';
 import { AbstractGuiElement } from './AbstractGuiElement';
 import React = require('react');
+import { Accordion } from 'react-bootstrap';
 
 export class Settings extends AbstractGuiElement {
 
@@ -11,7 +12,7 @@ export class Settings extends AbstractGuiElement {
     super(container);
   }
 
-  createElement(): ReactElement {
+  override createElement(): ReactElement {
     return <div id='collabSettings' className='guiElement'>
       <h1 className='elementHeading'>Settings</h1>
       {this.currentRoom.isLocal &&
@@ -41,20 +42,57 @@ export class Settings extends AbstractGuiElement {
    */
   viewInRoom(): React.ReactNode {
     return <>
-      You are in room {this.currentRoom.roomInfo.name}<br></br>
-      {this.currentRoom.users.size} users are in this room<br></br>
-      Role: {this.currentRoom.user.role}
       <br></br>
-      <button className='btn btn-primary' onClick={e => this.currentRoom.disconnect()}>Leave Room</button>
+
+      <Accordion defaultActiveKey="0">
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>Room Information</Accordion.Header>
+          <Accordion.Body>
+            Room Name: {this.currentRoom.roomInfo.name}<br></br>
+            Users: {this.currentRoom.users.size}<br></br>
+            Role: {this.currentRoom.user.role}<br></br>
+            <button className='btn' onClick={e => this.currentRoom.disconnect()}>Leave Room</button>
+          </Accordion.Body>
+        </Accordion.Item>
+        {(this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST || true)
+          &&
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>Settings</Accordion.Header>
+            <Accordion.Body>
+
+              {SETTINGS.map(e =>
+                this.createSetting(e, this.currentRoom.settings)
+              )}
+            </Accordion.Body>
+          </Accordion.Item>
+        }
+      </Accordion>
+    </>;
+  }
+
+  private createSetting(e: SettingsGuiElement, s: RoomSettings): React.ReactNode {
+    return <>
+    {
+        e.type == SettingsType.Heading &&
+        <h4>{e.name}</h4>
+      }
+      {
+        e.type == SettingsType.Checkbox &&
+        <label><input type="checkbox" checked={e.property(s)} onChange={() => { e.toggle(s); this.currentRoom.onSettingsUpdated(); }} />&nbsp;&nbsp;{e.name}</label>
+      }
     </>;
   }
 
   onRoomChanged(): void {
     super.updateView();
 
-    this.currentRoom.users.observe((evt, t) => {
+    this.currentRoom.users.observe(() => {
       super.updateView();
     });
+  }
+
+  override onSettingsChanged(): void {
+    super.updateView();
   }
 
   joinRoom(create: boolean) {
@@ -87,3 +125,19 @@ export class Settings extends AbstractGuiElement {
     }
   }
 }
+
+export enum SettingsType {
+  Checkbox, Heading
+}
+
+export interface SettingsGuiElement {
+  name: string,
+  type: SettingsType,
+  property?: (s: RoomSettings) => any,
+  toggle?: (s: RoomSettings) => any
+}
+
+export const SETTINGS: SettingsGuiElement[] = [
+  { name: "Users can...", type: SettingsType.Heading },
+  { name: "use the Chat", property: s => s.canUseChat, toggle: s => s.canUseChat = !s.canUseChat, type: SettingsType.Checkbox }
+]

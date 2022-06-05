@@ -19,6 +19,7 @@ export class Room {
     wsProvider: WebsocketProvider;
     /** The host updater. Only used if the user of this instance is the room host */
     hostUpdater: HostUpdater;
+    settings: RoomSettings;
 
     /**
      * Create a new room
@@ -57,8 +58,19 @@ export class Room {
             position: null,
             role: this.isCreator ? Role.HOST : Role.USER
         };
-
         this.onUserUpdated();
+
+        if (this.isCreator) {
+            this.settings = {
+                canUseChat: true
+            }
+            this.onSettingsUpdated();
+            console.log(this.doc.getMap());
+        }
+        else {
+            console.log(this.doc.getMap());
+            this.settings = this.doc.getMap().get("settings") as RoomSettings;
+        }
 
         for (let l of this.listeners) {
             l.currentRoom = this;
@@ -104,6 +116,10 @@ export class Room {
         this.users.set(this.user.username, this.user);
     }
 
+    onSettingsUpdated(): void {
+        this.doc.getMap().set("settings", this.settings);
+    }
+
     /**
      * Send a message as this room.
      * @param msg The message to send
@@ -141,6 +157,10 @@ export interface User {
     lastUpdate?: number;
     /** Set when the user is using the pointer tool */
     pointer?: PointerInfo;
+}
+
+export interface RoomSettings {
+    canUseChat: boolean;
 }
 
 export enum Role {

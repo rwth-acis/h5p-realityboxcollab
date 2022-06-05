@@ -21,7 +21,7 @@ export class PointerTool extends AbstractTool {
         });
     }
 
-    onActivate(): void {
+    override onActivate(): void {
 
     }
 
@@ -55,7 +55,7 @@ export class PointerTool extends AbstractTool {
         }
     }
 
-    private updateOwnPointer(scene: BABYLON.Scene) {
+    private updateOwnPointer(scene: BABYLON.Scene): void {
         const cam = scene.activeCamera;
         const model = RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env;
 
@@ -76,21 +76,18 @@ export class PointerTool extends AbstractTool {
         this.currentRoom.onUserUpdated();
     }
 
-    onDeactivate(): void {
+    override onDeactivate(): void {
         if (this.currentRoom) {
             this.currentRoom.user.pointer = undefined;
             this.currentRoom.onUserUpdated();
         }
     }
 
-    onRoomChanged(): void {
+    override onRoomChanged(): void {
         this.pointers.forEach(p => p.removeFromScene());
         this.pointers.clear();
     }
 
-    canActivate(): boolean {
-        return true;
-    }
 }
 
 export interface PointerInfo {
@@ -110,7 +107,7 @@ class Pointer {
         this.sphere.material = this.mat;
     }
 
-    update(info: PointerInfo) {
+    update(info: PointerInfo): void {
         if (this.line) this.line.setEnabled(info.active);
         this.sphere.setEnabled(info.active);
         if (!info.active) return;
@@ -127,7 +124,7 @@ class Pointer {
         this.sphere.position.set(target.x, target.y, target.z);
     }
 
-    removeFromScene() {
+    removeFromScene(): void {
         this.scene.removeMesh(this.line);
         this.scene.removeMesh(this.sphere);
     }
