@@ -54,7 +54,7 @@ export class Settings extends AbstractGuiElement {
             <button className='btn' onClick={e => this.currentRoom.disconnect()}>Leave Room</button>
           </Accordion.Body>
         </Accordion.Item>
-        {(this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST || true)
+        {(this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST)
           &&
           <Accordion.Item eventKey="1">
             <Accordion.Header>Settings</Accordion.Header>

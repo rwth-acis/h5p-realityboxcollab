@@ -4,6 +4,7 @@ import * as ReactDOM from "react-dom";
 import * as Y from "yjs";
 import { AbstractGuiElement } from "./AbstractGuiElement";
 import React = require("react");
+import { Role } from '../networking/Room';
 
 /**
  * Gui View for the Chat window
@@ -23,9 +24,13 @@ export class Chat extends AbstractGuiElement {
 
         </div>
         <input style={{ width: "80%" }} id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.sendInput(); }}></input>
-        <button className="btn btn-primary" style={{ float: "right" }} disabled={this.currentRoom.isLocal} onClick={this.sendInput.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
+        <button className="btn btn-primary" style={{ float: "right" }} disabled={!this.canUse()} onClick={this.sendInput.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
       </div>
     </span>
+  }
+
+  private canUse(): boolean {
+    return !this.currentRoom.isLocal && (this.currentRoom.settings.canUseChat || this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST);
   }
 
   override onRoomChanged(): void {
@@ -46,11 +51,15 @@ export class Chat extends AbstractGuiElement {
     this.updateView();
   }
 
+  override onSettingsChanged(): void {
+    super.updateView();
+  }
+
   /**
    * Send the current input of the input field.
    */
   private sendInput(): void {
-    if (this.currentRoom.isLocal) return;
+    if (!this.canUse()) return;
 
     this.sendMessage(Chat.createMessage($("#chatInput").val() as string, this.currentRoom.user.username));
     $("#chatInput").val("");

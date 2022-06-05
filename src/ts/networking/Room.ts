@@ -65,12 +65,15 @@ export class Room {
                 canUseChat: true
             }
             this.onSettingsUpdated();
-            console.log(this.doc.getMap());
         }
         else {
-            console.log(this.doc.getMap());
             this.settings = this.doc.getMap().get("settings") as RoomSettings;
         }
+
+        this.doc.getMap().observe(() => {
+            this.settings = this.doc.getMap().get("settings") as RoomSettings;
+            this.listeners.forEach(l => l.onSettingsChanged());
+        });
 
         for (let l of this.listeners) {
             l.currentRoom = this;
