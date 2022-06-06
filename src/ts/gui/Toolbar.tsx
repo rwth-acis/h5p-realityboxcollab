@@ -10,11 +10,11 @@ export class Toolbar extends AbstractGuiElement {
     /**
      * Create a new toolbar
      * @param container The container to add this toolbar to
-     * @param className The classname for this toolbars root div element
+     * @param name The name for the id of this toolbars root div element
      * @param alwaysActive If true, one tools is always activated (first available when creating)
      * @param tools The tools for this toolbar
      */
-    constructor(container: JQuery, public className: string, public alwaysActive: boolean, public tools: AbstractTool[]) {
+    constructor(container: JQuery, public name: string, public alwaysActive: boolean, public tools: AbstractTool[]) {
         super(container);
 
         if (this.alwaysActive) {
@@ -25,7 +25,7 @@ export class Toolbar extends AbstractGuiElement {
     }
 
     override createElement(): ReactElement {
-        return <div id={this.className} className='guiElement'>
+        return <div id={this.name} className='guiElement'>
             {this.tools.map(tool =>
                 <button className={tool.active ? "toolbarBtnActive toolbarBtn" : "toolbarBtn"} disabled={!tool.canActivate()}
                     data-toggle="tooltip" data-placement="bottom"

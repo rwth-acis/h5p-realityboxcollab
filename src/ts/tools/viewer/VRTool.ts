@@ -1,31 +1,15 @@
-import { Scene } from "babylonjs";
-import { RealityBoxCollab } from "../../RealityboxCollab";
-import { AbstractTool } from "../AbstractTool";
+import { AbstractXRView } from "./AbstractXRView";
 
-/**
- * See documentation for ARTool for a workaround when using WebXR over a non-https connection.
- */
-export class VRTool extends AbstractTool {
+export class VRTool extends AbstractXRView {
 
     constructor() {
-        super("VR View", "fa-solid fa-vr-cardboard");
+        super("VR View", "fa-solid fa-vr-cardboard", "immersive-vr", undefined);
     }
 
-    override onActivate(): void {
-        const scene: Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
-
-        scene.createDefaultXRExperienceAsync({
-            uiOptions: {
-                sessionMode: "immersive-vr"
-            }
-        });
-    }
-
-    override onDeactivate(): void {
+    onXREnter(): void {
 
     }
-
-    override onRoomChanged(): void {
+    onXRExit(): void {
 
     }
 }
