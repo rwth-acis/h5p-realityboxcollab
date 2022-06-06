@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run build:watch",
     "build": "node_modules\\.bin\\webpack",
-    "build:watch": "node_modules\\.bin\\webpack --watch",
+    "build:watch": "node_modules\\.bin\\webpack --watch --mode=development",
     "server": "node node_modules/y-websocket/bin/server.js",
     "check": "node_modules\\.bin\\eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
