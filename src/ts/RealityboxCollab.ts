@@ -71,8 +71,10 @@ export class RealityBoxCollab {
             new MoveTool(container), new PointerTool(), new AnnotationTool(), new DrawTool()
         ]);
 
-        let viewTools = [new OrbitTool(), new VRTool(), new ARTool()];
+        let viewTools = [new OrbitTool(), new VRTool()];
         if (!Utils.isMobile) viewTools = [new FirstPersonTool(), ...viewTools];
+        if (Utils.isMobile) viewTools = [...viewTools, new ARTool()];
+        
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
 
         this.chat = new Chat(container);
