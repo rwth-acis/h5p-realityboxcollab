@@ -1,4 +1,4 @@
-import { ModelShape } from "babylonjs";
+import { ModelShape, WebXRState } from "babylonjs";
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 
@@ -27,6 +27,10 @@ export class ARTool extends AbstractTool {
             this.oldScale = RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env.scaling;
             RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env.scaling.scaleInPlace(0.01);
             ex.baseExperience.enterXRAsync("immersive-ar", "unbounded");
+
+            this.experience.baseExperience.onStateChangedObservable.add((state) => {
+                if (state == WebXRState.EXITING_XR) this.toolbar.deactivateTool(this);
+            });
         });
     }
 

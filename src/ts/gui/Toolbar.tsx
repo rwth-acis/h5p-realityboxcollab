@@ -13,6 +13,8 @@ export class Toolbar extends AbstractGuiElement {
         if (this.alwaysActive) {
             this.selectFirst();
         }
+
+        tools.forEach(t => t.init(this));
     }
 
     override createElement(): ReactElement {
@@ -28,32 +30,46 @@ export class Toolbar extends AbstractGuiElement {
     }
 
     toolClicked(tool: AbstractTool, evt: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-        if (this.activeTool && this.activeTool != tool) {
-            this.activeTool.active = false;
-            this.activeTool.onDeactivate();
-        }
+        if (this.activeTool && this.activeTool != tool) this.deactivate(this.activeTool);
 
         if (!tool.active) {
-            if (!tool.canActivate()) {
-                console.error(`Tried to activate ${tool.name} which is not allowed`);
-            }
-            this.activeTool = tool;
-            this.activeTool.active = true;
-            this.activeTool.onActivate();
-        }
-        else if (!this.alwaysActive) {
-            tool.active = false;
-            tool.onDeactivate();
+            this.activateTool(tool);
+        } else if (!this.alwaysActive) { // Toggle
+            this.deactivate(tool);
         }
 
         super.updateView();
     }
 
+    activateTool(tool: AbstractTool): void {
+        if (!tool.canActivate()) {
+            console.error(`Tried to activate ${tool.name} which is not allowed`);
+        }
+        this.activeTool = tool;
+        this.activeTool.active = true;
+        this.activeTool.onActivate();
+    }
+
+    private deactivate(tool: AbstractTool): void {
+        if (this.activeTool != tool) return;
+
+        tool.active = false;
+        tool.onDeactivate();
+        this.activeTool = undefined;
+    }
+
+    deactivateTool(tool: AbstractTool): void {
+        this.deactivate(tool);
+        
+        if (this.alwaysActive) {
+            this.selectFirst();
+        }
+    }
+
     override onRoomChanged(): void {
         this.tools.forEach(t => { t.onRoomChanged(); t.currentRoom = this.currentRoom; t.active = false; });
 
-        if (this.alwaysActive)
-            this.selectFirst();
+        if (this.alwaysActive) this.selectFirst();
         this.updateView();
     }
 
