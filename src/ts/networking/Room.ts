@@ -32,7 +32,7 @@ export class Room {
         this.doc = new Y.Doc();
 
         if (!isLocal) {
-            this.wsProvider = new WebsocketProvider('ws://localhost:1234', "room:" + roomInfo.name, this.doc);
+            this.wsProvider = new WebsocketProvider('ws://192.168.0.10:1234', "room:" + roomInfo.name, this.doc);
             this.wsProvider.on('status', (event: any) => {
                 if (event.status === "connected") {
                     this.onConnect();

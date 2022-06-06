@@ -9,10 +9,13 @@ import { RoomManager } from './networking/RoomManager';
 import { Realitybox } from './RealityboxTypes';
 import { AnnotationTool } from './tools/AnnotationTool';
 import { DrawTool } from './tools/DrawTool';
-import { FirstPersonTool } from './tools/FirstPersonTool';
 import { MoveTool } from './tools/MoveTool';
-import { OrbitTool } from './tools/OrbitTool';
 import { PointerTool } from './tools/PointerTool';
+import { ARTool } from './tools/viewer/ARTool';
+import { FirstPersonTool } from './tools/viewer/FirstPersonTool';
+import { OrbitTool } from './tools/viewer/OrbitTool';
+import { VRTool } from './tools/viewer/VRTool';
+import { Utils } from './utils/Utils';
 
 
 declare let H5P: any;
@@ -67,9 +70,10 @@ export class RealityBoxCollab {
         let toolbar = new Toolbar(container, "collabToolbar", false, [
             new MoveTool(container), new PointerTool(), new AnnotationTool(), new DrawTool()
         ]);
-        let viewToolbar = new Toolbar(container, "collabViewToolbar", true, [
-            new FirstPersonTool(), new OrbitTool()
-        ]);
+
+        let viewTools = [new OrbitTool(), new VRTool(), new ARTool()];
+        if (!Utils.isMobile) viewTools = [new FirstPersonTool(), ...viewTools];
+        let viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
 
         this.chat = new Chat(container);
         this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(container)];

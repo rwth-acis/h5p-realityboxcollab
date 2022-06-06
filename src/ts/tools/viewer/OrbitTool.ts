@@ -1,4 +1,4 @@
-import { AbstractTool } from "./AbstractTool";
+import { AbstractTool } from "../AbstractTool";
 
 export class OrbitTool extends AbstractTool {
 

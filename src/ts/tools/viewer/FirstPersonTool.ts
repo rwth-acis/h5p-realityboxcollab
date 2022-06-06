@@ -1,6 +1,5 @@
-import { Vector3 } from "babylonjs";
-import { RealityBoxCollab } from "../RealityboxCollab";
-import { AbstractTool } from "./AbstractTool";
+import { RealityBoxCollab } from "../../RealityboxCollab";
+import { AbstractTool } from "../AbstractTool";
 
 export class FirstPersonTool extends AbstractTool {
 

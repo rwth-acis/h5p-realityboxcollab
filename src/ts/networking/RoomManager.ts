@@ -10,7 +10,7 @@ export class RoomManager {
 
     constructor() {
         this.doc = new Y.Doc();
-        const wsProvider = new WebsocketProvider('ws://localhost:1234', "RealityboxCollabRooms", this.doc);
+        const wsProvider = new WebsocketProvider('ws://192.168.0.10:1234', "RealityboxCollabRooms", this.doc);
 
         wsProvider.on('status', (event: any) => {
             if (event.status === "connected") {
