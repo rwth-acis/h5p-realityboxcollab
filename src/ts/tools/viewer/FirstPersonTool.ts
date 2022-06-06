@@ -1,3 +1,4 @@
+import { Scene } from "babylonjs";
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 
