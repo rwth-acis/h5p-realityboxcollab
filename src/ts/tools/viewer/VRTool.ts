@@ -1,3 +1,4 @@
+import { Scene } from "babylonjs";
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 
@@ -11,7 +12,7 @@ export class VRTool extends AbstractTool {
     }
 
     override onActivate(): void {
-        const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        const scene: Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
         scene.createDefaultXRExperienceAsync({
             uiOptions: {

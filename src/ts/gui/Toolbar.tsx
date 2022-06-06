@@ -7,6 +7,13 @@ export class Toolbar extends AbstractGuiElement {
 
     activeTool: AbstractTool;
 
+    /**
+     * Create a new toolbar
+     * @param container The container to add this toolbar to
+     * @param className The classname for this toolbars root div element
+     * @param alwaysActive If true, one tools is always activated (first available when creating)
+     * @param tools The tools for this toolbar
+     */
     constructor(container: JQuery, public className: string, public alwaysActive: boolean, public tools: AbstractTool[]) {
         super(container);
 
@@ -60,7 +67,7 @@ export class Toolbar extends AbstractGuiElement {
 
     deactivateTool(tool: AbstractTool): void {
         this.deactivate(tool);
-        
+
         if (this.alwaysActive) {
             this.selectFirst();
         }

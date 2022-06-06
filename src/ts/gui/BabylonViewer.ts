@@ -1,4 +1,5 @@
-import * as Y from "yjs";
+import { Color3, Mesh, MeshBuilder, Quaternion, Scene, StandardMaterial, Vector3 } from "babylonjs";
+import { Map as YMap } from "yjs";
 import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
@@ -8,10 +9,10 @@ import { createVector } from "../tools/PointerTool";
  * This class represents all important logic which has to do with the babylon scene, which is not in its own tool
  */
 export class BabylonViewer extends NetworkListener {
-    scene: BABYLON.Scene;
+    scene: Scene;
     meshes: Map<string, UserMesh> = new Map();
-    models: BABYLON.Mesh[];
-    remoteModelInfo: Y.Map<ModelInformation>;
+    models: Mesh[];
+    remoteModelInfo: YMap<ModelInformation>;
     localModelInfo: Map<string, ModelInformation> = new Map();
 
     constructor() {
@@ -81,20 +82,20 @@ export class BabylonViewer extends NetworkListener {
 
 }
 
-const RED = new BABYLON.Color3(1, 0, 0);
-const GREEN = new BABYLON.Color3(0, 1, 0);
-const BLUE = new BABYLON.Color3(0, 0, 1);
+const RED = new Color3(1, 0, 0);
+const GREEN = new Color3(0, 1, 0);
+const BLUE = new Color3(0, 0, 1);
 
 class UserMesh {
 
-    mesh: BABYLON.Mesh;
-    static matHost: BABYLON.StandardMaterial;
-    static matUser: BABYLON.StandardMaterial;
+    mesh: Mesh;
+    static matHost: StandardMaterial;
+    static matUser: StandardMaterial;
 
-    constructor(public user: User, scene: BABYLON.Scene) {
+    constructor(public user: User, scene: Scene) {
         if (!UserMesh.matHost) UserMesh.createMats(scene);
 
-        this.mesh = BABYLON.MeshBuilder.CreateCapsule(user.username, {
+        this.mesh = MeshBuilder.CreateCapsule(user.username, {
             height: 32,
             radius: 8,
             subdivisions: undefined,
@@ -104,9 +105,9 @@ class UserMesh {
         this.mesh.material = user.role == Role.HOST ? UserMesh.matHost : UserMesh.matUser;
     }
 
-    static createMats(scene: BABYLON.Scene) {
-        UserMesh.matHost = new BABYLON.StandardMaterial("matHost", scene);
-        UserMesh.matUser = new BABYLON.StandardMaterial("matUser", scene);
+    static createMats(scene: Scene) {
+        UserMesh.matHost = new StandardMaterial("matHost", scene);
+        UserMesh.matUser = new StandardMaterial("matUser", scene);
 
         UserMesh.matHost.diffuseColor = BLUE;
         UserMesh.matUser.diffuseColor = RED;
@@ -115,18 +116,18 @@ class UserMesh {
 }
 
 export interface ModelInformation {
-    position: BABYLON.Vector3;
-    rotation: BABYLON.Quaternion;
-    scale: BABYLON.Vector3;
+    position: Vector3;
+    rotation: Quaternion;
+    scale: Vector3;
 }
 
-function applyInformation(mesh: BABYLON.Mesh, info: ModelInformation): void {
+function applyInformation(mesh: Mesh, info: ModelInformation): void {
     mesh.position = createVector(info.position);
     mesh.rotationQuaternion = createQuaternion(info.rotation);
     mesh.scaling = createVector(info.scale);
 }
 
-function getInformation(mesh: BABYLON.Mesh): ModelInformation {
+function getInformation(mesh: Mesh): ModelInformation {
     return {
         position: mesh.position.clone(),
         rotation: mesh.rotationQuaternion.clone(),
@@ -138,15 +139,15 @@ function informationEquals(a: ModelInformation, b: ModelInformation): boolean {
     return vecEquals(a.position, b.position) && quatEquals(a.rotation, b.rotation) && vecEquals(a.scale, b.scale);
 }
 
-function vecEquals(a: BABYLON.Vector3, b: BABYLON.Vector3): boolean {
+function vecEquals(a: Vector3, b: Vector3): boolean {
     return a._x == b._x && a._y == b._y && a._z == b._z;
 }
 
-function createQuaternion(q: BABYLON.Quaternion): BABYLON.Quaternion {
-    return new BABYLON.Quaternion(q._x, q._y, q._z, q._w);
+function createQuaternion(q: Quaternion): Quaternion {
+    return new Quaternion(q._x, q._y, q._z, q._w);
 }
 
-function quatEquals(a: BABYLON.Quaternion, b: BABYLON.Quaternion) {
+function quatEquals(a: Quaternion, b: Quaternion) {
     return a._x == b._x && a._y == b._y && a._z == b._z && a._w == b._w;
 }
 

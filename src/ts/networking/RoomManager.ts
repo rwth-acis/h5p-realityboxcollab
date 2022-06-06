@@ -1,15 +1,15 @@
 import { WebsocketProvider } from "y-websocket";
-import * as Y from "yjs";
+import { Doc, Map as YMap } from "yjs";
 
 /**
  * The room manager is used to check whether rooms already exist and for password validation
  */
 export class RoomManager {
-    doc: Y.Doc;
-    rooms: Y.Map<RoomInformation>;
+    doc: Doc;
+    rooms: YMap<RoomInformation>;
 
     constructor() {
-        this.doc = new Y.Doc();
+        this.doc = new Doc();
         const wsProvider = new WebsocketProvider('ws://192.168.0.10:1234', "RealityboxCollabRooms", this.doc);
 
         wsProvider.on('status', (event: any) => {

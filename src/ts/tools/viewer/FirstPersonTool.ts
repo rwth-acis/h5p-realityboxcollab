@@ -1,4 +1,4 @@
-import { Scene } from "babylonjs";
+import { FreeCamera, KeyboardEventTypes, PointerEventTypes, Scene, Vector3 } from "babylonjs";
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 
@@ -18,7 +18,7 @@ export class FirstPersonTool extends AbstractTool {
     mouseSpeed: number = 1.2;
     moveShiftFactor: number = 3;
 
-    camera: BABYLON.FreeCamera;
+    camera: FreeCamera;
     pressedKeys: boolean[] = [];
     moveable: boolean;
     cursor: boolean;
@@ -28,7 +28,7 @@ export class FirstPersonTool extends AbstractTool {
     }
 
     override onActivate(): void {
-        let scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        let scene: Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
         if (!this.camera) {
             this.createComponents();
@@ -41,9 +41,9 @@ export class FirstPersonTool extends AbstractTool {
     }
 
     createComponents(): void {
-        let scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        let scene: Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
-        this.camera = new BABYLON.FreeCamera("First Person Camera", new BABYLON.Vector3(), scene, false);
+        this.camera = new FreeCamera("First Person Camera", new Vector3(), scene, false);
 
         scene.registerBeforeRender(() => {
             if (!this.active || !this.moveable) {
@@ -57,11 +57,11 @@ export class FirstPersonTool extends AbstractTool {
             this.cursor = true;
             RealityBoxCollab.instance.realitybox.viewer._$canvas.addClass("nocursor");
 
-            let dir = new BABYLON.Vector3(0, 0, 0);
+            let dir = new Vector3(0, 0, 0);
 
-            this.computeDirection(dir, this.KEY_W, this.KEY_S, BABYLON.Vector3.Forward());
-            this.computeDirection(dir, this.KEY_D, this.KEY_A, BABYLON.Vector3.Right());
-            this.computeDirection(dir, this.KEY_E, this.KEY_Q, BABYLON.Vector3.Up());
+            this.computeDirection(dir, this.KEY_W, this.KEY_S, Vector3.Forward());
+            this.computeDirection(dir, this.KEY_D, this.KEY_A, Vector3.Right());
+            this.computeDirection(dir, this.KEY_E, this.KEY_Q, Vector3.Up());
 
             dir = dir.normalize().scale(this.moveSpeed * (this.getKey(this.KEY_SHIFT) ? this.moveShiftFactor : 1));
             this.camera.position.addInPlaceFromFloats(dir.x, dir.y, dir.z);
@@ -70,10 +70,10 @@ export class FirstPersonTool extends AbstractTool {
         });
 
         scene.onKeyboardObservable.add((e) => {
-            if (e.type == BABYLON.KeyboardEventTypes.KEYDOWN) {
+            if (e.type == KeyboardEventTypes.KEYDOWN) {
                 this.pressedKeys[e.event.keyCode] = true;
             }
-            else if (e.type == BABYLON.KeyboardEventTypes.KEYUP) {
+            else if (e.type == KeyboardEventTypes.KEYUP) {
                 this.pressedKeys[e.event.keyCode] = false;
             }
         });
@@ -81,13 +81,13 @@ export class FirstPersonTool extends AbstractTool {
         scene.onPointerObservable.add(e => {
             if (!this.active) return;
 
-            if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 2) {
+            if (e.type == PointerEventTypes.POINTERDOWN && e.event.button == 2) {
                 this.moveable = true;
             }
-            else if (e.type == BABYLON.PointerEventTypes.POINTERUP && e.event.button == 2) {
+            else if (e.type == PointerEventTypes.POINTERUP && e.event.button == 2) {
                 this.moveable = false;
             }
-            else if (e.type == BABYLON.PointerEventTypes.POINTERMOVE && this.moveable) {
+            else if (e.type == PointerEventTypes.POINTERMOVE && this.moveable) {
                 let x = e.event.movementY * this.mouseSpeed / 200.0;
                 let y = e.event.movementX * this.mouseSpeed / 200.0;
 
@@ -101,7 +101,7 @@ export class FirstPersonTool extends AbstractTool {
         return this.pressedKeys[code];
     }
 
-    computeDirection(dir: BABYLON.Vector3, a: number, b: number, ref: BABYLON.Vector3): void {
+    computeDirection(dir: Vector3, a: number, b: number, ref: Vector3): void {
         if (this.getKey(a) !== this.getKey(b)) { // A xor D
             let v = this.camera.getDirection(ref);
             if (this.pressedKeys[b]) {
@@ -112,7 +112,7 @@ export class FirstPersonTool extends AbstractTool {
     }
 
     override onDeactivate(): void {
-        const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        const scene: Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
         scene.activeCamera = scene.cameras[0];
     }
 

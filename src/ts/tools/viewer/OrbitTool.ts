@@ -6,7 +6,7 @@ export class OrbitTool extends AbstractTool {
         super("Orbit Tool", "fa-solid fa-circle-notch");
     }
 
-    override  onActivate(): void {
+    override onActivate(): void {
 
     }
 

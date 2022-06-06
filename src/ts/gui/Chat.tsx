@@ -1,8 +1,8 @@
 import * as $ from 'jquery';
 import { ReactElement } from "react";
 import * as ReactDOM from "react-dom";
-import * as Y from "yjs";
 import { AbstractGuiElement } from "./AbstractGuiElement";
+import { Array as YArray, YArrayEvent } from "yjs";
 import React = require("react");
 import { Role } from '../networking/Room';
 
@@ -10,7 +10,7 @@ import { Role } from '../networking/Room';
  * Gui View for the Chat window
  */
 export class Chat extends AbstractGuiElement {
-  chatMessages: Y.Array<ChatMessage>; // The chat messages of the room
+  chatMessages: YArray<ChatMessage>; // The chat messages of the room
 
   constructor(container: JQuery) {
     super(container);
@@ -43,7 +43,7 @@ export class Chat extends AbstractGuiElement {
 
     if (this.currentRoom.isLocal) { this.updateView(); return; }
 
-    this.chatMessages.observe((evt: Y.YArrayEvent<ChatMessage>) => {
+    this.chatMessages.observe((evt: YArrayEvent<ChatMessage>) => {
       if (evt.changes.delta[0] && evt.changes.delta[0].insert) {
         let added = evt.changes.delta[0].insert as ChatMessage[];
         added.forEach(cm => {

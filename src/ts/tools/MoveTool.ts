@@ -1,10 +1,11 @@
+import { GizmoManager } from "babylonjs";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { BabylonBox } from "../RealityboxTypes";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
 
 export class MoveTool extends AbstractMultiTool {
 
-    gizmoManager: BABYLON.GizmoManager;
+    gizmoManager: GizmoManager;
 
     constructor(container: JQuery) {
         super("Move Tool", "fa-solid fa-arrows-up-down-left-right",
@@ -19,7 +20,7 @@ export class MoveTool extends AbstractMultiTool {
     override onSubToolSwitched(tool: SubTool): void {
         const babylonBox: BabylonBox = RealityBoxCollab.instance.realitybox.viewer._babylonBox;
         if (!this.gizmoManager) {
-            this.gizmoManager = new BABYLON.GizmoManager(babylonBox.scene);
+            this.gizmoManager = new GizmoManager(babylonBox.scene);
             this.gizmoManager.boundingBoxGizmoEnabled = true;
             this.gizmoManager.usePointerToAttachGizmos = false;
         }

@@ -1,19 +1,20 @@
+import { Color3, Color4, Material, Mesh, MeshBuilder, Ray, Scene, StandardMaterial, Vector3 } from "babylonjs";
 import { User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { AbstractTool } from "./AbstractTool";
 
 export class PointerTool extends AbstractTool {
 
-    static readonly LINE_COLOR = new BABYLON.Color4(1, 0, 0);
+    static readonly LINE_COLOR = new Color4(1, 0, 0);
 
-    mat: BABYLON.StandardMaterial;
+    mat: StandardMaterial;
     pointers: Map<string, Pointer> = new Map<string, Pointer>();
 
     constructor() {
         super("Pointer Tool", "fa-solid fa-person-chalkboard");
 
-        this.mat = new BABYLON.StandardMaterial("matPointerBall", RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene);
-        this.mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+        this.mat = new StandardMaterial("matPointerBall", RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene);
+        this.mat.diffuseColor = new Color3(1, 0, 0);
 
         const scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
         scene.registerBeforeRender(() => {
@@ -25,7 +26,7 @@ export class PointerTool extends AbstractTool {
 
     }
 
-    private onRender(scene: BABYLON.Scene) {
+    private onRender(scene: Scene) {
         if (this.active) {
             this.updateOwnPointer(scene);
         }
@@ -55,13 +56,13 @@ export class PointerTool extends AbstractTool {
         }
     }
 
-    private updateOwnPointer(scene: BABYLON.Scene): void {
+    private updateOwnPointer(scene: Scene): void {
         const cam = scene.activeCamera;
         const model = RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env;
 
         let pos = cam.position.clone();
         pos.y -= 1.4;
-        let hit = scene.pickWithRay(new BABYLON.Ray(cam.position, cam.getDirection(BABYLON.Vector3.Forward())),
+        let hit = scene.pickWithRay(new Ray(cam.position, cam.getDirection(Vector3.Forward())),
             mesh => model.getChildMeshes().find(c => c == mesh) != undefined);
         let target;
         if (hit) target = hit.pickedPoint;
@@ -91,17 +92,17 @@ export class PointerTool extends AbstractTool {
 }
 
 export interface PointerInfo {
-    pos: BABYLON.Vector3;
-    target: BABYLON.Vector3;
+    pos: Vector3;
+    target: Vector3;
     active: boolean;
 }
 
 class Pointer {
-    line: BABYLON.Mesh;
-    sphere: BABYLON.Mesh;
+    line: Mesh;
+    sphere: Mesh;
 
-    constructor(private mat: BABYLON.Material, private scene: BABYLON.Scene) {
-        this.sphere = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
+    constructor(private mat: Material, private scene: Scene) {
+        this.sphere = MeshBuilder.CreateSphere("pointerBall", {
             diameter: 3
         }, scene);
         this.sphere.material = this.mat;
@@ -112,7 +113,7 @@ class Pointer {
         this.sphere.setEnabled(info.active);
         if (!info.active) return;
 
-        this.line = BABYLON.MeshBuilder.CreateTube("tube", {
+        this.line = MeshBuilder.CreateTube("tube", {
             path: [createVector(info.pos), createVector(info.target)],
             radius: 0.1,
             updatable: true,
@@ -135,6 +136,6 @@ class Pointer {
  * @param vec The vector exchanged via yjs
  * @returns A proper Vector3 instance
  */
-export function createVector(vec: BABYLON.Vector3): BABYLON.Vector3 {
-    return new BABYLON.Vector3(vec._x, vec._y, vec._z);
+export function createVector(vec: Vector3): Vector3 {
+    return new Vector3(vec._x, vec._y, vec._z);
 }
