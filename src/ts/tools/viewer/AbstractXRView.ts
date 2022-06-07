@@ -1,4 +1,3 @@
-import { Scene, Vector3, WebXRDefaultExperience, WebXRState } from "babylonjs";
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 
@@ -8,8 +7,8 @@ import { AbstractTool } from "../AbstractTool";
  * is to setup a port forwarding using the chrome devtools at chrome://inspect/#devices (the device must be connect via adb).
  */
 export abstract class AbstractXRView extends AbstractTool {
-    experience: WebXRDefaultExperience;
-    oldScale: Vector3;
+    experience: BABYLON.WebXRDefaultExperience;
+    oldScale: BABYLON.Vector3;
 
     constructor(name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType) {
         super(name, icon);
@@ -19,7 +18,7 @@ export abstract class AbstractXRView extends AbstractTool {
     // https://codingxr.com/articles/webxr-with-babylonjs/
     // https://doc.babylonjs.com/divingDeeper/webXR/webXRDemos
     override onActivate(): void {
-        const scene: Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
         scene.createDefaultXRExperienceAsync({
         }).then(ex => {
@@ -31,7 +30,7 @@ export abstract class AbstractXRView extends AbstractTool {
             this.onXREnter();
 
             this.experience.baseExperience.onStateChangedObservable.add((state) => {
-                if (state == WebXRState.EXITING_XR) this.toolbar.deactivateTool(this);
+                if (state == BABYLON.WebXRState.EXITING_XR) this.toolbar.deactivateTool(this);
             });
         });
     }

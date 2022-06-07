@@ -1,8 +1,8 @@
 import * as $ from 'jquery';
+import * as Y from 'yjs';
 import { ReactElement } from "react";
 import * as ReactDOM from "react-dom";
 import { AbstractGuiElement } from "./AbstractGuiElement";
-import { Array as YArray, YArrayEvent } from "yjs";
 import React = require("react");
 import { Role } from '../networking/Room';
 
@@ -10,7 +10,7 @@ import { Role } from '../networking/Room';
  * Gui View for the Chat window
  */
 export class Chat extends AbstractGuiElement {
-  chatMessages: YArray<ChatMessage>; // The chat messages of the room
+  chatMessages: Y.Array<ChatMessage>; // The chat messages of the room
 
   constructor(container: JQuery) {
     super(container);

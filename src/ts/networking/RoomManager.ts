@@ -1,12 +1,12 @@
 import { WebsocketProvider } from "y-websocket";
-import { Doc, Map as YMap } from "yjs";
+import * as Y from "yjs";
 
 /**
  * The room manager is used to check whether rooms already exist and for password validation
  */
 export class RoomManager {
-    doc: Doc;
-    rooms: YMap<RoomInformation>;
+    doc: Y.Doc;
+    rooms: Y.Map<RoomInformation>;
 
     constructor() {
         this.doc = new Doc();

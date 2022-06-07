@@ -5,18 +5,17 @@ import { RealityBoxCollab } from "../RealityboxCollab";
 import { Chat } from "../gui/Chat";
 import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
-import { Vector3 } from "babylonjs";
-import { Doc, Map as YMap } from "yjs";
+import {  * as Y from "yjs";
 import { DEFAULT_SETTINGS, RoomSettings } from "./RoomSettings";
 
 export class Room {
 
     /** The general shared document for this room */
-    doc: Doc;
+    doc: Y.Doc;
     /** The user of this instance */
     user: User;
     /** All users of the current room (including the user of this instance) */
-    users: YMap<User>;
+    users: Y.Map<User>;
     /** The provider for the YJS room */
     wsProvider: WebsocketProvider;
     /** The host updater. Only used if the user of this instance is the room host */
@@ -32,7 +31,7 @@ export class Room {
      * @param isLocal Whether this room is a local / pseudo room
      */
     constructor(private listeners: NetworkListener[], public roomInfo: RoomInformation, public isCreator: boolean, public isLocal: boolean) {
-        this.doc = new Doc();
+        this.doc = new Y.Doc();
 
         if (!isLocal) {
             this.wsProvider = new WebsocketProvider('ws://192.168.0.10:1234', "room:" + roomInfo.name, this.doc);
@@ -156,7 +155,7 @@ export interface User {
     /** The role of the user for this room */
     role: Role;
     /** The position of the user in the scene */
-    position: Vector3;
+    position: BABYLON.Vector3;
     /** The last update of the user. This time is used for timeout timeouts*/
     lastUpdate?: number;
     /** Set when the user is using the pointer tool */

@@ -1,7 +1,6 @@
-import { Color3, Engine, Mesh, MeshBuilder, Quaternion, Scene, StandardMaterial, Vector3 } from "babylonjs";
-import { Map as YMap } from "yjs";
 import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
+import * as Y from "yjs";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { createVector } from "../tools/PointerTool";
 
@@ -9,10 +8,10 @@ import { createVector } from "../tools/PointerTool";
  * This class represents all important logic which has to do with the babylon scene, which is not in its own tool
  */
 export class BabylonViewer extends NetworkListener {
-    scene: Scene;
+    scene: BABYLON.Scene;
     userMeshes: Map<string, UserMesh> = new Map();
-    models: Mesh[];
-    remoteModelInfo: YMap<ModelInformation>;
+    models: BABYLON.Mesh[];
+    remoteModelInfo: Y.Map<ModelInformation>;
     localModelInfo: Map<string, ModelInformation> = new Map();
 
     constructor() {

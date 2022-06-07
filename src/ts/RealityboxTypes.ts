@@ -1,5 +1,3 @@
-import { Engine, Mesh, Scene } from "babylonjs";
-
 export interface Realitybox {
     _viewer: any; // Proxy
     viewer: RealityBoxViewer;
@@ -15,14 +13,14 @@ export interface RealityBoxViewer {
 
 export interface BabylonBox {
     webXRSupported: boolean;
-    scene: Scene;
-    engine: Engine;
+    scene: BABYLON.Scene;
+    engine: BABYLON.Engine;
     camera: any;
     model: RealityboxModel;
 }
 
 export interface RealityboxModel {
-   env: Mesh;
+   env: BABYLON.Mesh;
 }
 
 export interface RealityboxAnnotation {
