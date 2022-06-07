@@ -1,4 +1,4 @@
-import { Color3, Mesh, MeshBuilder, Quaternion, Scene, StandardMaterial, Vector3 } from "babylonjs";
+import { Color3, Engine, Mesh, MeshBuilder, Quaternion, Scene, StandardMaterial, Vector3 } from "babylonjs";
 import { Map as YMap } from "yjs";
 import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
@@ -10,7 +10,7 @@ import { createVector } from "../tools/PointerTool";
  */
 export class BabylonViewer extends NetworkListener {
     scene: Scene;
-    meshes: Map<string, UserMesh> = new Map();
+    userMeshes: Map<string, UserMesh> = new Map();
     models: Mesh[];
     remoteModelInfo: YMap<ModelInformation>;
     localModelInfo: Map<string, ModelInformation> = new Map();
@@ -18,12 +18,18 @@ export class BabylonViewer extends NetworkListener {
     constructor() {
         super();
 
+        // Get parameters from Realitybox, Replace Scene because of library problem
+        //RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene = new Scene(RealityBoxCollab.instance.realitybox.viewer._babylonBox.engine);
+        this.models = [RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env];
         this.scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+
+        //this.scene.createDefaultCameraOrLight(true, true, true);
+        //this.scene.createDefaultEnvironment();
+        //this.models.forEach(m => this.scene.addMesh(m));
+
         this.scene.registerBeforeRender(() => {
             this.onRender();
         });
-
-        this.models = [RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env];
     }
 
     /**
@@ -37,18 +43,18 @@ export class BabylonViewer extends NetworkListener {
             .forEach(user => {
                 if (user.username === this.currentRoom.user.username) return;
 
-                let mesh: UserMesh = this.meshes.get(user.username);
-                if (!mesh) this.meshes.set(user.username, mesh = new UserMesh(user, this.scene));
+                let mesh: UserMesh = this.userMeshes.get(user.username);
+                if (!mesh) this.userMeshes.set(user.username, mesh = new UserMesh(user, this.scene));
 
                 if (!user.position) return; // If position is set, than all are set
 
                 mesh.mesh.position = user.position;
             });
 
-        if (this.meshes.size > this.currentRoom.users.size - 1) {
-            this.meshes.forEach(mesh => {
+        if (this.userMeshes.size > this.currentRoom.users.size - 1) {
+            this.userMeshes.forEach(mesh => {
                 if (!this.currentRoom.users.get(mesh.user.username)) {
-                    this.meshes.delete(mesh.user.username);
+                    this.userMeshes.delete(mesh.user.username);
                     this.scene.removeMesh(mesh.mesh);
                 }
             });
@@ -73,10 +79,10 @@ export class BabylonViewer extends NetworkListener {
     }
 
     onRoomChanged(): void {
-        this.meshes.forEach(mesh => {
+        this.userMeshes.forEach(mesh => {
             this.scene.removeMesh(mesh.mesh);
         });
-        this.meshes.clear();
+        this.userMeshes.clear();
         this.remoteModelInfo = this.currentRoom.doc.getMap("models");
     }
 

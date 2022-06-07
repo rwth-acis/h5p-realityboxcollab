@@ -1,4 +1,5 @@
 {
+  "types": ["babylonjs"],
   "compilerOptions": {
     "outDir": "./dist/",
     "sourceMap": true,

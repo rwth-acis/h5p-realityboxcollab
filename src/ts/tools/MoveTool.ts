@@ -24,7 +24,7 @@ export class MoveTool extends AbstractMultiTool {
         if (!this.gizmoManager) {
             this.gizmoManager = new GizmoManager(scene);
             this.gizmoManager.boundingBoxGizmoEnabled = true;
-            this.gizmoManager.usePointerToAttachGizmos = false;
+            this.gizmoManager.usePointerToAttachGizmos = false; // Might be changed for multiple models
         }
 
         this.gizmoManager.positionGizmoEnabled = (tool == this.subtools[0]);
