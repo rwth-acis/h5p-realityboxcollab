@@ -3,7 +3,7 @@ import { AbstractTool } from "./AbstractTool";
 export class AnnotationTool extends AbstractTool {
 
     constructor() {
-        super("Annotation Tool", "fa-solid fa-note-sticky");
+        super("Annotation Tool", "fa-solid fa-note-sticky", s => s.canUseAnnotationTool);
     }
 
     override onActivate(): void {
@@ -17,4 +17,5 @@ export class AnnotationTool extends AbstractTool {
     override onRoomChanged(): void {
         
     }
+
 }

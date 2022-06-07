@@ -2,14 +2,15 @@ import { ReactElement } from "react";
 import { AbstractTool } from "./AbstractTool";
 import React = require("react");
 import ReactDOM = require("react-dom");
+import { RoomSettings } from "../networking/RoomSettings";
 
 export abstract class AbstractMultiTool extends AbstractTool {
 
   element: any;
   activeTool: SubTool;
 
-  constructor(name: string, icon: string, container: JQuery, public subtools: SubTool[]) {
-    super(name, icon);
+  constructor(name: string, icon: string, container: JQuery, public subtools: SubTool[], setting?: (s: RoomSettings) => boolean) {
+    super(name, icon, setting);
 
     this.element = document.createElement("div");
     container.append(this.element);

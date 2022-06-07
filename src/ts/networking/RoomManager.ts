@@ -27,11 +27,19 @@ export class RoomManager {
      * @param name The name for the room
      * @param password The password used to join the room
      * @returns The RoomInformation for the newly created room 
-     * or null if no room could be created because the name is already in use
+     * or null if no room could be created because the name is already in use 
+     * or the signaling server could not be reached
      */
     createRoom(name: string, password: string): RoomInformation {
-        if (this.getRoom(name)) return null;
-        
+        if (!this.rooms) {
+            alert("Cannot reach signaling server");
+            return null;
+        }
+        if (this.getRoom(name)) {
+            alert("Unable to create room: Name already in use");
+            return null;
+        }
+
         let info: RoomInformation = {
             name: name,
             password: password

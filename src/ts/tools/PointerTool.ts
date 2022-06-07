@@ -11,7 +11,7 @@ export class PointerTool extends AbstractTool {
     pointers: Map<string, Pointer> = new Map<string, Pointer>();
 
     constructor() {
-        super("Pointer Tool", "fa-solid fa-person-chalkboard");
+        super("Pointer Tool", "fa-solid fa-person-chalkboard", s => s.canUsePointerTool);
 
         this.mat = new StandardMaterial("matPointerBall", RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene);
         this.mat.diffuseColor = new Color3(1, 0, 0);

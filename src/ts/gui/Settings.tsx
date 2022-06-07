@@ -1,11 +1,11 @@
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
+import { Accordion } from 'react-bootstrap';
 import { Role, Room } from '../networking/Room';
 import { RoomInformation } from '../networking/RoomManager';
+import { SETTINGS } from '../networking/RoomSettings';
 import { RealityBoxCollab } from '../RealityboxCollab';
 import { AbstractGuiElement } from './AbstractGuiElement';
 import React = require('react');
-import { Accordion } from 'react-bootstrap';
-import { SETTINGS, SettingsGuiElement, SettingsType, RoomSettings } from '../networking/RoomSettings';
 
 export class Settings extends AbstractGuiElement {
 
@@ -29,7 +29,7 @@ export class Settings extends AbstractGuiElement {
    * View for the settings when not currently in a remote room (<=> when in a local room)
    * @returns The view 
    */
-  viewNotInRoom(): React.ReactNode {
+  viewNotInRoom(): ReactNode {
     return <>
       <button className='btn btn-primary' onClick={e => this.joinRoom(true)}>Create Room</button>
       <br></br>
@@ -41,7 +41,7 @@ export class Settings extends AbstractGuiElement {
    * View for the settings when currently connected to a remote room
    * @returns The view
    */
-  viewInRoom(): React.ReactNode {
+  viewInRoom(): ReactNode {
     return <>
       <br></br>
 
@@ -62,7 +62,7 @@ export class Settings extends AbstractGuiElement {
             <Accordion.Body>
 
               {SETTINGS.map(e =>
-                this.createSetting(e, this.currentRoom.settings)
+                e.createElement(this.currentRoom)
               )}
             </Accordion.Body>
           </Accordion.Item>
@@ -71,18 +71,6 @@ export class Settings extends AbstractGuiElement {
     </>;
   }
 
-  private createSetting(e: SettingsGuiElement, s: RoomSettings): React.ReactNode {
-    return <>
-    {
-        e.type == SettingsType.Heading &&
-        <h4>{e.name}</h4>
-      }
-      {
-        e.type == SettingsType.Checkbox &&
-        <label><input type="checkbox" checked={e.property(s)} onChange={() => { e.toggle(s); this.currentRoom.onSettingsUpdated(); }} />&nbsp;&nbsp;{e.name}</label>
-      }
-    </>;
-  }
 
   onRoomChanged(): void {
     super.updateView();
@@ -104,10 +92,6 @@ export class Settings extends AbstractGuiElement {
       let name = prompt("Enter a name for the new room");
       if (name) {
         info = manager.createRoom(name, "");
-        if (!info) {
-          alert("Unable to create room: Name already in use");
-          return;
-        }
       }
     }
     else {

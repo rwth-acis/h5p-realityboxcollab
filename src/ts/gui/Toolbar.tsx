@@ -80,6 +80,10 @@ export class Toolbar extends AbstractGuiElement {
         this.updateView();
     }
 
+    override onSettingsChanged(): void {
+        this.updateView();
+    }
+
     selectFirst(): void {
         for (let tool of this.tools) {
             if (tool.canActivate()) { // Find first tool, which can be activated

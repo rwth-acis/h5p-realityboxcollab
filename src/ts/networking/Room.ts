@@ -7,7 +7,7 @@ import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
 import { Vector3 } from "babylonjs";
 import { Doc, Map as YMap } from "yjs";
-import { RoomSettings } from "./RoomSettings";
+import { DEFAULT_SETTINGS, RoomSettings } from "./RoomSettings";
 
 export class Room {
 
@@ -64,9 +64,7 @@ export class Room {
         this.onUserUpdated();
 
         if (this.isCreator) {
-            this.settings = {
-                canUseChat: true
-            }
+            this.settings = DEFAULT_SETTINGS;
             this.onSettingsUpdated();
         }
         else {
