@@ -1,4 +1,4 @@
-import { Room, RoomSettings } from "./Room";
+import { Room } from "./Room";
 
 export abstract class NetworkListener {
     /** Reference to the current room. Never null or undefined (might reference the local room) */

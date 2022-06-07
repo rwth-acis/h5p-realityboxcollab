@@ -7,6 +7,7 @@ import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
 import { Vector3 } from "babylonjs";
 import { Doc, Map as YMap } from "yjs";
+import { RoomSettings } from "./RoomSettings";
 
 export class Room {
 
@@ -20,6 +21,7 @@ export class Room {
     wsProvider: WebsocketProvider;
     /** The host updater. Only used if the user of this instance is the room host */
     hostUpdater: HostUpdater;
+    /** The settings for this room */
     settings: RoomSettings;
 
     /**
@@ -161,10 +163,6 @@ export interface User {
     lastUpdate?: number;
     /** Set when the user is using the pointer tool */
     pointer?: PointerInfo;
-}
-
-export interface RoomSettings {
-    canUseChat: boolean;
 }
 
 export enum Role {

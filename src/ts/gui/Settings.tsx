@@ -1,10 +1,11 @@
 import { ReactElement } from 'react';
-import { Role, Room, RoomSettings } from '../networking/Room';
+import { Role, Room } from '../networking/Room';
 import { RoomInformation } from '../networking/RoomManager';
 import { RealityBoxCollab } from '../RealityboxCollab';
 import { AbstractGuiElement } from './AbstractGuiElement';
 import React = require('react');
 import { Accordion } from 'react-bootstrap';
+import { SETTINGS, SettingsGuiElement, SettingsType, RoomSettings } from '../networking/RoomSettings';
 
 export class Settings extends AbstractGuiElement {
 
@@ -125,19 +126,3 @@ export class Settings extends AbstractGuiElement {
     }
   }
 }
-
-export enum SettingsType {
-  Checkbox, Heading
-}
-
-export interface SettingsGuiElement {
-  name: string,
-  type: SettingsType,
-  property?: (s: RoomSettings) => any,
-  toggle?: (s: RoomSettings) => any
-}
-
-export const SETTINGS: SettingsGuiElement[] = [
-  { name: "Users can...", type: SettingsType.Heading },
-  { name: "use the Chat", property: s => s.canUseChat, toggle: s => s.canUseChat = !s.canUseChat, type: SettingsType.Checkbox }
-]
