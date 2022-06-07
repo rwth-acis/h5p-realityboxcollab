@@ -43,7 +43,7 @@ export class Chat extends AbstractGuiElement {
 
     if (this.currentRoom.isLocal) { this.updateView(); return; }
 
-    this.chatMessages.observe((evt: YArrayEvent<ChatMessage>) => {
+    this.chatMessages.observe((evt: Y.YArrayEvent<ChatMessage>) => {
       if (evt.changes.delta[0] && evt.changes.delta[0].insert) {
         let added = evt.changes.delta[0].insert as ChatMessage[];
         added.forEach(cm => {

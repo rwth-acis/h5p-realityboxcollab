@@ -39,7 +39,7 @@ export class BabylonViewer extends NetworkListener {
         this.currentRoom.onUserUpdated();
 
         this.currentRoom.users
-            .forEach(user => {
+            .forEach((user: User) => {
                 if (user.username === this.currentRoom.user.username) return;
 
                 let mesh: UserMesh = this.userMeshes.get(user.username);
@@ -87,20 +87,20 @@ export class BabylonViewer extends NetworkListener {
 
 }
 
-const RED = new Color3(1, 0, 0);
-const GREEN = new Color3(0, 1, 0);
-const BLUE = new Color3(0, 0, 1);
+const RED = new BABYLON.Color3(1, 0, 0);
+const GREEN = new BABYLON.Color3(0, 1, 0);
+const BLUE = new BABYLON.Color3(0, 0, 1);
 
 class UserMesh {
 
-    mesh: Mesh;
-    static matHost: StandardMaterial;
-    static matUser: StandardMaterial;
+    mesh: BABYLON.Mesh;
+    static matHost: BABYLON.StandardMaterial;
+    static matUser: BABYLON.StandardMaterial;
 
-    constructor(public user: User, scene: Scene) {
+    constructor(public user: User, scene: BABYLON.Scene) {
         if (!UserMesh.matHost) UserMesh.createMats(scene);
 
-        this.mesh = MeshBuilder.CreateCapsule(user.username, {
+        this.mesh = BABYLON.MeshBuilder.CreateCapsule(user.username, {
             height: 32,
             radius: 8,
             subdivisions: undefined,
@@ -110,9 +110,9 @@ class UserMesh {
         this.mesh.material = user.role == Role.HOST ? UserMesh.matHost : UserMesh.matUser;
     }
 
-    static createMats(scene: Scene) {
-        UserMesh.matHost = new StandardMaterial("matHost", scene);
-        UserMesh.matUser = new StandardMaterial("matUser", scene);
+    static createMats(scene: BABYLON.Scene) {
+        UserMesh.matHost = new BABYLON.StandardMaterial("matHost", scene);
+        UserMesh.matUser = new BABYLON.StandardMaterial("matUser", scene);
 
         UserMesh.matHost.diffuseColor = BLUE;
         UserMesh.matUser.diffuseColor = RED;
@@ -121,18 +121,18 @@ class UserMesh {
 }
 
 export interface ModelInformation {
-    position: Vector3;
-    rotation: Quaternion;
-    scale: Vector3;
+    position: BABYLON.Vector3;
+    rotation: BABYLON.Quaternion;
+    scale: BABYLON.Vector3;
 }
 
-function applyInformation(mesh: Mesh, info: ModelInformation): void {
+function applyInformation(mesh: BABYLON.Mesh, info: ModelInformation): void {
     mesh.position = createVector(info.position);
     mesh.rotationQuaternion = createQuaternion(info.rotation);
     mesh.scaling = createVector(info.scale);
 }
 
-function getInformation(mesh: Mesh): ModelInformation {
+function getInformation(mesh: BABYLON.Mesh): ModelInformation {
     return {
         position: mesh.position.clone(),
         rotation: mesh.rotationQuaternion.clone(),
@@ -144,15 +144,15 @@ function informationEquals(a: ModelInformation, b: ModelInformation): boolean {
     return vecEquals(a.position, b.position) && quatEquals(a.rotation, b.rotation) && vecEquals(a.scale, b.scale);
 }
 
-function vecEquals(a: Vector3, b: Vector3): boolean {
+function vecEquals(a: BABYLON.Vector3, b: BABYLON.Vector3): boolean {
     return a._x == b._x && a._y == b._y && a._z == b._z;
 }
 
-function createQuaternion(q: Quaternion): Quaternion {
-    return new Quaternion(q._x, q._y, q._z, q._w);
+function createQuaternion(q: BABYLON.Quaternion): BABYLON.Quaternion {
+    return new BABYLON.Quaternion(q._x, q._y, q._z, q._w);
 }
 
-function quatEquals(a: Quaternion, b: Quaternion) {
+function quatEquals(a: BABYLON.Quaternion, b: BABYLON.Quaternion) {
     return a._x == b._x && a._y == b._y && a._z == b._z && a._w == b._w;
 }
 

@@ -16,6 +16,7 @@ import { FirstPersonTool } from './tools/viewer/FirstPersonTool';
 import { OrbitTool } from './tools/viewer/OrbitTool';
 import { VRTool } from './tools/viewer/VRTool';
 import { Utils } from './utils/Utils';
+import * as BABYLON from "babylonjs"; // Needed, so BabylonJs is packaged
 
 
 declare let H5P: any;

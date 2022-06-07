@@ -5,7 +5,7 @@ import { RealityBoxCollab } from "../RealityboxCollab";
 import { Chat } from "../gui/Chat";
 import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
-import {  * as Y from "yjs";
+import   * as Y from "yjs";
 import { DEFAULT_SETTINGS, RoomSettings } from "./RoomSettings";
 
 export class Room {

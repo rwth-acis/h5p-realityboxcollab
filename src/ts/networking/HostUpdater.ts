@@ -11,7 +11,7 @@ export class HostUpdater {
     update(): void {
         let toRemove: User[] = [];
 
-        this.room.users.forEach(user => {
+        this.room.users.forEach((user: User) => {
             // Check timeouts
             let old = this.updateTimes.get(user.username);
             if (old && user.lastUpdate) {
