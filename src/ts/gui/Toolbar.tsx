@@ -44,8 +44,6 @@ export class Toolbar extends AbstractGuiElement {
         } else if (!this.alwaysActive) { // Toggle
             this.deactivate(tool);
         }
-
-        super.updateView();
     }
 
     activateTool(tool: AbstractTool): void {
@@ -55,6 +53,8 @@ export class Toolbar extends AbstractGuiElement {
         this.activeTool = tool;
         this.activeTool.active = true;
         this.activeTool.onActivate();
+
+        super.updateView();
     }
 
     private deactivate(tool: AbstractTool): void {
@@ -71,6 +71,7 @@ export class Toolbar extends AbstractGuiElement {
         if (this.alwaysActive) {
             this.selectFirst();
         }
+        super.updateView();
     }
 
     override onRoomChanged(): void {

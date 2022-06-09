@@ -32,7 +32,9 @@ export abstract class AbstractXRView extends AbstractTool {
             RealityBoxCollab.instance.babylonViewer.onXRStateChanged(true);
 
             this.experience.baseExperience.onStateChangedObservable.add((state) => {
-                if (state == BABYLON.WebXRState.EXITING_XR) this.toolbar.deactivateTool(this);
+                if (state == BABYLON.WebXRState.NOT_IN_XR) {
+                    this.toolbar.deactivateTool(this);
+                }
             });
         });
     }
