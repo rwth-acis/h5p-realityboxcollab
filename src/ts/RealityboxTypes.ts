@@ -1,3 +1,5 @@
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+
 export interface Realitybox {
     _viewer: any; // Proxy
     viewer: RealityBoxViewer;

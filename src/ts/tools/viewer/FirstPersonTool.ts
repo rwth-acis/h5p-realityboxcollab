@@ -1,5 +1,6 @@
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 
 export class FirstPersonTool extends AbstractTool {
 

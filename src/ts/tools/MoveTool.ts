@@ -1,5 +1,6 @@
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 
 export class MoveTool extends AbstractMultiTool {
 

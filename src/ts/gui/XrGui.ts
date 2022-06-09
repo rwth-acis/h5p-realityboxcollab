@@ -1,11 +1,12 @@
-import * as GUI from "babylonjs-gui";
 import { AbstractTool } from "../tools/AbstractTool";
 import { Toolbar } from "./Toolbar";
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { AdvancedDynamicTexture, Button, Control, StackPanel } from "@babylonjs/gui";
 
 
 export class XrGui {
-    xrGuiPanel: GUI.StackPanel;
-    buttons: Map<AbstractTool, GUI.Button> = new Map();
+    xrGuiPanel: StackPanel;
+    buttons: Map<AbstractTool, Button> = new Map();
 
     constructor(private toolbar: Toolbar, private scene: BABYLON.Scene) {
         this.createXRGui();
@@ -17,10 +18,10 @@ export class XrGui {
     }
 
     createXRGui(): void {
-        let xrGui = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene as any);
-        this.xrGuiPanel = new GUI.StackPanel();
-        this.xrGuiPanel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        this.xrGuiPanel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        let xrGui = AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene as any);
+        this.xrGuiPanel = new StackPanel();
+        this.xrGuiPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        this.xrGuiPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         xrGui.addControl(this.xrGuiPanel);
 
         for (let tool of this.toolbar.tools) {
@@ -30,14 +31,14 @@ export class XrGui {
         this.xrGuiPanel.notRenderable = true;
     }
 
-    createButton(tool: AbstractTool): GUI.Button {
-        var button = GUI.Button.CreateSimpleButton("but", tool.name);
+    createButton(tool: AbstractTool): Button {
+        var button = Button.CreateSimpleButton("but", tool.name);
         button.width = 0.5;
         button.fontSize = "60px";
         button.height = "120px";
         button.background = "gray";
         button.paddingTop = "20px";
-        button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        button.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         button.onPointerClickObservable.add(() => {
             this.toolbar.toolClicked(tool);
             this.updateButtons();
@@ -49,7 +50,7 @@ export class XrGui {
         this.buttons.forEach((b, t) => this.updateButton(t, b));
     }
 
-    updateButton(tool: AbstractTool, button: GUI.Button): void {
+    updateButton(tool: AbstractTool, button: Button): void {
         button.color = tool.active ? "red" : "black";
     }
 

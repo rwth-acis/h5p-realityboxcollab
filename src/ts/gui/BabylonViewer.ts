@@ -5,6 +5,7 @@ import { RealityBoxCollab } from "../RealityboxCollab";
 import { createVector } from "../tools/PointerTool";
 import { Toolbar } from "./Toolbar";
 import { XrGui } from "./XrGui";
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 
 /**
  * This class represents all important logic which has to do with the babylon scene, which is not in its own tool

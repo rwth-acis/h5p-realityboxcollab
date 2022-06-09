@@ -7,6 +7,7 @@ import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
 import   * as Y from "yjs";
 import { DEFAULT_SETTINGS, RoomSettings } from "./RoomSettings";
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 
 export class Room {
 
