@@ -61,7 +61,7 @@ export class PointerTool extends AbstractTool {
         const model = RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env;
 
         let pos = cam.position.clone();
-        pos.y -= 1.4;
+        pos.y -= RealityBoxCollab.instance.babylonViewer.isInXR ? 0.5 : 1.4;
         let hit = scene.pickWithRay(new BABYLON.Ray(cam.position, cam.getDirection(BABYLON.Vector3.Forward())),
             mesh => model.getChildMeshes().find(c => c == mesh) != undefined);
         let target;
@@ -103,8 +103,9 @@ class Pointer {
 
     constructor(private mat: BABYLON.Material, private scene: BABYLON.Scene) {
         this.sphere = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
-            diameter: 3
+            diameter: RealityBoxCollab.instance.babylonViewer.isInXR ? 0.005 : 3
         }, scene);
+        this.sphere.setParent(RealityBoxCollab.instance.babylonViewer.baseNode);
         this.sphere.material = this.mat;
     }
 
@@ -115,10 +116,11 @@ class Pointer {
 
         this.line = BABYLON.MeshBuilder.CreateTube("tube", {
             path: [createVector(info.pos), createVector(info.target)],
-            radius: 0.1,
+            radius: RealityBoxCollab.instance.babylonViewer.isInXR ? 0.005 : 0.1,
             updatable: true,
             instance: this.line
         }, this.scene);
+        this.line.setParent(RealityBoxCollab.instance.babylonViewer.baseNode);
         this.line.material = this.mat;
 
         let target = createVector(info.target);

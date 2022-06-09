@@ -9,27 +9,32 @@ import * as BABYLON from "@babylonjs/core/Legacy/legacy";
  */
 export abstract class AbstractXRView extends AbstractTool {
     experience: BABYLON.WebXRDefaultExperience;
-    oldScale: BABYLON.Vector3;
 
-    constructor(name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType) {
+    constructor(name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType,
+        public worldScale: number = 1, public baseScale: number = 1) {
         super(name, icon);
     }
 
     // https://doc.babylonjs.com/divingDeeper/webXR/introToWebXR
     // https://codingxr.com/articles/webxr-with-babylonjs/
     // https://doc.babylonjs.com/divingDeeper/webXR/webXRDemos
-    override onActivate(): void {
+    override async onActivate() {
+        if (!this.experience) {
+            await this.createXR();
+        }
+
+        this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
+        RealityBoxCollab.instance.babylonViewer.onXRStateChanged(true);
+        RealityBoxCollab.instance.babylonViewer.scaleWorld(this.worldScale, this.baseScale);
+        this.onXREnter();
+    }
+
+    async createXR() {
         const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
-        scene.createDefaultXRExperienceAsync({
+        await scene.createDefaultXRExperienceAsync({
         }).then(ex => {
             this.experience = ex;
-            this.oldScale = RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env.scaling;
-            RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env.scaling.scaleInPlace(0.01);
-            ex.baseExperience.enterXRAsync(this.mode, this.spaceType);
-
-            this.onXREnter();
-            RealityBoxCollab.instance.babylonViewer.onXRStateChanged(true);
 
             this.experience.baseExperience.onStateChangedObservable.add((state) => {
                 if (state == BABYLON.WebXRState.NOT_IN_XR) {
@@ -43,6 +48,7 @@ export abstract class AbstractXRView extends AbstractTool {
         if (this.experience) {
             this.experience.baseExperience.exitXRAsync();
             RealityBoxCollab.instance.babylonViewer.onXRStateChanged(false);
+            RealityBoxCollab.instance.babylonViewer.scaleWorld(1 / this.worldScale, this.baseScale);
             this.onXRExit();
         }
         this.experience = null;

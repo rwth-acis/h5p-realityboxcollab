@@ -14,10 +14,12 @@ export class BabylonViewer extends NetworkListener {
     scene: BABYLON.Scene;
     userMeshes: Map<string, UserMesh> = new Map();
     models: BABYLON.Mesh[];
+    modelNodes: BABYLON.TransformNode[] = [];
     remoteModelInfo: Y.Map<ModelInformation>;
     localModelInfo: Map<string, ModelInformation> = new Map();
     isInXR: boolean = false;
     xrGui: XrGui;
+    baseNode: BABYLON.TransformNode;
 
     constructor(toolbar: Toolbar) {
         super();
@@ -25,11 +27,24 @@ export class BabylonViewer extends NetworkListener {
         this.models = [RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env];
         this.scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
+        this.baseNode = new BABYLON.TransformNode("Base Node", this.scene);
+        for (let model of this.models) {
+            let node = new BABYLON.TransformNode("Parent Node for " + model.name, this.scene);
+            node.parent = this.baseNode;
+            this.modelNodes.push(node);
+            model.setParent(node);
+        }
+
         this.xrGui = new XrGui(toolbar, this.scene);
 
         this.scene.registerBeforeRender(() => {
             this.onRender();
         });
+    }
+
+    scaleWorld(modelScale: number, baseScale: number): void {
+        this.modelNodes.forEach(n => n.scaling.scaleInPlace(modelScale));
+        this.baseNode.scaling.scaleInPlace(baseScale);
     }
 
     onXRStateChanged(newState: boolean): void {
