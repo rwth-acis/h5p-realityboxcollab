@@ -25,7 +25,9 @@ export class XrGui {
         xrGui.addControl(this.xrGuiPanel);
 
         for (let tool of this.toolbar.tools) {
-            this.xrGuiPanel.addControl(this.createButton(tool));
+            let b = this.createButton(tool);
+            this.buttons.set(tool, b);
+            this.xrGuiPanel.addControl(b);
         }
 
         this.xrGuiPanel.notRenderable = true;
