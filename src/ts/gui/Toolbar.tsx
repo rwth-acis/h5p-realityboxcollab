@@ -29,14 +29,14 @@ export class Toolbar extends AbstractGuiElement {
             {this.tools.map(tool =>
                 <button className={tool.active ? "toolbarBtnActive toolbarBtn" : "toolbarBtn"} disabled={!tool.canActivate()}
                     data-toggle="tooltip" data-placement="bottom"
-                    title={tool.name} onClick={e => this.toolClicked(tool, e)}>
+                    title={tool.name} onClick={e => this.toolClicked(tool)}>
                     {tool.icon ? <i className={tool.icon}></i> : tool.name}
                 </button>
             )}
         </div>
     }
 
-    toolClicked(tool: AbstractTool, evt: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    toolClicked(tool: AbstractTool): void {
         if (this.activeTool && this.activeTool != tool) this.deactivate(this.activeTool);
 
         if (!tool.active) {

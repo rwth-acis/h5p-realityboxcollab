@@ -1,8 +1,10 @@
+import * as Y from "yjs";
 import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
-import * as Y from "yjs";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { createVector } from "../tools/PointerTool";
+import { Toolbar } from "./Toolbar";
+import { XrGui } from "./XrGui";
 
 /**
  * This class represents all important logic which has to do with the babylon scene, which is not in its own tool
@@ -13,22 +15,25 @@ export class BabylonViewer extends NetworkListener {
     models: BABYLON.Mesh[];
     remoteModelInfo: Y.Map<ModelInformation>;
     localModelInfo: Map<string, ModelInformation> = new Map();
+    isInXR: boolean = false;
+    xrGui: XrGui;
 
-    constructor() {
+    constructor(toolbar: Toolbar) {
         super();
 
-        // Get parameters from Realitybox, Replace Scene because of library problem
-        //RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene = new Scene(RealityBoxCollab.instance.realitybox.viewer._babylonBox.engine);
         this.models = [RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env];
         this.scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
-        //this.scene.createDefaultCameraOrLight(true, true, true);
-        //this.scene.createDefaultEnvironment();
-        //this.models.forEach(m => this.scene.addMesh(m));
+        this.xrGui = new XrGui(toolbar, this.scene);
 
         this.scene.registerBeforeRender(() => {
             this.onRender();
         });
+    }
+
+    onXRStateChanged(newState: boolean): void {
+        this.isInXR = newState;
+        this.xrGui.onXRStateChanged(newState);
     }
 
     /**

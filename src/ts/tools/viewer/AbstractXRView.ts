@@ -28,6 +28,7 @@ export abstract class AbstractXRView extends AbstractTool {
             ex.baseExperience.enterXRAsync(this.mode, this.spaceType);
 
             this.onXREnter();
+            RealityBoxCollab.instance.babylonViewer.onXRStateChanged(true);
 
             this.experience.baseExperience.onStateChangedObservable.add((state) => {
                 if (state == BABYLON.WebXRState.EXITING_XR) this.toolbar.deactivateTool(this);
@@ -38,6 +39,7 @@ export abstract class AbstractXRView extends AbstractTool {
     override onDeactivate(): void {
         if (this.experience) {
             this.experience.baseExperience.exitXRAsync();
+            RealityBoxCollab.instance.babylonViewer.onXRStateChanged(false);
             this.onXRExit();
         }
         this.experience = null;

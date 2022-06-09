@@ -17,6 +17,7 @@ import { OrbitTool } from './tools/viewer/OrbitTool';
 import { VRTool } from './tools/viewer/VRTool';
 import { Utils } from './utils/Utils';
 import * as BABYLON from "babylonjs"; // Needed, so BabylonJs is packaged
+import * as GUI from "babylonjs-gui";
 
 
 declare let H5P: any;
@@ -28,11 +29,11 @@ export class RealityBoxCollab {
     realitybox: Realitybox;
     options: any;
     guiElements: AbstractGuiElement[];
-    otherElements: NetworkListener[];
     chat: Chat;
     roomManager: RoomManager;
     room: Room;
     localRoom: Room;
+    babylonViewer: BabylonViewer;
 
     constructor(options: any, private id: any) {
         this.options = options.realityboxcollab;
@@ -59,7 +60,7 @@ export class RealityBoxCollab {
         });
     }
 
-    onPropertySet(target: any, key: string, value: any) {
+    onPropertySet(target: any, key: string, value: any): boolean {
         if (key === "$el") {
             this.buildComponents(value);
         }
@@ -67,7 +68,7 @@ export class RealityBoxCollab {
         return true;
     }
 
-    buildComponents(container: JQuery) {
+    buildComponents(container: JQuery): void {
         let toolbar = new Toolbar(container, "collabToolbar", false, [
             new MoveTool(container), new PointerTool(), new AnnotationTool(), new DrawTool()
         ]);
@@ -80,7 +81,7 @@ export class RealityBoxCollab {
 
         this.chat = new Chat(container);
         this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(container)];
-        this.otherElements = [new BabylonViewer()];
+        this.babylonViewer = new BabylonViewer(toolbar);
         this.guiElements.forEach(e => e.init());
         
         this.room = this.localRoom = new Room(this.getListeners(), {
@@ -88,7 +89,8 @@ export class RealityBoxCollab {
             password: ""
         }, true, true);
     }
+
     getListeners(): NetworkListener[] {
-        return [...this.guiElements, ...this.otherElements];
+        return [...this.guiElements, this.babylonViewer];
     }
 }
