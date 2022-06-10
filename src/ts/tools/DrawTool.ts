@@ -24,10 +24,6 @@ export class DrawTool extends AbstractTool {
             let mat = new BABYLON.StandardMaterial("matPointerBall", RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene);
             mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
             this.line.material = mat;
-
-            let gizmoManager = new BABYLON.GizmoManager(scene);
-            gizmoManager.boundingBoxGizmoEnabled = true;
-            gizmoManager.usePointerToAttachGizmos = false; // Might be changed for multiple models
         });
     }
 

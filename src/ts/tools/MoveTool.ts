@@ -22,7 +22,8 @@ export class MoveTool extends AbstractMultiTool {
         const mesh: BABYLON.Mesh = RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env;
 
         if (!this.gizmoManager) {
-            this.gizmoManager = new BABYLON.GizmoManager(scene);
+            let layer = new BABYLON.UtilityLayerRenderer(scene); // Fixes unknown bug in babylonjs
+            this.gizmoManager = new BABYLON.GizmoManager(scene, undefined, layer, layer);
             this.gizmoManager.boundingBoxGizmoEnabled = true;
             this.gizmoManager.usePointerToAttachGizmos = false; // Might be changed for multiple models
         }
