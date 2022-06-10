@@ -2,6 +2,7 @@ import { User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { AbstractTool } from "./AbstractTool";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { Utils } from "../utils/Utils";
 
 export class PointerTool extends AbstractTool {
 
@@ -115,7 +116,7 @@ class Pointer {
         if (!info.active) return;
 
         this.line = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: [createVector(info.pos), createVector(info.target)],
+            path: [Utils.createVector(info.pos), Utils.createVector(info.target)],
             radius: RealityBoxCollab.instance.babylonViewer.isInXR ? 0.005 : 0.1,
             updatable: true,
             instance: this.line
@@ -123,7 +124,7 @@ class Pointer {
         this.line.setParent(RealityBoxCollab.instance.babylonViewer.baseNode);
         this.line.material = this.mat;
 
-        let target = createVector(info.target);
+        let target = Utils.createVector(info.target);
         this.sphere.position.set(target.x, target.y, target.z);
     }
 
@@ -131,13 +132,4 @@ class Pointer {
         this.scene.removeMesh(this.line);
         this.scene.removeMesh(this.sphere);
     }
-}
-
-/**
- * Only _x, _y and _z will be exchanged via yjs
- * @param vec The vector exchanged via yjs
- * @returns A proper Vector3 instance
- */
-export function createVector(vec: BABYLON.Vector3): BABYLON.Vector3 {
-    return new BABYLON.Vector3(vec._x, vec._y, vec._z);
 }

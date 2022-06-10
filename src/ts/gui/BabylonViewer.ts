@@ -2,10 +2,10 @@ import * as Y from "yjs";
 import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
-import { createVector } from "../tools/PointerTool";
 import { Toolbar } from "./Toolbar";
 import { XrGui } from "./XrGui";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { Utils } from "../utils/Utils";
 
 /**
  * This class represents all important logic which has to do with the babylon scene, which is not in its own tool
@@ -148,9 +148,9 @@ export interface ModelInformation {
 }
 
 function applyInformation(mesh: BABYLON.Mesh, info: ModelInformation): void {
-    mesh.position = createVector(info.position);
-    mesh.rotationQuaternion = createQuaternion(info.rotation);
-    mesh.scaling = createVector(info.scale);
+    mesh.position = Utils.createVector(info.position);
+    mesh.rotationQuaternion = Utils.createQuaternion(info.rotation);
+    mesh.scaling = Utils.createVector(info.scale);
 }
 
 function getInformation(mesh: BABYLON.Mesh): ModelInformation {
@@ -162,18 +162,5 @@ function getInformation(mesh: BABYLON.Mesh): ModelInformation {
 }
 
 function informationEquals(a: ModelInformation, b: ModelInformation): boolean {
-    return vecEquals(a.position, b.position) && quatEquals(a.rotation, b.rotation) && vecEquals(a.scale, b.scale);
+    return Utils.vectorEquals(a.position, b.position) && Utils.quaternionEquals(a.rotation, b.rotation) && Utils.vectorEquals(a.scale, b.scale);
 }
-
-function vecEquals(a: BABYLON.Vector3, b: BABYLON.Vector3): boolean {
-    return a._x == b._x && a._y == b._y && a._z == b._z;
-}
-
-function createQuaternion(q: BABYLON.Quaternion): BABYLON.Quaternion {
-    return new BABYLON.Quaternion(q._x, q._y, q._z, q._w);
-}
-
-function quatEquals(a: BABYLON.Quaternion, b: BABYLON.Quaternion) {
-    return a._x == b._x && a._y == b._y && a._z == b._z && a._w == b._w;
-}
-
