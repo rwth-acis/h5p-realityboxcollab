@@ -119,6 +119,7 @@ class Pointer {
             path: [Utils.createVector(info.pos), Utils.createVector(info.target)],
             radius: RealityBoxCollab.instance.babylonViewer.isInXR ? 0.005 : 0.1,
             updatable: true,
+            sideOrientation: BABYLON.Mesh.DOUBLESIDE,
             instance: this.line
         }, this.scene);
         this.line.setParent(RealityBoxCollab.instance.babylonViewer.baseNode);
