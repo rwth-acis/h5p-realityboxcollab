@@ -25,7 +25,9 @@ export class DrawTool extends AbstractTool {
             mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
             this.line.material = mat;
 
-            let gizmoManager = new BABYLON.GizmoManager(scene);
+            let layer = new BABYLON.UtilityLayerRenderer(scene);
+            console.log(layer.originalScene.getEngine());
+            let gizmoManager = new BABYLON.GizmoManager(scene, 1, layer, layer);
             gizmoManager.boundingBoxGizmoEnabled = true;
             gizmoManager.usePointerToAttachGizmos = false; // Might be changed for multiple models
         });

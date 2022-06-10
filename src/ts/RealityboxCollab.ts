@@ -68,7 +68,7 @@ export class RealityBoxCollab {
 
     buildComponents(container: JQuery): void {
         let toolbar = new Toolbar(container, "collabToolbar", false, [
-            /*new MoveTool(container),*/ new PointerTool(), new AnnotationTool(), new DrawTool()
+            new MoveTool(container), new PointerTool(), new AnnotationTool(), new DrawTool()
         ]);
 
         let viewTools = [new OrbitTool(), new VRTool()];
