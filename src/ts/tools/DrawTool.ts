@@ -1,5 +1,6 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { MixMaterial } from "@babylonjs/materials";
+import { MaterialHelper, StandardMaterial } from "@babylonjs/core/Legacy/legacy";
+import { CustomMaterial, MixMaterial } from "@babylonjs/materials";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { Utils } from "../utils/Utils";
 import { AbstractTool } from "./AbstractTool";
@@ -50,26 +51,19 @@ export class DrawTool extends AbstractTool {
             height: 512
         }, scene, true);
         let mat = new BABYLON.StandardMaterial("texMat", scene);
-        mat.transparencyMode = 2; // Alpha blend
+        mat.transparencyMode = 3; // Alpha blend
         mat.diffuseTexture = texture;
-        mat.alpha = 0.5;
         mat.backFaceCulling = false;
         const size = texture.getSize();
 
         const ctx = texture.getContext();
-        ctx.beginPath();
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = "#00ff00"; // Green
+        ctx.fillStyle = "#00ff00";
         ctx.fillRect(0, 0, size.width, size.height);
-        texture.update(true);
+        texture.update();
 
         const meshes = model.getChildMeshes();
-        meshes.forEach(m => {
-            let multi = new BABYLON.MultiMaterial("multi" + m.id, scene);
-            multi.subMaterials.push(mat);
-            multi.subMaterials.push(m.material);
-            m.material = multi;
-        });
+        meshes.forEach(m => m.material = mat);
+
 
         scene.onPointerObservable.add(e => {
             if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0) {
@@ -79,19 +73,15 @@ export class DrawTool extends AbstractTool {
                 this.draw = false;
             }
             else if (e.type == BABYLON.PointerEventTypes.POINTERMOVE && this.draw) {
-                let pick = scene.pick(scene.pointerX, scene.pointerY,
-                    mesh => meshes.find(c => c == mesh) != undefined);
+                let pick = scene.pick(scene.pointerX, scene.pointerY);
+                //mesh => meshes.find(c => c == mesh) != undefined);
                 let texCoordinates = pick.getTextureCoordinates();
-
                 if (!texCoordinates) return;
-
 
                 ctx.beginPath();
                 ctx.arc(texCoordinates.x * size.width, size.height - texCoordinates.y * size.height, 5, 0, 2 * Math.PI, false);
-                ctx.globalAlpha = 0.5;
                 ctx.fillStyle = "#ff0000"; // Red
                 ctx.fill();
-                ctx.lineWidth = 5;
                 texture.update();
             }
         });
