@@ -1,18 +1,21 @@
 import { User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
-import { AbstractTool } from "./AbstractTool";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { Utils } from "../utils/Utils";
+import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
 
-export class PointerTool extends AbstractTool {
-
+export class PointerTool extends AbstractMultiTool {
+    
     static readonly LINE_COLOR = new BABYLON.Color4(1, 0, 0);
 
     mat: BABYLON.StandardMaterial;
     pointers: Map<string, Pointer> = new Map<string, Pointer>();
 
-    constructor() {
-        super("Pointer Tool", "fa-solid fa-person-chalkboard", s => s.canUsePointerTool);
+    constructor(container: JQuery) {
+        super("Pointer Tool", "fa-solid fa-person-chalkboard", container, [
+            {name: "Pointer", icon: "fa-solid fa-arrow-pointer"},
+            {name: "View", icon: "fa-solid fa-eye"}
+        ], s => s.canUsePointerTool);
 
         this.mat = new BABYLON.StandardMaterial("matPointerBall", RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene);
         this.mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
@@ -23,8 +26,8 @@ export class PointerTool extends AbstractTool {
         });
     }
 
-    override onActivate(): void {
-
+    onSubToolSwitched(subtool: SubTool): void {
+        
     }
 
     private onRender(scene: BABYLON.Scene) {
@@ -63,8 +66,14 @@ export class PointerTool extends AbstractTool {
 
         let pos = cam.position.clone();
         pos.y -= RealityBoxCollab.instance.babylonViewer.isInXR ? 0.5 : 1.4;
-        let hit = scene.pickWithRay(new BABYLON.Ray(cam.position, cam.getDirection(BABYLON.Vector3.Forward())),
-            mesh => model.getChildMeshes().find(c => c == mesh) != undefined);
+        let hit: BABYLON.PickingInfo;
+        if (this.activeTool == this.subtools[0]) {
+            hit = scene.pick(scene.pointerX, scene.pointerY, mesh => model.getChildMeshes().find(c => c == mesh) != undefined);
+        }
+        else {
+            hit = scene.pickWithRay(new BABYLON.Ray(cam.position, cam.getDirection(BABYLON.Vector3.Forward())),
+                mesh => model.getChildMeshes().find(c => c == mesh) != undefined);
+        }
         let target;
         if (hit) target = hit.pickedPoint;
         if (!target) target = pos;
