@@ -39,6 +39,7 @@ export class RealityBoxCollab {
             throw new Error("Instance already definied");
         }
         RealityBoxCollab.instance = this;
+        console.log(options);
 
         this.roomManager = new RoomManager();
     }

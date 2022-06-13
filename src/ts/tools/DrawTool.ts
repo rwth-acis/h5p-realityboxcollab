@@ -10,6 +10,7 @@ export class DrawTool extends AbstractTool {
     lastPosition: BABYLON.Vector3;
     frame: number = 0;
     mat: BABYLON.StandardMaterial;
+    draw: boolean = false;
 
     constructor() {
         super("Draw Tool", "fa-solid fa-pen", s => s.canUsePenTool);
@@ -19,6 +20,9 @@ export class DrawTool extends AbstractTool {
     }
 
     override onActivate(): void {
+        this.test();
+        if (true) return;
+
         RealityBoxCollab.instance.babylonViewer.scene.onBeforeRenderObservable.add((scene: BABYLON.Scene) => {
             this.frame++;
             if (this.frame % 20 != 0) return;
@@ -31,6 +35,60 @@ export class DrawTool extends AbstractTool {
             this.positions.push(pos);
             console.log(this.positions);
             if (this.positions.length > 3) this.updateLine(scene);
+        });
+    }
+
+    // https://www.babylonjs-playground.com/#9MPPSY#5
+    // https://doc.babylonjs.com/divingDeeper/materials/using/multiMaterials
+    test() {
+        const scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        const model = RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env;
+
+        let texture = new BABYLON.DynamicTexture("dynTex1", {
+            width: 512,
+            height: 512
+        }, scene, true);
+        let mat = new BABYLON.StandardMaterial("texMat", scene);
+        mat.diffuseTexture = texture;
+        mat.backFaceCulling = false;
+        const size = texture.getSize();
+
+        const ctx = texture.getContext();
+        ctx.beginPath();
+        ctx.fillStyle = "#00ff00"; // Green
+        ctx.fillRect(0, 0, size.width, size.height);
+        texture.update(true);
+
+        const meshes = model.getChildMeshes();
+        meshes.forEach(m => {
+            let multi = new BABYLON.MultiMaterial("multi" + m.id, scene);
+            multi.subMaterials.push(mat);
+            multi.subMaterials.push(m.material);
+            m.material = multi;
+        });
+
+        scene.onPointerObservable.add(e => {
+            if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0) {
+                this.draw = true;
+            }
+            else if (e.type == BABYLON.PointerEventTypes.POINTERUP && e.event.button == 0) {
+                this.draw = false;
+            }
+            else if (e.type == BABYLON.PointerEventTypes.POINTERMOVE && this.draw) {
+                let pick = scene.pick(scene.pointerX, scene.pointerY,
+                    mesh => meshes.find(c => c == mesh) != undefined);
+                let texCoordinates = pick.getTextureCoordinates();
+
+                if (!texCoordinates) return;
+
+
+                ctx.beginPath();
+                ctx.arc(texCoordinates.x * size.width, size.height - texCoordinates.y * size.height, 5, 0, 2 * Math.PI, false);
+                ctx.fillStyle = "#ff0000"; // Red
+                ctx.fill();
+                ctx.lineWidth = 5;
+                texture.update();
+            }
         });
     }
 
