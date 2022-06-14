@@ -7,7 +7,7 @@ import { Toolbar } from './gui/Toolbar';
 import { NetworkListener } from './networking/NetworkListener';
 import { Room } from './networking/Room';
 import { RoomManager } from './networking/RoomManager';
-import { Realitybox } from './RealityboxTypes';
+import { Realitybox, RealityboxAnnotation, RealityBoxEditor } from './RealityboxTypes';
 import { AnnotationTool } from './tools/AnnotationTool';
 import { DrawTool } from './tools/DrawTool';
 import { MoveTool } from './tools/MoveTool';
@@ -40,7 +40,6 @@ export class RealityBoxCollab {
             throw new Error("Instance already definied");
         }
         RealityBoxCollab.instance = this;
-        console.log(options);
 
         this.roomManager = new RoomManager();
     }
@@ -76,7 +75,7 @@ export class RealityBoxCollab {
         let viewTools = [new OrbitTool(), new VRTool()];
         if (!Utils.isMobile) viewTools = [new FirstPersonTool(), ...viewTools];
         if (Utils.isMobile) viewTools = [...viewTools, new ARTool()];
-        
+
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
 
         this.chat = new Chat(container);
@@ -84,15 +83,13 @@ export class RealityBoxCollab {
         this.babylonViewer = new BabylonViewer(toolbar);
         this.guiElements.forEach(e => e.init());
 
-        console.log("================");
         let a = this.realitybox.viewer._babylonBox.getAnnotations();
-        console.log(a[0]);
-        console.log(this.realitybox.viewer._babylonBox.addAnnotation({
+        this.realitybox.viewer._babylonBox.addAnnotation({
             content: a[0].content,
             normalRef: new BABYLON.Vector3(0, 1, 0),
             position: new BABYLON.Vector3()
-        }));
-        
+        });
+
         this.room = this.localRoom = new Room(this.getListeners(), {
             name: "Local Room",
             password: ""

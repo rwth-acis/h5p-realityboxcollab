@@ -26,4 +26,12 @@ export class Utils {
         return a._x == b._x && a._y == b._y && a._z == b._z && a._w == b._w;
     }
 
+    static vectorMax(a: BABYLON.Vector3, b: BABYLON.Vector3): BABYLON.Vector3 {
+        return new BABYLON.Vector3(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
+    }
+
+    static vectorMin(a: BABYLON.Vector3, b: BABYLON.Vector3): BABYLON.Vector3 {
+        return new BABYLON.Vector3(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
+    }
+
 }

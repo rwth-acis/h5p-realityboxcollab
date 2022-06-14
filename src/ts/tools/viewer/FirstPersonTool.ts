@@ -1,6 +1,7 @@
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { BabylonViewer } from "../../gui/BabylonViewer";
 
 export class FirstPersonTool extends AbstractTool {
 
@@ -14,8 +15,8 @@ export class FirstPersonTool extends AbstractTool {
     KEY_SHIFT = 16;
 
     // Camera Settings
-    moveSpeed: number = 1.2;
-    mouseSpeed: number = 1.2;
+    moveSpeed: number = 1.2 * BabylonViewer.WORLD_SIZE;
+    mouseSpeed: number = 1.2 * BabylonViewer.WORLD_SIZE;
     moveShiftFactor: number = 3;
 
     camera: BABYLON.FreeCamera;
@@ -34,7 +35,8 @@ export class FirstPersonTool extends AbstractTool {
             this.createComponents();
         }
 
-        this.camera.position = scene.activeCamera.position;
+        // 3 m from world origin
+        this.camera.position = scene.activeCamera.getDirection(BABYLON.Vector3.Forward()).scale(-3);
         this.camera.rotation = scene.activeCamera.absoluteRotation.toEulerAngles();
         this.camera.rotation.z = 0;
         scene.activeCamera = this.camera;
@@ -63,7 +65,7 @@ export class FirstPersonTool extends AbstractTool {
             this.computeDirection(dir, this.KEY_D, this.KEY_A, BABYLON.Vector3.Right());
             this.computeDirection(dir, this.KEY_E, this.KEY_Q, BABYLON.Vector3.Up());
 
-            dir = dir.normalize().scale(this.moveSpeed * (this.getKey(this.KEY_SHIFT) ? this.moveShiftFactor : 1));
+            dir = dir.normalize().scale(this.moveSpeed * (this.getKey(this.KEY_SHIFT) ? this.moveShiftFactor : 1)  / 50);
             this.camera.position.addInPlaceFromFloats(dir.x, dir.y, dir.z);
 
             return scene;

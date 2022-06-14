@@ -17,9 +17,9 @@ export interface BabylonBox {
     webXRSupported: boolean;
     scene: BABYLON.Scene;
     engine: BABYLON.Engine;
-    camera: any;
     model: RealityboxModel;
     $canvas: JQuery;
+    camera: RealityboxCamera;
     _annotationsManager: RealityboxAnnotationManager;
     addAnnotation(options: RealityboxAnnotation): RealityboxAnnotation;
     removeAnnotation(a: RealityboxAnnotation): void;
@@ -28,6 +28,10 @@ export interface BabylonBox {
     setAnnotationState(state: string, a: RealityboxAnnotation): void;
     showAllAnnotations(): void;
     hideAllAnnotations(): void;
+}
+
+export interface RealityboxCamera {
+    babylonObj: BABYLON.ArcRotateCamera;
 }
 
 export interface RealityboxModel {
@@ -47,4 +51,8 @@ export interface RealityboxAnnotation {
 export interface H5PContent {
     library: string;
     params: any;
+}
+
+export interface RealityBoxEditor {
+
 }

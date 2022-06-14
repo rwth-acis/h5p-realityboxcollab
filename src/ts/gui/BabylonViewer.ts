@@ -6,11 +6,14 @@ import { Toolbar } from "./Toolbar";
 import { XrGui } from "./XrGui";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { Utils } from "../utils/Utils";
+import { Vector3 } from "@babylonjs/core/Legacy/legacy";
 
 /**
  * This class represents all important logic which has to do with the babylon scene, which is not in its own tool
  */
 export class BabylonViewer extends NetworkListener {
+    static readonly WORLD_SIZE = 1;
+
     scene: BABYLON.Scene;
     userMeshes: Map<string, UserMesh> = new Map();
     models: BABYLON.Mesh[];
@@ -25,8 +28,8 @@ export class BabylonViewer extends NetworkListener {
         super();
 
         this.models = [RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env];
-        this.scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
+        this.scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
         this.baseNode = new BABYLON.TransformNode("Base Node", this.scene);
         for (let model of this.models) {
             let node = new BABYLON.TransformNode("Parent Node for " + model.name, this.scene);
@@ -34,6 +37,7 @@ export class BabylonViewer extends NetworkListener {
             this.modelNodes.push(node);
             model.setParent(node);
         }
+        this.adjustModelScale();
 
         this.xrGui = new XrGui(toolbar, this.scene);
 
@@ -42,9 +46,30 @@ export class BabylonViewer extends NetworkListener {
         });
     }
 
+    adjustModelScale() {
+        for (let m of this.models) {
+            let max = new BABYLON.Vector3(0, 0, 0);
+            let min = new BABYLON.Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+            for (let c of m.getChildMeshes()) {
+                max = Utils.vectorMax(max, c.getBoundingInfo().boundingBox.maximumWorld);
+                min = Utils.vectorMin(min, c.getBoundingInfo().boundingBox.minimumWorld);
+            }
+            // Scale to 1m in height 
+            m.scaling.scaleInPlace(BabylonViewer.WORLD_SIZE / max.subtract(min).y);
+        }
+
+        const cam = RealityBoxCollab.instance.realitybox.viewer._babylonBox.camera.babylonObj;
+        cam.lowerRadiusLimit = 0.05 * BabylonViewer.WORLD_SIZE;
+        cam.upperRadiusLimit = 30 * BabylonViewer.WORLD_SIZE;
+        cam.speed = 0.2 * BabylonViewer.WORLD_SIZE; 
+        cam.minZ = 0; // Near clipping plane
+        cam.radius = 2 * BabylonViewer.WORLD_SIZE;
+        cam.wheelPrecision = 50 * BabylonViewer.WORLD_SIZE;
+    }
+
     scaleWorld(modelScale: number, baseScale: number): void {
-        this.modelNodes.forEach(n => n.scaling.scaleInPlace(modelScale));
-        this.baseNode.scaling.scaleInPlace(baseScale);
+        //this.modelNodes.forEach(n => n.scaling.scaleInPlace(modelScale));
+        //this.baseNode.scaling.scaleInPlace(baseScale);
     }
 
     onXRStateChanged(newState: boolean): void {
