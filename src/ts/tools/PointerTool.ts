@@ -113,7 +113,7 @@ class Pointer {
 
     constructor(private mat: BABYLON.Material, private scene: BABYLON.Scene) {
         this.sphere = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
-            diameter: RealityBoxCollab.instance.babylonViewer.isInXR ? 0.005 : 3
+            diameter: 0.05
         }, scene);
         this.sphere.setParent(RealityBoxCollab.instance.babylonViewer.baseNode);
         this.sphere.material = this.mat;
@@ -126,7 +126,7 @@ class Pointer {
 
         this.line = BABYLON.MeshBuilder.CreateTube("tube", {
             path: [Utils.createVector(info.pos), Utils.createVector(info.target)],
-            radius: RealityBoxCollab.instance.babylonViewer.isInXR ? 0.005 : 0.1,
+            radius: 0.005,
             updatable: true,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE,
             instance: this.line
