@@ -1,3 +1,4 @@
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { AbstractGuiElement } from './gui/AbstractGuiElement';
 import { BabylonViewer } from './gui/BabylonViewer';
 import { Chat } from './gui/Chat';
@@ -82,6 +83,15 @@ export class RealityBoxCollab {
         this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(container)];
         this.babylonViewer = new BabylonViewer(toolbar);
         this.guiElements.forEach(e => e.init());
+
+        console.log("================");
+        let a = this.realitybox.viewer._babylonBox.getAnnotations();
+        console.log(a[0]);
+        console.log(this.realitybox.viewer._babylonBox.addAnnotation({
+            content: a[0].content,
+            normalRef: new BABYLON.Vector3(0, 1, 0),
+            position: new BABYLON.Vector3()
+        }));
         
         this.room = this.localRoom = new Room(this.getListeners(), {
             name: "Local Room",
