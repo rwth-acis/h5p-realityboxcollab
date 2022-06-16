@@ -29,16 +29,19 @@ export class FirstPersonTool extends AbstractTool {
     }
 
     override onActivate(): void {
-        let scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        const scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        const oldCamera = scene.cameras[0];
 
         if (!this.camera) {
             this.createComponents();
         }
 
         // 3 m from world origin
-        this.camera.position = scene.activeCamera.getDirection(BABYLON.Vector3.Forward()).scale(-3);
-        this.camera.rotation = scene.activeCamera.absoluteRotation.toEulerAngles();
+        this.camera.position = oldCamera.getDirection(BABYLON.Vector3.Forward()).scale(-3);
+        this.camera.rotation = oldCamera.absoluteRotation.toEulerAngles();
         this.camera.rotation.z = 0;
+        // Avoid camera input when inactive (even setEnabled does not disable input)
+        (oldCamera.inputs.attached.pointers as any).buttons = [];
         scene.activeCamera = this.camera;
     }
 
@@ -117,6 +120,8 @@ export class FirstPersonTool extends AbstractTool {
     override onDeactivate(): void {
         const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
         scene.activeCamera = scene.cameras[0];
+        // Reactivate camera
+        (scene.cameras[0].inputs.attached.pointers as any).buttons = [0, 1, 2];
     }
 
     override onRoomChanged(): void {
