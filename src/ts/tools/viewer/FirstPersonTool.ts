@@ -46,6 +46,7 @@ export class FirstPersonTool extends AbstractTool {
         let scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
 
         this.camera = new BABYLON.FreeCamera("First Person Camera", new BABYLON.Vector3(), scene, false);
+        this.camera.minZ = 0;
 
         scene.registerBeforeRender(() => {
             if (!this.active || !this.moveable) {

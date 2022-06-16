@@ -23,8 +23,8 @@ export class HostUpdater {
         });
 
         toRemove.forEach(u => {
-            this.room.users.delete(u.username);
-            this.room.sendRoomMessage(`User ${u.username} lost connection`);
+            //this.room.users.delete(u.username);
+            //this.room.sendRoomMessage(`User ${u.username} lost connection`);
         });
     }
 

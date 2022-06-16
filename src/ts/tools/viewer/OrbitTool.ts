@@ -1,4 +1,6 @@
+import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 
 export class OrbitTool extends AbstractTool {
 
@@ -7,7 +9,8 @@ export class OrbitTool extends AbstractTool {
     }
 
     override onActivate(): void {
-
+        const cam = RealityBoxCollab.instance.babylonViewer.scene.activeCamera as BABYLON.ArcRotateCamera;
+        console.log(cam.target);
     }
 
     override onDeactivate(): void {
