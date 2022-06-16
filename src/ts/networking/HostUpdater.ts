@@ -1,5 +1,8 @@
 import { Room, User } from "./Room";
 
+/**
+ * The HostUpdater runs on the user which is the host. Therefore it is guaranteed that only one instance is active per room
+ */
 export class HostUpdater {
     timer: NodeJS.Timer;
     updateTimes: Map<string, number> = new Map();

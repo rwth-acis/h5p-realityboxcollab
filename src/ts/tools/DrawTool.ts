@@ -9,7 +9,7 @@ import { AbstractTool } from "./AbstractTool";
 
 export class DrawTool extends AbstractMultiTool {
 
-    line: BABYLON.Mesh;
+    lineMesh: BABYLON.Mesh;
     linePositions: BABYLON.Vector3[] = [];
     lastPosition: BABYLON.Vector3;
     frame: number = 0;
@@ -39,7 +39,7 @@ export class DrawTool extends AbstractMultiTool {
                 else if (e.type == BABYLON.PointerEventTypes.POINTERUP && e.event.button == 0) {
                     this.draw = false;
                     // Reste line but do not remove
-                    this.line = null;
+                    this.lineMesh = null;
                     this.linePositions = [];
                 }
                 else if (e.type == BABYLON.PointerEventTypes.POINTERMOVE && this.draw) {
@@ -104,17 +104,17 @@ export class DrawTool extends AbstractMultiTool {
     }
 
     updateLine(scene: BABYLON.Scene): void {
-        if (this.line) scene.removeMesh(this.line);
+        if (this.lineMesh) scene.removeMesh(this.lineMesh);
 
         // Updatable not possible, because position size changes
-        this.line = BABYLON.MeshBuilder.CreateTube("tube", {
+        this.lineMesh = BABYLON.MeshBuilder.CreateTube("tube", {
             path: this.linePositions,
             radius: 0.01,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         }, scene);
-        this.line.setParent(RealityBoxCollab.instance.babylonViewer.baseNode);
+        this.lineMesh.setParent(RealityBoxCollab.instance.babylonViewer.baseNode);
 
-        this.line.material = this.mat;
+        this.lineMesh.material = this.mat;
     }
 
     override onDeactivate(): void {

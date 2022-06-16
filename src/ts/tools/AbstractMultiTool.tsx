@@ -40,15 +40,19 @@ export abstract class AbstractMultiTool extends AbstractTool {
     this.render();
   }
 
+  override onDeactivate(): void {
+    ReactDOM.render(<></>, this.element);
+  }
+
   private render(): void {
     ReactDOM.render(this.createElement(), this.element);
     this.onSubToolSwitched(this.activeTool);
   }
 
-  override onDeactivate(): void {
-    ReactDOM.render(<></>, this.element);
-  }
-
+  /**
+   * Called when switching between tools
+   * @param subtool The tool which is now active
+   */
   abstract onSubToolSwitched(subtool: SubTool): void;
 }
 
