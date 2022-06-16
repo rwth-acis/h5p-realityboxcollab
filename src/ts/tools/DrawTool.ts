@@ -1,10 +1,7 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { MaterialHelper, StandardMaterial } from "@babylonjs/core/Legacy/legacy";
-import { CustomMaterial, MixMaterial } from "@babylonjs/materials";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
-import { AbstractTool } from "./AbstractTool";
 
 
 export class DrawTool extends AbstractMultiTool {
@@ -75,6 +72,7 @@ export class DrawTool extends AbstractMultiTool {
         this.texture.update();
 
         const meshes = model.getChildMeshes();
+        console.log(meshes[0].material);
         meshes.forEach(m => m.material = mat);
     }
 
@@ -115,10 +113,6 @@ export class DrawTool extends AbstractMultiTool {
         this.lineMesh.setParent(RealityBoxCollab.instance.babylonViewer.baseNode);
 
         this.lineMesh.material = this.mat;
-    }
-
-    override onDeactivate(): void {
-
     }
 
     override onRoomChanged(): void {

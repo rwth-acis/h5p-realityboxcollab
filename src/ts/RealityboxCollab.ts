@@ -84,11 +84,12 @@ export class RealityBoxCollab {
         this.guiElements.forEach(e => e.init());
 
         let a = this.realitybox.viewer._babylonBox.getAnnotations();
-        this.realitybox.viewer._babylonBox.addAnnotation({
-            content: a[0].content,
-            normalRef: new BABYLON.Vector3(0, 1, 0),
-            position: new BABYLON.Vector3()
-        });
+        if (a.length > 0)
+            this.realitybox.viewer._babylonBox.addAnnotation({
+                content: a[0].content,
+                normalRef: new BABYLON.Vector3(0, 1, 0),
+                position: new BABYLON.Vector3()
+            });
 
         this.room = this.localRoom = new Room(this.getListeners(), {
             name: "Local Room",
@@ -99,4 +100,5 @@ export class RealityBoxCollab {
     getListeners(): NetworkListener[] {
         return [...this.guiElements, this.babylonViewer];
     }
+
 }

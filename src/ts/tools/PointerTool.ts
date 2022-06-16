@@ -92,6 +92,7 @@ export class PointerTool extends AbstractMultiTool {
             this.currentRoom.user.pointer = undefined;
             this.currentRoom.onUserUpdated();
         }
+        super.onDeactivate();
     }
 
     override onRoomChanged(): void {
