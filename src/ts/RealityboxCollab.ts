@@ -16,6 +16,7 @@ import { ARTool } from './tools/viewer/ARTool';
 import { FirstPersonTool } from './tools/viewer/FirstPersonTool';
 import { OrbitTool } from './tools/viewer/OrbitTool';
 import { VRTool } from './tools/viewer/VRTool';
+import { NormalViewMode, PaintViewMode, WireframeViewMode } from "./tools/viewModes/ViewModes";
 import { Utils } from './utils/Utils';
 
 
@@ -63,8 +64,9 @@ export class RealityBoxCollab {
     }
 
     buildComponents(container: JQuery): void {
+        let drawTool = new DrawTool(this, container);
         let toolbar = new Toolbar(container, "collabToolbar", false, [
-            new MoveTool(this, container), new PointerTool(this, container), new AnnotationTool(), new DrawTool(this, container)
+            new MoveTool(this, container), new PointerTool(this, container), new AnnotationTool(), drawTool
         ]);
 
         let viewTools = [new OrbitTool(), new VRTool(this.babylonViewer)];
@@ -72,9 +74,12 @@ export class RealityBoxCollab {
         if (Utils.isMobile) viewTools = [...viewTools, new ARTool(this.babylonViewer)];
 
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
+        let viewModesToolbar = new Toolbar(container, "collabViewModeToolbar", true, [
+            new NormalViewMode(this.babylonViewer), new PaintViewMode(this.babylonViewer, drawTool), new WireframeViewMode(this.babylonViewer)
+        ]);
 
         this.chat = new Chat(container);
-        this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(this, container)];
+        this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(this, container), viewModesToolbar];
         this.babylonViewer = new BabylonViewer(this, toolbar);
         this.guiElements.forEach(e => e.init());
 
