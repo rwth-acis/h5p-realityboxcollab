@@ -1,12 +1,11 @@
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import * as Y from "yjs";
 import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
+import { Utils } from "../utils/Utils";
 import { Toolbar } from "./Toolbar";
 import { XrGui } from "./XrGui";
-import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { Utils } from "../utils/Utils";
-import { Vector3 } from "@babylonjs/core/Legacy/legacy";
 
 /**
  * This class represents all important logic which has to do with the babylon scene, which is not in its own tool
@@ -24,12 +23,12 @@ export class BabylonViewer extends NetworkListener {
     xrGui: XrGui;
     baseNode: BABYLON.TransformNode;
 
-    constructor(toolbar: Toolbar) {
+    constructor(private instance: RealityBoxCollab, toolbar: Toolbar) {
         super();
 
-        this.models = [RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env];
+        this.models = [instance.realitybox.viewer._babylonBox.model.env];
 
-        this.scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        this.scene = instance.realitybox.viewer._babylonBox.scene;
         this.baseNode = new BABYLON.TransformNode("Base Node", this.scene);
         for (let model of this.models) {
             let node = new BABYLON.TransformNode("Parent Node for " + model.name, this.scene);
@@ -58,7 +57,7 @@ export class BabylonViewer extends NetworkListener {
             m.scaling.scaleInPlace(BabylonViewer.WORLD_SIZE / max.subtract(min).y);
         }
 
-        const cam = RealityBoxCollab.instance.realitybox.viewer._babylonBox.camera.babylonObj;
+        const cam = this.instance.realitybox.viewer._babylonBox.camera.babylonObj;
         cam.lowerRadiusLimit = 0.05 * BabylonViewer.WORLD_SIZE;
         cam.upperRadiusLimit = 30 * BabylonViewer.WORLD_SIZE;
         cam.speed = 0.2 * BabylonViewer.WORLD_SIZE; 

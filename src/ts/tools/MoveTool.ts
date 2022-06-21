@@ -1,12 +1,12 @@
-import { RealityBoxCollab } from "../RealityboxCollab";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { RealityBoxCollab } from "../RealityboxCollab";
 
 export class MoveTool extends AbstractMultiTool {
 
     gizmoManager: BABYLON.GizmoManager;
 
-    constructor(container: JQuery) {
+    constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Move Tool", "fa-solid fa-arrows-up-down-left-right",
             container,
             [
@@ -18,8 +18,8 @@ export class MoveTool extends AbstractMultiTool {
     }
 
     override onSubToolSwitched(tool: SubTool): void {
-        const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
-        const mesh: BABYLON.Mesh = RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env;
+        const scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
+        const mesh: BABYLON.Mesh = this.instance.realitybox.viewer._babylonBox.model.env;
 
         if (!this.gizmoManager) {
             let layer = new BABYLON.UtilityLayerRenderer(scene); // Fixes unknown bug in babylonjs

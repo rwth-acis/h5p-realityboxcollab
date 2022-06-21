@@ -1,13 +1,13 @@
 import { WebsocketProvider } from "y-websocket";
 import { NetworkListener } from "./NetworkListener";
 import { RoomInformation } from "./RoomManager";
-import { RealityBoxCollab } from "../RealityboxCollab";
 import { Chat } from "../gui/Chat";
 import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
 import   * as Y from "yjs";
 import { DEFAULT_SETTINGS, RoomSettings } from "./RoomSettings";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { RealityBoxCollab } from "../RealityboxCollab";
 
 export class Room {
 
@@ -26,12 +26,13 @@ export class Room {
 
     /**
      * Create a new room
+     * @param instance Reference to the RealityBoxCollab instance
      * @param listeners The listeners which will be notified on room change
      * @param roomInfo The room info for the room to create or join
      * @param isCreator Whether this user is the creator of the room
      * @param isLocal Whether this room is a local / pseudo room
      */
-    constructor(private listeners: NetworkListener[], public roomInfo: RoomInformation, public isCreator: boolean, public isLocal: boolean) {
+    constructor(private instance: RealityBoxCollab, private listeners: NetworkListener[], public roomInfo: RoomInformation, public isCreator: boolean, public isLocal: boolean) {
         this.doc = new Y.Doc();
 
         if (!isLocal) {
@@ -108,8 +109,8 @@ export class Room {
         if (this.hostUpdater) {
             this.hostUpdater.clear();
         }
-        RealityBoxCollab.instance.room = RealityBoxCollab.instance.localRoom;
-        RealityBoxCollab.instance.room.onConnect();
+        this.instance.room = this.instance.localRoom;
+        this.instance.room.onConnect();
     }
 
     /**
@@ -129,7 +130,7 @@ export class Room {
      * @param msg The message to send
      */
     sendRoomMessage(msg: string): void {
-        RealityBoxCollab.instance.chat.sendMessage(Chat.createMessage(msg, "Room " + this.roomInfo.name));
+        this.instance.chat.sendMessage(Chat.createMessage(msg, "Room " + this.roomInfo.name));
     }
 
     private askUsername(): string {

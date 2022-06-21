@@ -1,7 +1,7 @@
-import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { BabylonViewer } from "../../gui/BabylonViewer";
+import { RealityBoxCollab } from "../../RealityboxCollab";
 
 export class FirstPersonTool extends AbstractTool {
 
@@ -24,12 +24,12 @@ export class FirstPersonTool extends AbstractTool {
     moveable: boolean;
     cursor: boolean;
 
-    constructor() {
+    constructor(private instance: RealityBoxCollab) {
         super("First Person Tool", "fa-solid fa-eye");
     }
 
     override onActivate(): void {
-        const scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        const scene = this.instance.realitybox.viewer._babylonBox.scene;
         const oldCamera = scene.cameras[0];
 
         if (!this.camera) {
@@ -46,7 +46,7 @@ export class FirstPersonTool extends AbstractTool {
     }
 
     createComponents(): void {
-        let scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        let scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
 
         this.camera = new BABYLON.FreeCamera("First Person Camera", new BABYLON.Vector3(), scene, false);
         this.camera.minZ = 0;
@@ -54,14 +54,14 @@ export class FirstPersonTool extends AbstractTool {
         scene.registerBeforeRender(() => {
             if (!this.active || !this.moveable) {
                 if (this.cursor) {
-                    RealityBoxCollab.instance.realitybox.viewer._$canvas.removeClass("nocursor");
+                    this.instance.realitybox.viewer._$canvas.removeClass("nocursor");
                     this.cursor = false;
                 }
                 return scene;
             }
 
             this.cursor = true;
-            RealityBoxCollab.instance.realitybox.viewer._$canvas.addClass("nocursor");
+            this.instance.realitybox.viewer._$canvas.addClass("nocursor");
 
             let dir = new BABYLON.Vector3(0, 0, 0);
 
@@ -118,7 +118,7 @@ export class FirstPersonTool extends AbstractTool {
     }
 
     override onDeactivate(): void {
-        const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        const scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
         scene.activeCamera = scene.cameras[0];
         // Reactivate camera
         (scene.cameras[0].inputs.attached.pointers as any).buttons = [0, 1, 2];

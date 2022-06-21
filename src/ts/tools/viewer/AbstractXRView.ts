@@ -1,6 +1,6 @@
-import { RealityBoxCollab } from "../../RealityboxCollab";
-import { AbstractTool } from "../AbstractTool";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { BabylonViewer } from "../../gui/BabylonViewer";
+import { AbstractTool } from "../AbstractTool";
 
 /**
  * WebXR will not work properly if not accessed via https or localhost. 
@@ -10,7 +10,7 @@ import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 export abstract class AbstractXRView extends AbstractTool {
     experience: BABYLON.WebXRDefaultExperience;
 
-    constructor(name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType,
+    constructor(private babylonViewer: BabylonViewer, name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType,
         public worldScale: number = 1, public baseScale: number = 1) {
         super(name, icon);
     }
@@ -24,13 +24,13 @@ export abstract class AbstractXRView extends AbstractTool {
         }
 
         this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
-        RealityBoxCollab.instance.babylonViewer.onXRStateChanged(true);
-        RealityBoxCollab.instance.babylonViewer.scaleWorld(this.worldScale, this.baseScale);
+        this.babylonViewer.onXRStateChanged(true);
+        this.babylonViewer.scaleWorld(this.worldScale, this.baseScale);
         this.onXREnter();
     }
 
     async createXR() {
-        const scene: BABYLON.Scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+        const scene: BABYLON.Scene = this.babylonViewer.scene;
 
         await scene.createDefaultXRExperienceAsync({
         }).then(ex => {
@@ -47,8 +47,8 @@ export abstract class AbstractXRView extends AbstractTool {
     override onDeactivate(): void {
         if (this.experience) {
             this.experience.baseExperience.exitXRAsync();
-            RealityBoxCollab.instance.babylonViewer.onXRStateChanged(false);
-            RealityBoxCollab.instance.babylonViewer.scaleWorld(1 / this.worldScale, this.baseScale);
+            this.babylonViewer.onXRStateChanged(false);
+            this.babylonViewer.scaleWorld(1 / this.worldScale, this.baseScale);
             this.onXRExit();
         }
         this.experience = null;

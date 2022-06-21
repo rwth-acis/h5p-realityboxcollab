@@ -23,7 +23,6 @@ declare let H5P: any;
 H5P = H5P || {};
 
 export class RealityBoxCollab {
-    static instance: RealityBoxCollab;
 
     realitybox: Realitybox;
     options: any;
@@ -36,10 +35,6 @@ export class RealityBoxCollab {
 
     constructor(options: any, private id: any) {
         this.options = options.realityboxcollab;
-        if (RealityBoxCollab.instance) {
-            throw new Error("Instance already definied");
-        }
-        RealityBoxCollab.instance = this;
 
         this.roomManager = new RoomManager();
     }
@@ -69,18 +64,18 @@ export class RealityBoxCollab {
 
     buildComponents(container: JQuery): void {
         let toolbar = new Toolbar(container, "collabToolbar", false, [
-            new MoveTool(container), new PointerTool(container), new AnnotationTool(), new DrawTool(container)
+            new MoveTool(this, container), new PointerTool(this, container), new AnnotationTool(), new DrawTool(this, container)
         ]);
 
-        let viewTools = [new OrbitTool(), new VRTool()];
-        if (!Utils.isMobile) viewTools = [new FirstPersonTool(), ...viewTools];
-        if (Utils.isMobile) viewTools = [...viewTools, new ARTool()];
+        let viewTools = [new OrbitTool(), new VRTool(this.babylonViewer)];
+        if (!Utils.isMobile) viewTools = [new FirstPersonTool(this), ...viewTools];
+        if (Utils.isMobile) viewTools = [...viewTools, new ARTool(this.babylonViewer)];
 
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
 
         this.chat = new Chat(container);
-        this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(container)];
-        this.babylonViewer = new BabylonViewer(toolbar);
+        this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(this, container)];
+        this.babylonViewer = new BabylonViewer(this, toolbar);
         this.guiElements.forEach(e => e.init());
 
         let a = this.realitybox.viewer._babylonBox.getAnnotations();
@@ -91,7 +86,7 @@ export class RealityBoxCollab {
                 position: new BABYLON.Vector3()
             });
 
-        this.room = this.localRoom = new Room(this.getListeners(), {
+        this.room = this.localRoom = new Room(this, this.getListeners(), {
             name: "Local Room",
             password: ""
         }, true, true);

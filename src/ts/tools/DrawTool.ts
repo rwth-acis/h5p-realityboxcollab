@@ -15,19 +15,19 @@ export class DrawTool extends AbstractMultiTool {
     initTools: boolean = false;
     texture: BABYLON.DynamicTexture;
 
-    constructor(container: JQuery) {
+    constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Draw Tool", "fa-solid fa-pen", container, [
             { name: "Mat Paint", icon: "fa-solid fa-paintbrush" },
             { name: "Air Paint", icon: "fa-solid fa-compass-drafting" }
         ], s => s.canUsePenTool);
 
-        this.mat = new BABYLON.StandardMaterial("matDrawPen", RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene);
+        this.mat = new BABYLON.StandardMaterial("matDrawPen", this.instance.realitybox.viewer._babylonBox.scene);
         this.mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
     }
 
     onSubToolSwitched(subtool: SubTool): void {
         if (!this.initTools) {
-            const scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
+            const scene = this.instance.realitybox.viewer._babylonBox.scene;
             this.initMatPaint();
             scene.onPointerObservable.add(e => {
                 if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0) {
@@ -53,8 +53,8 @@ export class DrawTool extends AbstractMultiTool {
     // https://www.babylonjs-playground.com/#9MPPSY#5
     // https://doc.babylonjs.com/divingDeeper/materials/using/multiMaterials
     initMatPaint() {
-        const scene = RealityBoxCollab.instance.realitybox.viewer._babylonBox.scene;
-        const model = RealityBoxCollab.instance.realitybox.viewer._babylonBox.model.env;
+        const scene = this.instance.realitybox.viewer._babylonBox.scene;
+        const model = this.instance.realitybox.viewer._babylonBox.model.env;
 
         this.texture = new BABYLON.DynamicTexture("dynTex1", {
             width: 512,
@@ -110,7 +110,7 @@ export class DrawTool extends AbstractMultiTool {
             radius: 0.01,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         }, scene);
-        this.lineMesh.setParent(RealityBoxCollab.instance.babylonViewer.baseNode);
+        this.lineMesh.setParent(this.instance.babylonViewer.baseNode);
 
         this.lineMesh.material = this.mat;
     }

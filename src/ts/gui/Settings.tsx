@@ -9,7 +9,7 @@ import React = require('react');
 
 export class Settings extends AbstractGuiElement {
 
-  constructor(container: JQuery) {
+  constructor(private instance: RealityBoxCollab, container: JQuery) {
     super(container);
   }
 
@@ -85,7 +85,7 @@ export class Settings extends AbstractGuiElement {
   }
 
   joinRoom(create: boolean) {
-    const manager = RealityBoxCollab.instance.roomManager;
+    const manager = this.instance.roomManager;
     let info: RoomInformation;
 
     if (create) {
@@ -106,7 +106,7 @@ export class Settings extends AbstractGuiElement {
     }
 
     if (info) {
-      RealityBoxCollab.instance.room = new Room(RealityBoxCollab.instance.getListeners(), info, create, false);
+      this.instance.room = new Room(this.instance, this.instance.getListeners(), info, create, false);
     }
   }
 }
