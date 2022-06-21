@@ -43,6 +43,7 @@ export class Toolbar extends AbstractGuiElement {
             this.activateTool(tool);
         } else if (!this.alwaysActive) { // Toggle
             this.deactivate(tool);
+            super.updateView();
         }
     }
 
