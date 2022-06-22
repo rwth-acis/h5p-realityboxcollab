@@ -1,9 +1,9 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { RealityBoxCollab } from "../RealityboxCollab";
-import { InputManager } from "../utils/InputManager";
 import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
 import { OrbitTool } from "./viewer/OrbitTool";
+import { PaintViewMode } from "./viewModes/ViewModes";
 
 
 export class DrawTool extends AbstractMultiTool {
@@ -15,9 +15,9 @@ export class DrawTool extends AbstractMultiTool {
     mat: BABYLON.StandardMaterial;
     draw: boolean = false;
     initTools: boolean = false;
-    texture: BABYLON.DynamicTexture;
+    
 
-    constructor(private instance: RealityBoxCollab, container: JQuery, private orbitTool: OrbitTool) {
+    constructor(private instance: RealityBoxCollab, container: JQuery, private orbitTool: OrbitTool, private paintViewMode: PaintViewMode) {
         super("Draw Tool", "fa-solid fa-pen", container, [
             { name: "Mat Paint", icon: "fa-solid fa-paintbrush" },
             { name: "Air Paint", icon: "fa-solid fa-compass-drafting" }
@@ -30,7 +30,6 @@ export class DrawTool extends AbstractMultiTool {
     onSubToolSwitched(subtool: SubTool): void {
         if (!this.initTools) {
             const scene = this.instance.realitybox.viewer._babylonBox.scene;
-            this.initMatPaint();
             scene.onPointerObservable.add(e => {
                 if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0) {
                     this.draw = true;
@@ -58,31 +57,6 @@ export class DrawTool extends AbstractMultiTool {
         }
     }
 
-    // https://www.babylonjs-playground.com/#9MPPSY#5
-    // https://doc.babylonjs.com/divingDeeper/materials/using/multiMaterials
-    initMatPaint() {
-        const scene = this.instance.realitybox.viewer._babylonBox.scene;
-        const model = this.instance.realitybox.viewer._babylonBox.model.env;
-
-        this.texture = new BABYLON.DynamicTexture("dynTex1", {
-            width: 512,
-            height: 512
-        }, scene, true);
-        let mat = new BABYLON.StandardMaterial("texMat", scene);
-        mat.transparencyMode = 3; // Alpha blend
-        mat.diffuseTexture = this.texture;
-        mat.backFaceCulling = false;
-        const size = this.texture.getSize();
-
-        const ctx = this.texture.getContext();
-        ctx.fillStyle = "#00ff00";
-        ctx.fillRect(0, 0, size.width, size.height);
-        this.texture.update();
-
-        const meshes = model.getChildMeshes();
-        console.log(meshes[0].material);
-        meshes.forEach(m => m.material = mat);
-    }
 
     drawAir(scene: BABYLON.Scene) {
         let pick = scene.pick(scene.pointerX, scene.pointerY);
@@ -99,14 +73,14 @@ export class DrawTool extends AbstractMultiTool {
         let texCoordinates = pick.getTextureCoordinates();
         if (!texCoordinates) return;
 
-        const ctx = this.texture.getContext();
-        const size = this.texture.getSize();
+        const ctx = this.paintViewMode.texture.getContext();
+        const size = this.paintViewMode.texture.getSize();
 
         ctx.beginPath();
         ctx.arc(texCoordinates.x * size.width, size.height - texCoordinates.y * size.height, 5, 0, 2 * Math.PI, false);
         ctx.fillStyle = "#ff0000"; // Red
         ctx.fill();
-        this.texture.update();
+        this.paintViewMode.texture.update();
     }
 
     updateLine(scene: BABYLON.Scene): void {

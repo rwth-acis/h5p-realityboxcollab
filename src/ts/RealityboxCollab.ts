@@ -70,8 +70,9 @@ export class RealityBoxCollab {
         // Some tools need reference to others
         this.babylonViewer = new BabylonViewer(this);
 
+        let paintViewMode = new PaintViewMode(this.babylonViewer);
         let orbitTool = new OrbitTool(this);
-        let drawTool = new DrawTool(this, container, orbitTool);
+        let drawTool = new DrawTool(this, container, orbitTool, paintViewMode);
 
         let toolbar = new Toolbar(container, "collabToolbar", false, [
             new MoveTool(this, container), new PointerTool(this, container), new AnnotationTool(), drawTool
@@ -83,7 +84,7 @@ export class RealityBoxCollab {
 
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
         let viewModesToolbar = new Toolbar(container, "collabViewModeToolbar", true, [
-            new NormalViewMode(this.babylonViewer), new PaintViewMode(this.babylonViewer, drawTool), new WireframeViewMode(this.babylonViewer)
+            new NormalViewMode(this.babylonViewer), paintViewMode, new WireframeViewMode(this.babylonViewer)
         ]);
 
         this.chat = new Chat(container);
