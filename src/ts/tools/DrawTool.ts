@@ -32,8 +32,7 @@ export class DrawTool extends AbstractMultiTool {
             const scene = this.instance.realitybox.viewer._babylonBox.scene;
             this.initMatPaint();
             scene.onPointerObservable.add(e => {
-                if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0
-                    && (!this.orbitTool.active || this.instance.inputManager.isKeyDown(InputManager.KEY_D))) {
+                if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0) {
                     this.draw = true;
                 }
                 else if (e.type == BABYLON.PointerEventTypes.POINTERUP && e.event.button == 0) {
@@ -50,6 +49,12 @@ export class DrawTool extends AbstractMultiTool {
                 }
             });
             this.initTools = true;
+        }
+
+        // Disable input of orbit tool while this tool is active
+        if (this.orbitTool.active) {
+            if (subtool) this.orbitTool.forceDisableInput();
+            else this.orbitTool.enableInput();
         }
     }
 

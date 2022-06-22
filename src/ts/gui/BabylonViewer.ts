@@ -20,10 +20,10 @@ export class BabylonViewer extends NetworkListener {
     remoteModelInfo: Y.Map<ModelInformation>;
     localModelInfo: Map<string, ModelInformation> = new Map();
     isInXR: boolean = false;
-    xrGui: XrGui;
+    xrGui: XrGui[] = [];
     baseNode: BABYLON.TransformNode;
 
-    constructor(private instance: RealityBoxCollab, toolbar: Toolbar) {
+    constructor(private instance: RealityBoxCollab) {
         super();
 
         this.models = [instance.realitybox.viewer._babylonBox.model.env];
@@ -38,11 +38,13 @@ export class BabylonViewer extends NetworkListener {
         }
         this.adjustModelScale();
 
-        this.xrGui = new XrGui(toolbar, this.scene);
-
         this.scene.registerBeforeRender(() => {
             this.onRender();
         });
+    }
+
+    registerToolbar(toolbar: Toolbar) {
+        this.xrGui.push(new XrGui(toolbar, this.scene));
     }
 
     adjustModelScale() {
@@ -68,7 +70,7 @@ export class BabylonViewer extends NetworkListener {
 
     onXRStateChanged(newState: boolean): void {
         this.isInXR = newState;
-        this.xrGui.onXRStateChanged(newState);
+        this.xrGui.forEach(g => g.onXRStateChanged(newState));
     }
 
     /**

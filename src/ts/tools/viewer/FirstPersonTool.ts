@@ -31,8 +31,6 @@ export class FirstPersonTool extends AbstractTool {
         this.camera.position = oldCamera.getDirection(BABYLON.Vector3.Forward()).scale(-3);
         this.camera.rotation = oldCamera.absoluteRotation.toEulerAngles();
         this.camera.rotation.z = 0;
-        // Avoid camera input when inactive (even setEnabled does not disable input)
-        (oldCamera.inputs.attached.pointers as any).buttons = [];
         scene.activeCamera = this.camera;
     }
 
@@ -98,7 +96,7 @@ export class FirstPersonTool extends AbstractTool {
         const scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
         scene.activeCamera = scene.cameras[0];
         // Reactivate camera
-        (scene.cameras[0].inputs.attached.pointers as any).buttons = [0, 1, 2];
+        
     }
 
     override onRoomChanged(): void {

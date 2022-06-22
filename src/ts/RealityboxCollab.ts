@@ -7,7 +7,8 @@ import { Toolbar } from './gui/Toolbar';
 import { NetworkListener } from './networking/NetworkListener';
 import { Room } from './networking/Room';
 import { RoomManager } from './networking/RoomManager';
-import { Realitybox, RealityboxAnnotation, RealityBoxEditor } from './RealityboxTypes';
+import { Realitybox } from './RealityboxTypes';
+import { AbstractTool } from "./tools/AbstractTool";
 import { AnnotationTool } from './tools/AnnotationTool';
 import { DrawTool } from './tools/DrawTool';
 import { MoveTool } from './tools/MoveTool';
@@ -67,14 +68,16 @@ export class RealityBoxCollab {
 
     buildComponents(container: JQuery): void {
         // Some tools need reference to others
-        let orbitTool = new OrbitTool();
+        this.babylonViewer = new BabylonViewer(this);
+
+        let orbitTool = new OrbitTool(this);
         let drawTool = new DrawTool(this, container, orbitTool);
 
         let toolbar = new Toolbar(container, "collabToolbar", false, [
             new MoveTool(this, container), new PointerTool(this, container), new AnnotationTool(), drawTool
         ]);
 
-        let viewTools = [orbitTool, new VRTool(this.babylonViewer)];
+        let viewTools: AbstractTool[] = [orbitTool, new VRTool(this.babylonViewer)];
         if (!Utils.isMobile) viewTools = [new FirstPersonTool(this), ...viewTools];
         if (Utils.isMobile) viewTools = [...viewTools, new ARTool(this.babylonViewer)];
 
@@ -85,9 +88,9 @@ export class RealityBoxCollab {
 
         this.chat = new Chat(container);
         this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(this, container), viewModesToolbar];
-        this.babylonViewer = new BabylonViewer(this, toolbar);
         this.inputManager = new InputManager(this.babylonViewer);
         this.guiElements.forEach(e => e.init());
+        this.babylonViewer.registerToolbar(toolbar);
 
         let a = this.realitybox.viewer._babylonBox.getAnnotations();
         if (a.length > 0)
