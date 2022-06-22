@@ -4,7 +4,7 @@ import { AbstractXRView } from "./AbstractXRView";
 export class ARTool extends AbstractXRView {
     
     constructor(babylonViewer: BabylonViewer) {
-        super(babylonViewer, "AR View", "fa-solid fa-mobile-screen", "immersive-ar", "unbounded", 0.05, 0.5);
+        super(babylonViewer, "AR View", "fa-solid fa-mobile-screen", "immersive-ar", "unbounded");
     }
 
     onXREnter(): void {

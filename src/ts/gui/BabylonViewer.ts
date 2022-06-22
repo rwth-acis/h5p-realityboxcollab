@@ -66,11 +66,6 @@ export class BabylonViewer extends NetworkListener {
         cam.wheelPrecision = 50 * BabylonViewer.WORLD_SIZE;
     }
 
-    scaleWorld(modelScale: number, baseScale: number): void {
-        //this.modelNodes.forEach(n => n.scaling.scaleInPlace(modelScale));
-        //this.baseNode.scaling.scaleInPlace(baseScale);
-    }
-
     onXRStateChanged(newState: boolean): void {
         this.isInXR = newState;
         this.xrGui.onXRStateChanged(newState);

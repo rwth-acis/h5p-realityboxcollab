@@ -10,8 +10,7 @@ import { AbstractTool } from "../AbstractTool";
 export abstract class AbstractXRView extends AbstractTool {
     experience: BABYLON.WebXRDefaultExperience;
 
-    constructor(private babylonViewer: BabylonViewer, name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType,
-        public worldScale: number = 1, public baseScale: number = 1) {
+    constructor(private babylonViewer: BabylonViewer, name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType) {
         super(name, icon);
     }
 
@@ -25,7 +24,6 @@ export abstract class AbstractXRView extends AbstractTool {
 
         this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
         this.babylonViewer.onXRStateChanged(true);
-        this.babylonViewer.scaleWorld(this.worldScale, this.baseScale);
         this.onXREnter();
     }
 
@@ -48,7 +46,6 @@ export abstract class AbstractXRView extends AbstractTool {
         if (this.experience) {
             this.experience.baseExperience.exitXRAsync();
             this.babylonViewer.onXRStateChanged(false);
-            this.babylonViewer.scaleWorld(1 / this.worldScale, this.baseScale);
             this.onXRExit();
         }
         this.experience = null;

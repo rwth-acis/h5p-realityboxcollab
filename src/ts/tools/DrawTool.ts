@@ -1,7 +1,9 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { RealityBoxCollab } from "../RealityboxCollab";
+import { InputManager } from "../utils/InputManager";
 import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
+import { OrbitTool } from "./viewer/OrbitTool";
 
 
 export class DrawTool extends AbstractMultiTool {
@@ -15,7 +17,7 @@ export class DrawTool extends AbstractMultiTool {
     initTools: boolean = false;
     texture: BABYLON.DynamicTexture;
 
-    constructor(private instance: RealityBoxCollab, container: JQuery) {
+    constructor(private instance: RealityBoxCollab, container: JQuery, private orbitTool: OrbitTool) {
         super("Draw Tool", "fa-solid fa-pen", container, [
             { name: "Mat Paint", icon: "fa-solid fa-paintbrush" },
             { name: "Air Paint", icon: "fa-solid fa-compass-drafting" }
@@ -30,7 +32,8 @@ export class DrawTool extends AbstractMultiTool {
             const scene = this.instance.realitybox.viewer._babylonBox.scene;
             this.initMatPaint();
             scene.onPointerObservable.add(e => {
-                if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0) {
+                if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0
+                    && (!this.orbitTool.active || this.instance.inputManager.isKeyDown(InputManager.KEY_D))) {
                     this.draw = true;
                 }
                 else if (e.type == BABYLON.PointerEventTypes.POINTERUP && e.event.button == 0) {

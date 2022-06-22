@@ -17,6 +17,7 @@ import { FirstPersonTool } from './tools/viewer/FirstPersonTool';
 import { OrbitTool } from './tools/viewer/OrbitTool';
 import { VRTool } from './tools/viewer/VRTool';
 import { NormalViewMode, PaintViewMode, WireframeViewMode } from "./tools/viewModes/ViewModes";
+import { InputManager } from "./utils/InputManager";
 import { Utils } from './utils/Utils';
 
 
@@ -33,6 +34,7 @@ export class RealityBoxCollab {
     room: Room;
     localRoom: Room;
     babylonViewer: BabylonViewer;
+    inputManager: InputManager;
 
     constructor(options: any, private id: any) {
         this.options = options.realityboxcollab;
@@ -64,12 +66,15 @@ export class RealityBoxCollab {
     }
 
     buildComponents(container: JQuery): void {
-        let drawTool = new DrawTool(this, container);
+        // Some tools need reference to others
+        let orbitTool = new OrbitTool();
+        let drawTool = new DrawTool(this, container, orbitTool);
+
         let toolbar = new Toolbar(container, "collabToolbar", false, [
             new MoveTool(this, container), new PointerTool(this, container), new AnnotationTool(), drawTool
         ]);
 
-        let viewTools = [new OrbitTool(), new VRTool(this.babylonViewer)];
+        let viewTools = [orbitTool, new VRTool(this.babylonViewer)];
         if (!Utils.isMobile) viewTools = [new FirstPersonTool(this), ...viewTools];
         if (Utils.isMobile) viewTools = [...viewTools, new ARTool(this.babylonViewer)];
 
@@ -81,6 +86,7 @@ export class RealityBoxCollab {
         this.chat = new Chat(container);
         this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(this, container), viewModesToolbar];
         this.babylonViewer = new BabylonViewer(this, toolbar);
+        this.inputManager = new InputManager(this.babylonViewer);
         this.guiElements.forEach(e => e.init());
 
         let a = this.realitybox.viewer._babylonBox.getAnnotations();

@@ -2,17 +2,9 @@ import { AbstractTool } from "../AbstractTool";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { BabylonViewer } from "../../gui/BabylonViewer";
 import { RealityBoxCollab } from "../../RealityboxCollab";
+import { InputManager } from "../../utils/InputManager";
 
 export class FirstPersonTool extends AbstractTool {
-
-    // Key Constants
-    KEY_W = 87;
-    KEY_A = 65;
-    KEY_S = 83;
-    KEY_D = 68;
-    KEY_Q = 81;
-    KEY_E = 69;
-    KEY_SHIFT = 16;
 
     // Camera Settings
     moveSpeed: number = 1.2 * BabylonViewer.WORLD_SIZE;
@@ -20,7 +12,6 @@ export class FirstPersonTool extends AbstractTool {
     moveShiftFactor: number = 3;
 
     camera: BABYLON.FreeCamera;
-    pressedKeys: boolean[] = [];
     moveable: boolean;
     cursor: boolean;
 
@@ -65,23 +56,14 @@ export class FirstPersonTool extends AbstractTool {
 
             let dir = new BABYLON.Vector3(0, 0, 0);
 
-            this.computeDirection(dir, this.KEY_W, this.KEY_S, BABYLON.Vector3.Forward());
-            this.computeDirection(dir, this.KEY_D, this.KEY_A, BABYLON.Vector3.Right());
-            this.computeDirection(dir, this.KEY_E, this.KEY_Q, BABYLON.Vector3.Up());
+            this.computeDirection(dir, InputManager.KEY_W, InputManager.KEY_S, BABYLON.Vector3.Forward());
+            this.computeDirection(dir, InputManager.KEY_D, InputManager.KEY_A, BABYLON.Vector3.Right());
+            this.computeDirection(dir, InputManager.KEY_E, InputManager.KEY_Q, BABYLON.Vector3.Up());
 
-            dir = dir.normalize().scale(this.moveSpeed * (this.getKey(this.KEY_SHIFT) ? this.moveShiftFactor : 1)  / 50);
+            dir = dir.normalize().scale(this.moveSpeed * (this.instance.inputManager.isKeyDown(InputManager.KEY_SHIFT) ? this.moveShiftFactor : 1)  / 50);
             this.camera.position.addInPlaceFromFloats(dir.x, dir.y, dir.z);
 
             return scene;
-        });
-
-        scene.onKeyboardObservable.add((e) => {
-            if (e.type == BABYLON.KeyboardEventTypes.KEYDOWN) {
-                this.pressedKeys[e.event.keyCode] = true;
-            }
-            else if (e.type == BABYLON.KeyboardEventTypes.KEYUP) {
-                this.pressedKeys[e.event.keyCode] = false;
-            }
         });
 
         scene.onPointerObservable.add(e => {
@@ -102,15 +84,10 @@ export class FirstPersonTool extends AbstractTool {
         });
     }
 
-    getKey(code: number): boolean {
-        if (this.pressedKeys[code] == undefined) this.pressedKeys[code] = false;
-        return this.pressedKeys[code];
-    }
-
     computeDirection(dir: BABYLON.Vector3, a: number, b: number, ref: BABYLON.Vector3): void {
-        if (this.getKey(a) !== this.getKey(b)) { // A xor D
+        if (this.instance.inputManager.isKeyDown(a) !== this.instance.inputManager.isKeyDown(b)) { // A xor D
             let v = this.camera.getDirection(ref);
-            if (this.pressedKeys[b]) {
+            if (this.instance.inputManager.isKeyDown(b)) {
                 v = v.negate();
             }
             dir.addInPlace(v);
