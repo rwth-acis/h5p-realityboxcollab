@@ -5,7 +5,7 @@ import { DrawTool } from "../DrawTool";
 
 export class NormalViewMode extends AbstractTool {
 
-    constructor(private babylonView: BabylonViewer) {
+    constructor(private babylonViewer: BabylonViewer) {
         super("Normal", "fa-solid fa-earth-americas");
     }
 
@@ -21,34 +21,28 @@ export class PaintViewMode extends AbstractTool {
     material: BABYLON.StandardMaterial;
     oldMaterials: Map<BABYLON.AbstractMesh, BABYLON.Material> = new Map();
 
-    constructor(private babylonView: BabylonViewer) {
+    constructor(private babylonViewer: BabylonViewer) {
         super("Paint", "fa-solid fa-paintbrush");
         this.initPaint();
     }
 
-    onActivate(): void { 
-        for (let model of this.babylonView.models) {
-            for (let mesh of model.getChildMeshes()) {
-                this.oldMaterials.set(mesh, mesh.material);
-                mesh.material = this.material;
-            }
-        }
+    onActivate(): void {
+        forMeshes(this.babylonViewer, mesh => {
+            this.oldMaterials.set(mesh, mesh.material);
+            mesh.material = this.material;
+        });
     }
 
-    onDeactivate(): void { 
-        for (let model of this.babylonView.models) {
-            for (let mesh of model.getChildMeshes()) {
-                mesh.material = this.oldMaterials.get(mesh);
-            }
-        }
+    onDeactivate(): void {
+        forMeshes(this.babylonViewer, mesh => mesh.material = this.oldMaterials.get(mesh));
     }
 
-    onRoomChanged(): void { 
+    onRoomChanged(): void {
 
     }
 
     private initPaint() {
-        const scene = this.babylonView.scene;
+        const scene = this.babylonViewer.scene;
 
         this.texture = new BABYLON.DynamicTexture("dynTex1", {
             width: 512,
@@ -70,12 +64,26 @@ export class PaintViewMode extends AbstractTool {
 
 export class WireframeViewMode extends AbstractTool {
 
-    constructor(private babylonView: BabylonViewer) {
+    constructor(private babylonViewer: BabylonViewer) {
         super("Wireframe", "fa-solid fa-border-none");
     }
 
-    onActivate(): void { }
-    onDeactivate(): void { }
+    onActivate(): void { 
+        forMeshes(this.babylonViewer, m => m.material.wireframe = true);
+    }
+
+    onDeactivate(): void { 
+        forMeshes(this.babylonViewer, m => m.material.wireframe = false);
+    }
+
     onRoomChanged(): void { }
 
+}
+
+function forMeshes(babylonViewer: BabylonViewer, callback: (mesh: BABYLON.AbstractMesh) => void) {
+    for (let model of babylonViewer.models) {
+        for (let mesh of model.getChildMeshes()) {
+            callback(mesh);
+        }
+    }
 }
