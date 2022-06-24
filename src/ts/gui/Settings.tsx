@@ -9,6 +9,8 @@ import React = require('react');
 
 export class Settings extends AbstractGuiElement {
 
+  lastSize: number = 0;
+
   constructor(private instance: RealityBoxCollab, container: JQuery) {
     super(container);
   }
@@ -76,8 +78,10 @@ export class Settings extends AbstractGuiElement {
     super.updateView();
 
     this.currentRoom.users.observe((e) => {
-      if (e.changes.added.size > 0 || e.changes.deleted.size > 0)
+      if (this.currentRoom.users.size != this.lastSize) {
+        this.lastSize = this.currentRoom.users.size;
         super.updateView();
+      }
     });
   }
 

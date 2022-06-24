@@ -1,28 +1,26 @@
+import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { WebsocketProvider } from "y-websocket";
-import { NetworkListener } from "./NetworkListener";
-import { RoomInformation } from "./RoomManager";
+import * as Y from "yjs";
 import { Chat } from "../gui/Chat";
+import { RealityBoxCollab } from "../RealityboxCollab";
 import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
-import * as Y from "yjs";
-import { DEFAULT_SETTINGS, RoomSettings } from "./RoomSettings";
-import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { RealityBoxCollab } from "../RealityboxCollab";
+import { NetworkListener } from "./NetworkListener";
+import { RoomInformation, RoomManager } from "./RoomManager";
 
 export class Room {
 
+    /** The provider for the YJS room */
+    private wsProvider: WebsocketProvider;
+    /** The host updater. Only used if the user of this instance is the room host */
+    private hostUpdater: HostUpdater;
+    private manager: RoomManager
     /** The general shared document for this room */
     doc: Y.Doc;
     /** The user of this instance */
     user: User;
     /** All users of the current room (including the user of this instance) */
     users: Y.Map<User>;
-    /** The provider for the YJS room */
-    wsProvider: WebsocketProvider;
-    /** The host updater. Only used if the user of this instance is the room host */
-    hostUpdater: HostUpdater;
-    /** The settings for this room */
-    settings: RoomSettings;
 
     /**
      * Create a new room
@@ -34,6 +32,7 @@ export class Room {
      */
     constructor(private instance: RealityBoxCollab, private listeners: NetworkListener[], public roomInfo: RoomInformation, public isCreator: boolean, public isLocal: boolean) {
         this.doc = new Y.Doc();
+        this.manager = this.instance.roomManager;
 
         if (!isLocal) {
             this.wsProvider = new WebsocketProvider('ws://192.168.0.10:1234', "room:" + roomInfo.name, this.doc);
@@ -64,25 +63,19 @@ export class Room {
         };
         this.onUserUpdated();
 
-        if (this.isCreator) {
-            this.settings = DEFAULT_SETTINGS;
-            this.onSettingsUpdated();
-        }
-        else {
-            this.settings = this.doc.getMap().get("settings") as RoomSettings;
-        }
-
-        this.doc.getMap().observe((e) => {
-            this.settings = this.doc.getMap().get("settings") as RoomSettings;
-            this.listeners.forEach(l => l.onSettingsChanged());
-        });
-
         for (let l of this.listeners) {
             l.currentRoom = this;
             l.onRoomChanged();
         }
 
         this.sendRoomMessage(`User ${this.user.username} joined the room`);
+
+        this.manager.rooms.observe(() => {
+            if (this.isLocal) return;
+
+            this.roomInfo = this.manager.getRoom(this.roomInfo.name);
+            this.listeners.forEach(l => l.onSettingsChanged());
+        });
 
         if (this.user.role == Role.HOST && !this.isLocal) {
             this.hostUpdater = new HostUpdater(this);
@@ -122,7 +115,7 @@ export class Room {
     }
 
     onSettingsUpdated(): void {
-        this.doc.getMap().set("settings", this.settings);
+        this.manager.updateRoom(this.roomInfo);
     }
 
     /**

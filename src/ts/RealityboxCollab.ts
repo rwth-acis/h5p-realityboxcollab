@@ -7,6 +7,7 @@ import { Toolbar } from './gui/Toolbar';
 import { NetworkListener } from './networking/NetworkListener';
 import { Room } from './networking/Room';
 import { RoomManager } from './networking/RoomManager';
+import { DEFAULT_SETTINGS } from "./networking/RoomSettings";
 import { Realitybox } from './RealityboxTypes';
 import { AbstractTool } from "./tools/AbstractTool";
 import { AnnotationTool } from './tools/AnnotationTool';
@@ -104,7 +105,8 @@ export class RealityBoxCollab {
 
         this.room = this.localRoom = new Room(this, this.getListeners(), {
             name: "Local Room",
-            password: ""
+            password: "",
+            settings: DEFAULT_SETTINGS
         }, true, true);
     }
 

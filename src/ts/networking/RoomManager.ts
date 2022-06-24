@@ -1,5 +1,6 @@
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
+import { DEFAULT_SETTINGS, RoomSettings } from "./RoomSettings";
 
 /**
  * The room manager is used to check whether rooms already exist and for password validation
@@ -42,9 +43,11 @@ export class RoomManager {
 
         let info: RoomInformation = {
             name: name,
-            password: password
+            password: password,
+            settings: DEFAULT_SETTINGS
         }
-        this.rooms.set(name, info);
+
+        this.updateRoom(info);
 
         return info;
     }
@@ -54,8 +57,12 @@ export class RoomManager {
      * @param name The name of the room
      * @returns The room or undefined if no such room exists
      */
-    getRoom(name: string) {
+    getRoom(name: string): RoomInformation {
         return this.rooms.get(name);
+    }
+
+    updateRoom(info: RoomInformation) {
+        this.rooms.set(info.name, info);
     }
 }
 
@@ -65,4 +72,5 @@ export class RoomManager {
 export interface RoomInformation {
     name: string;
     password: string;
+    settings: RoomSettings;
 }

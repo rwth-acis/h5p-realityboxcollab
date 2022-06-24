@@ -30,11 +30,11 @@ export class Chat extends AbstractGuiElement {
   }
 
   private canUse(): boolean {
-    if (!this.currentRoom.settings) {
+    if (!this.currentRoom.roomInfo.settings) {
       console.log("No settings... (Temp)");
       return true;
     }
-    return !this.currentRoom.isLocal && (this.currentRoom.settings.canUseChat || this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST);
+    return !this.currentRoom.isLocal && (this.currentRoom.roomInfo.settings.canUseChat || this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST);
   }
 
   override onRoomChanged(): void {

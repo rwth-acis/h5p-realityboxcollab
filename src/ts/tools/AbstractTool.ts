@@ -42,7 +42,7 @@ export abstract class AbstractTool extends NetworkListener {
         if (!this.setting) return true;
 
         return this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST
-            || this.setting(this.currentRoom.settings);
+            || this.setting(this.currentRoom.roomInfo.settings);
     };
 
     /**

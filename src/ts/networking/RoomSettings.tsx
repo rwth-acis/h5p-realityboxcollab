@@ -21,7 +21,7 @@ export class SettingsGuiElement {
             }
             {
                 this.type == SettingsType.Checkbox &&
-                <label><input type="checkbox" checked={this.getter(room.settings) as boolean} onChange={() => { this.setter(room.settings, !(this.getter(room.settings) as boolean)); room.onSettingsUpdated(); }} />&nbsp;&nbsp;{this.name}</label >
+                <label><input type="checkbox" checked={this.getter(room.roomInfo.settings) as boolean} onChange={() => { this.setter(room.roomInfo.settings, !(this.getter(room.roomInfo.settings) as boolean)); room.onSettingsUpdated(); }} />&nbsp;&nbsp;{this.name}</label >
             }
         </>;
     }
