@@ -148,8 +148,8 @@ class UserMesh {
         if (!UserMesh.matHost) UserMesh.createMats(scene);
 
         this.mesh = BABYLON.MeshBuilder.CreateCapsule(user.username, {
-            height: 32,
-            radius: 8,
+            height: 0.2,
+            radius: 0.05,
             subdivisions: undefined,
             capSubdivisions: undefined,
             tessellation: undefined
