@@ -8,14 +8,14 @@ import { PaintViewMode } from "./viewModes/ViewModes";
 
 export class DrawTool extends AbstractMultiTool {
 
-    lineMesh: BABYLON.Mesh;
-    linePositions: BABYLON.Vector3[] = [];
+    currentLineMesh: BABYLON.Mesh;
     lastPosition: BABYLON.Vector3;
     frame: number = 0;
     mat: BABYLON.StandardMaterial;
     draw: boolean = false;
     initTools: boolean = false;
-    
+    ownDrawInformation: DrawInformation;
+    lineIndex: number = 0;
 
     constructor(private instance: RealityBoxCollab, container: JQuery, private orbitTool: OrbitTool, private paintViewMode: PaintViewMode) {
         super("Draw Tool", "fa-solid fa-pen", container, [
@@ -25,6 +25,10 @@ export class DrawTool extends AbstractMultiTool {
 
         this.mat = new BABYLON.StandardMaterial("matDrawPen", this.instance.realitybox.viewer._babylonBox.scene);
         this.mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+
+        this.ownDrawInformation = {
+            positions: [[]],
+        };
     }
 
     onSubToolSwitched(subtool: SubTool): void {
@@ -37,8 +41,9 @@ export class DrawTool extends AbstractMultiTool {
                 else if (e.type == BABYLON.PointerEventTypes.POINTERUP && e.event.button == 0) {
                     this.draw = false;
                     // Reste line but do not remove
-                    this.lineMesh = null;
-                    this.linePositions = [];
+                    this.currentLineMesh = null;
+                    this.lineIndex++;
+                    this.ownDrawInformation.positions.push([]);
                 }
                 else if (e.type == BABYLON.PointerEventTypes.POINTERMOVE && this.draw) {
                     if (this.active) {
@@ -64,8 +69,9 @@ export class DrawTool extends AbstractMultiTool {
         if (this.lastPosition && Utils.vectorEquals(this.lastPosition, pos)) return;
         this.lastPosition = pos;
 
-        this.linePositions.push(pos);
-        if (this.linePositions.length >= 2) this.updateLine(scene);
+        const line = this.ownDrawInformation.positions[this.lineIndex];
+        line.push(pos);
+        if (line.length >= 2) this.updateCurrentLine(scene, line);
     }
 
     drawMat(scene: BABYLON.Scene) {
@@ -83,21 +89,25 @@ export class DrawTool extends AbstractMultiTool {
         this.paintViewMode.texture.update();
     }
 
-    updateLine(scene: BABYLON.Scene): void {
-        if (this.lineMesh) scene.removeMesh(this.lineMesh);
+    updateCurrentLine(scene: BABYLON.Scene, line: BABYLON.Vector3[]): void {
+        if (this.currentLineMesh) scene.removeMesh(this.currentLineMesh);
 
         // Updatable not possible, because position size changes
-        this.lineMesh = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: this.linePositions,
+        this.currentLineMesh = BABYLON.MeshBuilder.CreateTube("tube", {
+            path: line,
             radius: 0.01,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         }, scene);
-        this.lineMesh.setParent(this.instance.babylonViewer.baseNode);
+        this.currentLineMesh.setParent(this.instance.babylonViewer.baseNode);
 
-        this.lineMesh.material = this.mat;
+        this.currentLineMesh.material = this.mat;
     }
 
     override onRoomChanged(): void {
 
     }
+}
+
+export interface DrawInformation {
+    positions: BABYLON.Vector3[][];
 }
