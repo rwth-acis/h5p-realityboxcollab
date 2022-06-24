@@ -86,6 +86,9 @@ export class DrawTool extends AbstractMultiTool {
         ctx.arc(texCoordinates.x * size.width, size.height - texCoordinates.y * size.height, 5, 0, 2 * Math.PI, false);
         ctx.fillStyle = "#ff0000"; // Red
         ctx.fill();
+
+        ctx.clearRect(0, 0, size.width, size.height);
+        this.ownDrawInformation.texture = ctx.getImageData(0, 0, size.width, size.height);
         this.paintViewMode.texture.update();
     }
 
@@ -110,4 +113,5 @@ export class DrawTool extends AbstractMultiTool {
 
 export interface DrawInformation {
     positions: BABYLON.Vector3[][];
+    texture?: ImageData;
 }
