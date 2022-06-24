@@ -75,8 +75,9 @@ export class Settings extends AbstractGuiElement {
   onRoomChanged(): void {
     super.updateView();
 
-    this.currentRoom.users.observe(() => {
-      super.updateView();
+    this.currentRoom.users.observe((e) => {
+      if (e.changes.added.size > 0 || e.changes.deleted.size > 0)
+        super.updateView();
     });
   }
 

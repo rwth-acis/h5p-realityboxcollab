@@ -99,6 +99,7 @@ export class BabylonViewer extends NetworkListener {
         if (this.userMeshes.size > this.currentRoom.users.size - 1) {
             this.userMeshes.forEach(mesh => {
                 if (!this.currentRoom.users.get(mesh.user.username)) {
+
                     this.userMeshes.delete(mesh.user.username);
                     this.scene.removeMesh(mesh.mesh);
                 }

@@ -4,7 +4,7 @@ import { RoomInformation } from "./RoomManager";
 import { Chat } from "../gui/Chat";
 import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
-import   * as Y from "yjs";
+import * as Y from "yjs";
 import { DEFAULT_SETTINGS, RoomSettings } from "./RoomSettings";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { RealityBoxCollab } from "../RealityboxCollab";
@@ -72,7 +72,7 @@ export class Room {
             this.settings = this.doc.getMap().get("settings") as RoomSettings;
         }
 
-        this.doc.getMap().observe(() => {
+        this.doc.getMap().observe((e) => {
             this.settings = this.doc.getMap().get("settings") as RoomSettings;
             this.listeners.forEach(l => l.onSettingsChanged());
         });

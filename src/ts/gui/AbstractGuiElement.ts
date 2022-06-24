@@ -1,7 +1,6 @@
-import * as $ from 'jquery';
 import { ReactElement } from 'react';
-import ReactDOM = require('react-dom');
 import { NetworkListener } from '../networking/NetworkListener';
+import ReactDOM = require('react-dom');
 
 /**
  * This class represents a Gui Element such as the chat. It will be initialized by the main RealityboxCollab instance.
@@ -31,7 +30,6 @@ export abstract class AbstractGuiElement extends NetworkListener {
    */
   updateView(): void {
     ReactDOM.render(this.createElement(), this.root);
-    console.log("OK");
   }
 
   /**
