@@ -24,7 +24,7 @@ export abstract class AbstractXRView extends AbstractTool {
 
         this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
         this.babylonViewer.onXRStateChanged(true);
-        this.onXREnter();
+        this.pOnXREnter();
     }
 
     async createXR() {
@@ -37,7 +37,7 @@ export abstract class AbstractXRView extends AbstractTool {
             this.experience.baseExperience.onStateChangedObservable.add((state) => {
                 if (state == BABYLON.WebXRState.NOT_IN_XR) {
                     if (this.active) this.toolbar.deactivateTool(this); // Calls onXRExit later
-                    else this.onXRExit(); // Manual call
+                    else this.pOnXRExit(); // Manual call
                 }
             });
         });
@@ -54,6 +54,16 @@ export abstract class AbstractXRView extends AbstractTool {
 
     override onRoomChanged(): void {
 
+    }
+
+    private pOnXREnter() {
+        this.babylonViewer.babylonBox.hideAllAnnotations();
+        this.onXREnter();
+    }
+
+    private pOnXRExit() {
+        this.babylonViewer.babylonBox.showAllAnnotations();
+        this.onXRExit();
     }
 
     abstract onXREnter(): void;

@@ -39,6 +39,7 @@ export class RealityBoxCollab {
 
     constructor(options: any, private id: any) {
         this.options = options.realityboxcollab;
+        console.log(options);
 
         this.roomManager = new RoomManager();
     }

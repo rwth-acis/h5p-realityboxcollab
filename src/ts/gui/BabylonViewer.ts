@@ -3,6 +3,7 @@ import * as Y from "yjs";
 import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
+import { BabylonBox } from "../RealityboxTypes";
 import { Utils } from "../utils/Utils";
 import { Toolbar } from "./Toolbar";
 import { XrGui } from "./XrGui";
@@ -14,6 +15,7 @@ export class BabylonViewer extends NetworkListener {
     static readonly WORLD_SIZE = 1;
 
     scene: BABYLON.Scene;
+    babylonBox: BabylonBox;
     userMeshes: Map<string, UserMesh> = new Map();
     models: BABYLON.Mesh[];
     modelNodes: BABYLON.TransformNode[] = [];
@@ -27,9 +29,11 @@ export class BabylonViewer extends NetworkListener {
         super();
 
         this.models = [instance.realitybox.viewer._babylonBox.model.env];
-
         this.scene = instance.realitybox.viewer._babylonBox.scene;
+        this.babylonBox = instance.realitybox.viewer._babylonBox;
         this.baseNode = new BABYLON.TransformNode("Base Node", this.scene);
+
+
         for (let model of this.models) {
             let node = new BABYLON.TransformNode("Parent Node for " + model.name, this.scene);
             node.parent = this.baseNode;

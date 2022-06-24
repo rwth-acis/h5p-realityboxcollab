@@ -31,6 +31,7 @@ export abstract class AbstractGuiElement extends NetworkListener {
    */
   updateView(): void {
     ReactDOM.render(this.createElement(), this.root);
+    console.log("OK");
   }
 
   /**
