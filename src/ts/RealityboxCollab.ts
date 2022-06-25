@@ -100,7 +100,7 @@ export class RealityBoxCollab {
             this.realitybox.viewer._babylonBox.addAnnotation({
                 content: a[0].content,
                 normalRef: new BABYLON.Vector3(0, 1, 0),
-                position: new BABYLON.Vector3()
+                position: new BABYLON.Vector3(1, 0, 2)
             });
 
         this.room = this.localRoom = new Room(this, this.getListeners(), {

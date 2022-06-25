@@ -8,14 +8,16 @@ import { PaintViewMode } from "./viewModes/ViewModes";
 
 export class DrawTool extends AbstractMultiTool {
 
-    currentLineMesh: BABYLON.Mesh;
+    lineMeshes: BABYLON.Mesh[] = [];
+    lineMeshSize: number[] = [];
     lastPosition: BABYLON.Vector3;
     frame: number = 0;
     mat: BABYLON.StandardMaterial;
     draw: boolean = false;
     initTools: boolean = false;
-    ownDrawInformation: DrawInformation;
     lineIndex: number = 0;
+    sharedDrawInformation: SharedDrawInformation;
+    syncIn: number = -1;
 
     constructor(private instance: RealityBoxCollab, container: JQuery, private orbitTool: OrbitTool, private paintViewMode: PaintViewMode) {
         super("Draw Tool", "fa-solid fa-pen", container, [
@@ -26,9 +28,14 @@ export class DrawTool extends AbstractMultiTool {
         this.mat = new BABYLON.StandardMaterial("matDrawPen", this.instance.realitybox.viewer._babylonBox.scene);
         this.mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
 
-        this.ownDrawInformation = {
-            positions: [[]],
-        };
+        this.instance.babylonViewer.scene.registerBeforeRender(() => {
+            this.updateSharedTexture();
+
+            if (this.syncIn > 0) {
+                this.syncIn--;
+                if (this.syncIn == 0) this.writeDrawInfo();
+            }
+        });
     }
 
     onSubToolSwitched(subtool: SubTool): void {
@@ -36,14 +43,12 @@ export class DrawTool extends AbstractMultiTool {
             const scene = this.instance.realitybox.viewer._babylonBox.scene;
             scene.onPointerObservable.add(e => {
                 if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0) {
+                    this.sharedDrawInformation.lines.push([]);
+                    this.lineIndex = this.sharedDrawInformation.lines.length - 1;
                     this.draw = true;
                 }
                 else if (e.type == BABYLON.PointerEventTypes.POINTERUP && e.event.button == 0) {
                     this.draw = false;
-                    // Reste line but do not remove
-                    this.currentLineMesh = null;
-                    this.lineIndex++;
-                    this.ownDrawInformation.positions.push([]);
                 }
                 else if (e.type == BABYLON.PointerEventTypes.POINTERMOVE && this.draw) {
                     if (this.active) {
@@ -69,9 +74,10 @@ export class DrawTool extends AbstractMultiTool {
         if (this.lastPosition && Utils.vectorEquals(this.lastPosition, pos)) return;
         this.lastPosition = pos;
 
-        const line = this.ownDrawInformation.positions[this.lineIndex];
+        const line = this.sharedDrawInformation.lines[this.lineIndex];
         line.push(pos);
-        if (line.length >= 2) this.updateCurrentLine(scene, line);
+        this.updateLine(this.lineIndex);
+        this.writeDrawInfo();
     }
 
     drawMat(scene: BABYLON.Scene) {
@@ -87,31 +93,88 @@ export class DrawTool extends AbstractMultiTool {
         ctx.fillStyle = "#ff0000"; // Red
         ctx.fill();
 
-        ctx.clearRect(0, 0, size.width, size.height);
-        this.ownDrawInformation.texture = ctx.getImageData(0, 0, size.width, size.height);
+        if (this.syncIn <= 0) this.syncIn = 10;
         this.paintViewMode.texture.update();
     }
 
-    updateCurrentLine(scene: BABYLON.Scene, line: BABYLON.Vector3[]): void {
-        if (this.currentLineMesh) scene.removeMesh(this.currentLineMesh);
+    updateLine(index: number): void {
+        const scene = this.instance.babylonViewer.scene;
+        const line = this.sharedDrawInformation.lines[index];
+
+        if (this.lineMeshSize.length > index && line.length == this.lineMeshSize[index]) return;
+        if (this.lineMeshes[index]) scene.removeMesh(this.lineMeshes[index]);
+
+
+        this.lineMeshSize[index] = line.length;
+
+        if (line.length < 2) return;
 
         // Updatable not possible, because position size changes
-        this.currentLineMesh = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: line,
+        this.lineMeshes[index] = BABYLON.MeshBuilder.CreateTube("tube", {
+            path: line.map(v => Utils.createVector(v)),
             radius: 0.01,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         }, scene);
-        this.currentLineMesh.setParent(this.instance.babylonViewer.baseNode);
+        this.lineMeshes[index].setParent(this.instance.babylonViewer.baseNode);
 
-        this.currentLineMesh.material = this.mat;
+        this.lineMeshes[index].material = this.mat;
     }
 
     override onRoomChanged(): void {
 
     }
+
+    private updateSharedTexture(): void {
+        let data = this.currentRoom.doc.getMap().get("DrawToolTexture") as SharedDrawInformation;
+        if (data && (!this.sharedDrawInformation || this.sharedDrawInformation.lastUpdate != data.lastUpdate)) {
+            this.sharedDrawInformation = data;
+            const ctx = this.paintViewMode.texture.getContext();
+            let r = this.sharedDrawInformation.texture;
+            ctx.putImageData(new ImageData(new Uint8ClampedArray(r.data), r.width, r.height), 0, 0);
+            this.paintViewMode.texture.update();
+
+            for (let x = 0; x < this.sharedDrawInformation.lines.length; x++) {
+                this.updateLine(x);
+            }
+        }
+        else if (!data) {
+            this.writeDrawInfo();
+        }
+    }
+
+    private writeDrawInfo() {
+        const ctx = this.paintViewMode.texture.getContext();
+        const size = this.paintViewMode.texture.getSize();
+
+        if (!this.sharedDrawInformation) {
+            this.sharedDrawInformation = {
+                texture: undefined,
+                lastUpdate: undefined,
+                lines: [[]]
+            };
+        }
+
+        let t = ctx.getImageData(0, 0, size.width, size.height);
+        let data: number[] = [];
+        t.data.forEach(x => data.push(x));
+        this.sharedDrawInformation.texture = {
+            width: t.width,
+            height: t.height,
+            data: data
+        };
+        this.sharedDrawInformation.lastUpdate = Date.now();
+        this.currentRoom.doc.getMap().set("DrawToolTexture", this.sharedDrawInformation);
+    }
 }
 
-export interface DrawInformation {
-    positions: BABYLON.Vector3[][];
-    texture?: ImageData;
+interface SharedDrawInformation {
+    texture: Texture;
+    lastUpdate: number;
+    lines: BABYLON.Vector3[][];
+}
+
+interface Texture {
+    width: number;
+    height: number;
+    data: number[];
 }
