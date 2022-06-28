@@ -19,6 +19,7 @@ export class DrawTool extends AbstractMultiTool {
     sharedDrawInformation: SharedDrawInformation;
     syncIn: number = -1;
 
+    // Color picker: https://www.babylonjs-playground.com/#91I2RE#1
     constructor(private instance: RealityBoxCollab, container: JQuery, private orbitTool: OrbitTool, private paintViewMode: PaintViewMode) {
         super("Draw Tool", "fa-solid fa-pen", container, [
             { name: "Mat Paint", icon: "fa-solid fa-paintbrush" },
@@ -39,6 +40,8 @@ export class DrawTool extends AbstractMultiTool {
     }
 
     onSubToolSwitched(subtool: SubTool): void {
+        if (subtool) this.paintViewMode.toolbar.activateTool(this.paintViewMode);
+
         if (!this.initTools) {
             const scene = this.instance.realitybox.viewer._babylonBox.scene;
             scene.onPointerObservable.add(e => {
@@ -93,7 +96,7 @@ export class DrawTool extends AbstractMultiTool {
         ctx.fillStyle = "#ff0000"; // Red
         ctx.fill();
 
-        if (this.syncIn <= 0) this.syncIn = 10;
+        if (this.syncIn <= 0) this.syncIn = 10; // Avoid laggs
         this.paintViewMode.texture.update();
     }
 
@@ -121,7 +124,7 @@ export class DrawTool extends AbstractMultiTool {
     }
 
     override onRoomChanged(): void {
-
+        this.sharedDrawInformation = undefined; // Reset
     }
 
     private updateSharedTexture(): void {

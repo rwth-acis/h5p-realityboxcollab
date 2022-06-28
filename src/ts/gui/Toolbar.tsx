@@ -37,17 +37,22 @@ export class Toolbar extends AbstractGuiElement {
     }
 
     toolClicked(tool: AbstractTool): void {
-        if (this.activeTool && this.activeTool != tool) this.deactivate(this.activeTool);
-
         if (!tool.active) {
             this.activateTool(tool);
-        } else if (!this.alwaysActive) { // Toggle
-            this.deactivate(tool);
+        } 
+        else if (!this.alwaysActive) { // Toggle
+            this.deactivateActiveRaw();
             super.updateView();
         }
     }
 
     activateTool(tool: AbstractTool): void {
+        if (tool == this.activeTool) return;
+
+        if (this.activeTool) {
+            this.deactivateActiveRaw();
+        }
+
         if (!tool.canActivate()) {
             console.error(`Tried to activate ${tool.name} which is not allowed`);
         }
@@ -58,16 +63,8 @@ export class Toolbar extends AbstractGuiElement {
         super.updateView();
     }
 
-    private deactivate(tool: AbstractTool): void {
-        if (this.activeTool != tool) return;
-
-        tool.active = false;
-        tool.onDeactivate();
-        this.activeTool = undefined;
-    }
-
-    deactivateTool(tool: AbstractTool): void {
-        this.deactivate(tool);
+    deactivateActiveTool(): void {
+        this.deactivateActiveRaw();
 
         if (this.alwaysActive) {
             this.selectFirst();
@@ -75,8 +72,16 @@ export class Toolbar extends AbstractGuiElement {
         super.updateView();
     }
 
+    private deactivateActiveRaw(): void {
+        this.activeTool.active = false;
+        this.activeTool.onDeactivate();
+        this.activeTool = undefined;
+    }
+
     override onRoomChanged(): void {
-        this.tools.forEach(t => { t.onRoomChanged(); t.currentRoom = this.currentRoom; t.active = false; });
+        if (this.activeTool) this.deactivateActiveTool();
+
+        this.tools.forEach(t => { t.onRoomChanged(); t.currentRoom = this.currentRoom; });
 
         if (this.alwaysActive) this.selectFirst();
         this.updateView();

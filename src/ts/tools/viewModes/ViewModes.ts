@@ -1,7 +1,6 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { BabylonViewer } from "../../gui/BabylonViewer";
 import { AbstractTool } from "../AbstractTool";
-import { DrawTool } from "../DrawTool";
 
 export class NormalViewMode extends AbstractTool {
 
@@ -38,7 +37,7 @@ export class PaintViewMode extends AbstractTool {
     }
 
     onRoomChanged(): void {
-
+        this.initPaint();
     }
 
     private initPaint() {

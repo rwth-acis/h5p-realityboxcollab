@@ -36,7 +36,7 @@ export abstract class AbstractXRView extends AbstractTool {
 
             this.experience.baseExperience.onStateChangedObservable.add((state) => {
                 if (state == BABYLON.WebXRState.NOT_IN_XR) {
-                    if (this.active) this.toolbar.deactivateTool(this); // Calls onXRExit later
+                    if (this.active) this.toolbar.deactivateActiveTool(); // Calls onXRExit later
                     else this.pOnXRExit(); // Manual call
                 }
             });
