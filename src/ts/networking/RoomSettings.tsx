@@ -17,11 +17,16 @@ export class SettingsGuiElement {
         return <>
             {
                 this.type == SettingsType.Heading &&
-                <h4>{this.name} </h4>
+                <h4>{this.name}</h4>
             }
             {
                 this.type == SettingsType.Checkbox &&
-                <label><input type="checkbox" checked={this.getter(room.roomInfo.settings) as boolean} onChange={() => { this.setter(room.roomInfo.settings, !(this.getter(room.roomInfo.settings) as boolean)); room.onSettingsUpdated(); }} />&nbsp;&nbsp;{this.name}</label >
+                <div>
+                    <label>
+                        <input type="checkbox" checked={this.getter(room.roomInfo.settings) as boolean} onChange={() => { this.setter(room.roomInfo.settings, !(this.getter(room.roomInfo.settings) as boolean)); room.onSettingsUpdated(); }} />
+                        &nbsp;&nbsp;{this.name}
+                    </label>
+                </div>
             }
         </>;
     }
@@ -36,6 +41,7 @@ export interface RoomSettings {
     canUsePointerTool: boolean;
     canUseAnnotationTool: boolean;
     canUsePenTool: boolean;
+    annotationEnabled: boolean;
 }
 
 export const DEFAULT_SETTINGS: RoomSettings = {
@@ -43,10 +49,12 @@ export const DEFAULT_SETTINGS: RoomSettings = {
     canUseMoveTool: true,
     canUsePointerTool: true,
     canUseAnnotationTool: true,
-    canUsePenTool: true
+    canUsePenTool: true,
+    annotationEnabled: true
 }
 
 export const SETTINGS: SettingsGuiElement[] = [
+    new SettingsGuiElement("Annotations", SettingsType.Checkbox, s => s.annotationEnabled, (s, v) => s.annotationEnabled = v),
     new SettingsGuiElement("Users can use...", SettingsType.Heading),
     new SettingsGuiElement("Chat", SettingsType.Checkbox, s => s.canUseChat, (s, v) => s.canUseChat = v),
     new SettingsGuiElement("Move Tool", SettingsType.Checkbox, s => s.canUseMoveTool, (s, v) => s.canUseMoveTool = v),

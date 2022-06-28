@@ -132,6 +132,11 @@ export class BabylonViewer extends NetworkListener {
         this.remoteModelInfo = this.currentRoom.doc.getMap("models");
     }
 
+    override onSettingsChanged(): void {
+        if (this.currentRoom.roomInfo.settings.annotationEnabled) this.babylonBox.showAllAnnotations();
+        else this.babylonBox.hideAllAnnotations();
+    }
+
 }
 
 const RED = new BABYLON.Color3(1, 0, 0);
