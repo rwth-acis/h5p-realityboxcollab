@@ -36,16 +36,26 @@ export class Toolbar extends AbstractGuiElement {
         </div>
     }
 
+    /**
+     * Activates or toggles the clicked tool. This method is invoked by this toolsbars UI and by the XrGui
+     * @param tool The tools which has been clicked
+     */
     toolClicked(tool: AbstractTool): void {
         if (!tool.active) {
             this.activateTool(tool);
-        } 
+        }
         else if (!this.alwaysActive) { // Toggle
             this.deactivateActiveRaw();
             super.updateView();
         }
     }
 
+    /**
+     * Activates a tool. The current active tool will be deactivated. The method does nothing, if the tool is already active.
+     * @param tool The tool to activate
+     * @throws Exception, if the tool can not be activated according to its {@link AbstractTool.canActivate()} method
+     * @throws Exception, if the tool is not part of this toolbar
+     */
     activateTool(tool: AbstractTool): void {
         if (tool == this.activeTool) return;
 
@@ -54,8 +64,12 @@ export class Toolbar extends AbstractGuiElement {
         }
 
         if (!tool.canActivate()) {
-            console.error(`Tried to activate ${tool.name} which is not allowed`);
+            throw `Tried to activate ${tool.name} which is not allowed`;
         }
+        if (!this.tools.find(x => x == tool)) {
+            throw `Tool ${tool.name} is not part of the tools of the toolbar with id ${this.name}`;
+        }
+
         this.activeTool = tool;
         this.activeTool.active = true;
         this.activeTool.onActivate();
@@ -63,6 +77,10 @@ export class Toolbar extends AbstractGuiElement {
         super.updateView();
     }
 
+    /**
+     * Deactivates the active tool, selects the first useable (if alwaysActive is set)
+     * and updates the view.
+     */
     deactivateActiveTool(): void {
         this.deactivateActiveRaw();
 
@@ -72,12 +90,18 @@ export class Toolbar extends AbstractGuiElement {
         super.updateView();
     }
 
+    /**
+     * Only deactives the active tool, without any further updates including view changes
+     */
     private deactivateActiveRaw(): void {
         this.activeTool.active = false;
         this.activeTool.onDeactivate();
         this.activeTool = undefined;
     }
 
+    /**
+     * Resets the tools and notifies them of the room change
+     */
     override onRoomChanged(): void {
         if (this.activeTool) this.deactivateActiveTool();
 
@@ -87,10 +111,16 @@ export class Toolbar extends AbstractGuiElement {
         this.updateView();
     }
 
+    /**
+     * Permissions might have been updated. Therefore, redraw the toolbar
+     */
     override onSettingsChanged(): void {
         this.updateView();
     }
 
+    /**
+     * Goes through all tools and activates the first useable. This method does not deactivate the current active tool, if any is active
+     */
     selectFirst(): void {
         for (let tool of this.tools) {
             if (tool.canActivate()) { // Find first tool, which can be activated
