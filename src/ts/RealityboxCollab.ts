@@ -40,7 +40,6 @@ export class RealityBoxCollab {
 
     constructor(options: any, private id: any) {
         this.options = options.realityboxcollab;
-        console.log(options);
 
         this.roomManager = new RoomManager();
     }
@@ -77,7 +76,7 @@ export class RealityBoxCollab {
         let drawTool = new DrawTool(this, container, orbitTool, paintViewMode);
 
         let toolbar = new Toolbar(container, "collabToolbar", false, [
-            new MoveTool(this, container), new PointerTool(this, container), new AnnotationTool(), drawTool
+            new MoveTool(this, container), new PointerTool(this, container), new AnnotationTool(this), drawTool
         ]);
 
         let viewTools: AbstractTool[] = [orbitTool, new VRTool(this.babylonViewer)];
@@ -96,12 +95,13 @@ export class RealityBoxCollab {
         this.babylonViewer.registerToolbar(toolbar);
 
         let a = this.realitybox.viewer._babylonBox.getAnnotations();
-        if (a.length > 0)
+        if (a.length > 0) {
             this.realitybox.viewer._babylonBox.addAnnotation({
                 content: a[0].content,
                 normalRef: new BABYLON.Vector3(0, 1, 0),
                 position: new BABYLON.Vector3(1, 0, 2)
             });
+        }
 
         this.room = this.localRoom = new Room(this, this.getListeners(), {
             name: "Local Room",

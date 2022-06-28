@@ -20,6 +20,7 @@ export interface BabylonBox {
     model: RealityboxModel;
     $canvas: JQuery;
     camera: RealityboxCamera;
+    webXR: {inWebXR: boolean};
     _annotationsManager: RealityboxAnnotationManager;
     addAnnotation(options: RealityboxAnnotation): RealityboxAnnotation;
     removeAnnotation(a: RealityboxAnnotation): void;
@@ -28,6 +29,7 @@ export interface BabylonBox {
     setAnnotationState(state: string, a: RealityboxAnnotation): void;
     showAllAnnotations(): void;
     hideAllAnnotations(): void;
+    on(s: string, f: (d: any) => void): void;
 }
 
 export interface RealityboxCamera {
