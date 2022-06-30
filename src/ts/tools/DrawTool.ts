@@ -1,10 +1,8 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { AdvancedDynamicTexture, ColorPicker, Control, StackPanel, TextBlock } from "@babylonjs/gui";
+import { AdvancedDynamicTexture, ColorPicker, Control, StackPanel } from "@babylonjs/gui";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
-import { OrbitTool } from "./viewer/OrbitTool";
-import { PaintViewMode } from "./viewModes/ViewModes";
 
 
 export class DrawTool extends AbstractMultiTool {
