@@ -189,17 +189,16 @@ export class DrawTool extends AbstractMultiTool {
         let ui = AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.instance.babylonViewer.scene as any);
 
         this.uiPanel = new StackPanel();
-        this.uiPanel.width = "200px";
         this.uiPanel.isVertical = true;
         this.uiPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        this.uiPanel.left = "400 px";
+        this.uiPanel.left = "300 px";
         this.uiPanel.top = "50 px";
         this.uiPanel.isVisible = false;
         ui.addControl(this.uiPanel);
 
         this.picker = new ColorPicker();
         this.picker.value = DrawTool.DEFAULT_COLOR;
-        this.setPickerSize(false);
+        this.setPickerState(false);
         this.picker.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         this.picker.onValueChangedObservable.add((value: BABYLON.Color3) => { // value is a color3
             this.drawColor = value;
@@ -208,8 +207,10 @@ export class DrawTool extends AbstractMultiTool {
         this.uiPanel.addControl(this.picker);
     }
 
-    setPickerSize(big: boolean) {
-        const n = big ? 200 : 150;
+    setPickerState(inXR: boolean) {
+        const n = inXR ? 400 : 150;
+        this.uiPanel.height = n + "px";
+        this.uiPanel.width = n + "px";
         this.picker.height = n + "px";
         this.picker.width = n + "px";
     }
