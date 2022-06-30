@@ -1,19 +1,20 @@
-import { AbstractTool } from "../tools/AbstractTool";
-import { Toolbar } from "./Toolbar";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { AdvancedDynamicTexture, Button, Control, StackPanel } from "@babylonjs/gui";
+import { RealityBoxCollab } from "../RealityboxCollab";
+import { AbstractTool } from "../tools/AbstractTool";
+import { Toolbar } from "./Toolbar";
 
 
 export class XrGui {
     xrGuiPanel: StackPanel;
     buttons: Map<AbstractTool, Button> = new Map();
 
-    constructor(private toolbar: Toolbar, private scene: BABYLON.Scene) {
+    constructor(private toolbar: Toolbar, private scene: BABYLON.Scene, private instance: RealityBoxCollab) {
         this.createXRGui();
     }
 
     onXRStateChanged(newState: boolean): void {
-        this.xrGuiPanel.notRenderable = !newState;
+        this.xrGuiPanel.isVisible = newState;
         this.updateButtons();
     }
 
@@ -22,6 +23,8 @@ export class XrGui {
         this.xrGuiPanel = new StackPanel();
         this.xrGuiPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         this.xrGuiPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        this.xrGuiPanel.left = "20 px";
+        this.xrGuiPanel.top = "20 px";
         xrGui.addControl(this.xrGuiPanel);
 
         for (let tool of this.toolbar.tools) {
@@ -30,7 +33,7 @@ export class XrGui {
             this.xrGuiPanel.addControl(b);
         }
 
-        this.xrGuiPanel.notRenderable = true;
+        this.xrGuiPanel.isVisible = false;
     }
 
     createButton(tool: AbstractTool): Button {

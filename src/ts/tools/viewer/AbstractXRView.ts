@@ -1,5 +1,5 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { BabylonViewer } from "../../gui/BabylonViewer";
+import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 
 /**
@@ -10,7 +10,7 @@ import { AbstractTool } from "../AbstractTool";
 export abstract class AbstractXRView extends AbstractTool {
     experience: BABYLON.WebXRDefaultExperience;
 
-    constructor(private babylonViewer: BabylonViewer, name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType) {
+    constructor(private instance: RealityBoxCollab, name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType) {
         super(name, icon);
     }
 
@@ -23,12 +23,12 @@ export abstract class AbstractXRView extends AbstractTool {
         }
 
         this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
-        this.babylonViewer.onXRStateChanged(true);
+        this.instance.babylonViewer.onXRStateChanged(true);
         this.pOnXREnter();
     }
 
     async createXR() {
-        const scene: BABYLON.Scene = this.babylonViewer.scene;
+        const scene: BABYLON.Scene = this.instance.babylonViewer.scene;
 
         await scene.createDefaultXRExperienceAsync({
         }).then(ex => {
@@ -46,7 +46,7 @@ export abstract class AbstractXRView extends AbstractTool {
     override onDeactivate(): void {
         if (this.experience) {
             this.experience.baseExperience.exitXRAsync();
-            this.babylonViewer.onXRStateChanged(false);
+            this.instance.babylonViewer.onXRStateChanged(false);
             this.onXRExit();
         }
         this.experience = null;
@@ -57,12 +57,12 @@ export abstract class AbstractXRView extends AbstractTool {
     }
 
     private pOnXREnter() {
-        this.babylonViewer.babylonBox.hideAllAnnotations();
+        this.instance.babylonViewer.babylonBox.hideAllAnnotations();
         this.onXREnter();
     }
 
     private pOnXRExit() {
-        this.babylonViewer.babylonBox.showAllAnnotations();
+        this.instance.babylonViewer.babylonBox.showAllAnnotations();
         this.onXRExit();
     }
 

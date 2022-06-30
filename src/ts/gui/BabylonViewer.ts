@@ -48,7 +48,7 @@ export class BabylonViewer extends NetworkListener {
     }
 
     registerToolbar(toolbar: Toolbar) {
-        this.xrGui.push(new XrGui(toolbar, this.scene));
+        this.xrGui.push(new XrGui(toolbar, this.scene, this.instance));
     }
 
     adjustModelScale() {

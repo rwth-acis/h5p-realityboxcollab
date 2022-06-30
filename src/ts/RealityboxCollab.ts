@@ -37,6 +37,16 @@ export class RealityBoxCollab {
     localRoom: Room;
     babylonViewer: BabylonViewer;
     inputManager: InputManager;
+    drawTool: DrawTool;
+    orbitTool: OrbitTool;
+    paintViewMode: PaintViewMode;
+    annotationTool: AnnotationTool;
+    pointerTool: PointerTool;
+    moveTool: MoveTool;
+    vrTool: VRTool;
+    firstPersonTool: FirstPersonTool;
+    wireframeViewMode: WireframeViewMode;
+    normalViewMode: NormalViewMode;
 
     constructor(options: any, private id: any) {
         this.options = options.realityboxcollab;
@@ -71,21 +81,33 @@ export class RealityBoxCollab {
         // Some tools need reference to others
         this.babylonViewer = new BabylonViewer(this);
 
-        let paintViewMode = new PaintViewMode(this.babylonViewer);
-        let orbitTool = new OrbitTool(this);
-        let drawTool = new DrawTool(this, container, orbitTool, paintViewMode);
+        // Main Toolbar
+        this.orbitTool = new OrbitTool(this);
+        this.drawTool = new DrawTool(this, container);
+        this.annotationTool = new AnnotationTool(this);
+        this.pointerTool = new PointerTool(this, container);
+        this.moveTool = new MoveTool(this, container);
+
+        // View Tools
+        this.vrTool = new VRTool(this);
+        this.firstPersonTool = new FirstPersonTool(this);
+
+        // View Modes
+        this.normalViewMode = new NormalViewMode(this.babylonViewer);
+        this.paintViewMode = new PaintViewMode(this.babylonViewer);
+        this.wireframeViewMode = new WireframeViewMode(this.babylonViewer);
 
         let toolbar = new Toolbar(container, "collabToolbar", false, [
-            new MoveTool(this, container), new PointerTool(this, container), new AnnotationTool(this), drawTool
+            this.moveTool, this.pointerTool, this.annotationTool, this.drawTool
         ]);
 
-        let viewTools: AbstractTool[] = [orbitTool, new VRTool(this.babylonViewer)];
-        if (!Utils.isMobile) viewTools = [new FirstPersonTool(this), ...viewTools];
-        if (Utils.isMobile) viewTools = [...viewTools, new ARTool(this.babylonViewer)];
+        let viewTools: AbstractTool[] = [this.orbitTool, this.vrTool];
+        if (!Utils.isMobile) viewTools = [this.firstPersonTool, ...viewTools];
+        if (Utils.isMobile) viewTools = [...viewTools, new ARTool(this)];
 
         let viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
         let viewModesToolbar = new Toolbar(container, "collabViewModeToolbar", true, [
-            new NormalViewMode(this.babylonViewer), paintViewMode, new WireframeViewMode(this.babylonViewer)
+            this.normalViewMode, this.paintViewMode, this.wireframeViewMode
         ]);
 
         this.chat = new Chat(container);
@@ -94,6 +116,7 @@ export class RealityBoxCollab {
         this.guiElements.forEach(e => e.init());
         this.babylonViewer.registerToolbar(toolbar);
 
+        // Debug
         let a = this.realitybox.viewer._babylonBox.getAnnotations();
         if (a.length > 0) {
             this.realitybox.viewer._babylonBox.addAnnotation({

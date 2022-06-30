@@ -24,7 +24,7 @@ export class DrawTool extends AbstractMultiTool {
     uiPanel: any;
 
     // Color picker: https://www.babylonjs-playground.com/#91I2RE#1
-    constructor(private instance: RealityBoxCollab, container: JQuery, private orbitTool: OrbitTool, private paintViewMode: PaintViewMode) {
+    constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Draw Tool", "fa-solid fa-pen", container, [
             { name: "Mat Paint", icon: "fa-solid fa-paintbrush" },
             { name: "Air Paint", icon: "fa-solid fa-compass-drafting" }
@@ -44,7 +44,7 @@ export class DrawTool extends AbstractMultiTool {
 
     onSubToolSwitched(subtool: SubTool): void {
         if (subtool) {
-            this.paintViewMode.toolbar.activateTool(this.paintViewMode);
+            this.instance.paintViewMode.toolbar.activateTool(this.instance.paintViewMode);
             this.uiPanel.isVisible = true;
         }
         else this.uiPanel.isVisible = false;
@@ -74,9 +74,9 @@ export class DrawTool extends AbstractMultiTool {
         }
 
         // Disable input of orbit tool while this tool is active
-        if (this.orbitTool.active) {
-            if (subtool) this.orbitTool.forceDisableInput();
-            else this.orbitTool.enableInput();
+        if (this.instance.orbitTool.active) {
+            if (subtool) this.instance.orbitTool.forceDisableInput();
+            else this.instance.orbitTool.enableInput();
         }
     }
 
@@ -98,8 +98,8 @@ export class DrawTool extends AbstractMultiTool {
         let texCoordinates = pick.getTextureCoordinates();
         if (!texCoordinates) return;
 
-        const ctx = this.paintViewMode.texture.getContext();
-        const size = this.paintViewMode.texture.getSize();
+        const ctx = this.instance.paintViewMode.texture.getContext();
+        const size = this.instance.paintViewMode.texture.getSize();
 
         ctx.beginPath();
         ctx.arc(texCoordinates.x * size.width, size.height - texCoordinates.y * size.height, 5, 0, 2 * Math.PI, false);
@@ -109,7 +109,7 @@ export class DrawTool extends AbstractMultiTool {
         ctx.fill();
 
         if (this.syncIn <= 0) this.syncIn = 10; // Avoid lags
-        this.paintViewMode.texture.update();
+        this.instance.paintViewMode.texture.update();
     }
 
     updateLine(index: number): void {
@@ -146,10 +146,10 @@ export class DrawTool extends AbstractMultiTool {
         let data = this.currentRoom.doc.getMap().get("DrawToolTexture") as SharedDrawInformation;
         if (data && (!this.sharedDrawInformation || this.sharedDrawInformation.lastUpdate != data.lastUpdate)) {
             this.sharedDrawInformation = data;
-            const ctx = this.paintViewMode.texture.getContext();
+            const ctx = this.instance.paintViewMode.texture.getContext();
             let r = this.sharedDrawInformation.texture;
             ctx.putImageData(new ImageData(new Uint8ClampedArray(r.data), r.width, r.height), 0, 0);
-            this.paintViewMode.texture.update();
+            this.instance.paintViewMode.texture.update();
 
             for (let x = 0; x < this.sharedDrawInformation.lines.length; x++) {
                 this.updateLine(x);
@@ -161,8 +161,8 @@ export class DrawTool extends AbstractMultiTool {
     }
 
     private writeDrawInfo() {
-        const ctx = this.paintViewMode.texture.getContext();
-        const size = this.paintViewMode.texture.getSize();
+        const ctx = this.instance.paintViewMode.texture.getContext();
+        const size = this.instance.paintViewMode.texture.getSize();
 
         if (!this.sharedDrawInformation) {
             this.sharedDrawInformation = {
