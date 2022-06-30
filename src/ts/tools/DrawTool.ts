@@ -15,7 +15,6 @@ export class DrawTool extends AbstractMultiTool {
     lineMeshSize: number[] = [];
     lastPosition: BABYLON.Vector3;
     frame: number = 0;
-    mat: BABYLON.StandardMaterial;
     draw: boolean = false;
     initTools: boolean = false;
     lineIndex: number = 0;
@@ -30,9 +29,6 @@ export class DrawTool extends AbstractMultiTool {
             { name: "Mat Paint", icon: "fa-solid fa-paintbrush" },
             { name: "Air Paint", icon: "fa-solid fa-compass-drafting" }
         ], s => s.canUsePenTool);
-
-        this.mat = new BABYLON.StandardMaterial("matDrawPen", this.instance.realitybox.viewer._babylonBox.scene);
-        this.mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
 
         this.instance.babylonViewer.scene.registerBeforeRender(() => {
             this.updateSharedTexture();
@@ -57,7 +53,10 @@ export class DrawTool extends AbstractMultiTool {
             const scene = this.instance.realitybox.viewer._babylonBox.scene;
             scene.onPointerObservable.add(e => {
                 if (e.type == BABYLON.PointerEventTypes.POINTERDOWN && e.event.button == 0) {
-                    this.sharedDrawInformation.lines.push([]);
+                    this.sharedDrawInformation.lines.push({
+                        path: [],
+                        color: this.drawColor
+                    });
                     this.lineIndex = this.sharedDrawInformation.lines.length - 1;
                     this.draw = true;
                 }
@@ -89,7 +88,7 @@ export class DrawTool extends AbstractMultiTool {
         this.lastPosition = pos;
 
         const line = this.sharedDrawInformation.lines[this.lineIndex];
-        line.push(pos);
+        line.path.push(pos);
         this.updateLine(this.lineIndex);
         this.writeDrawInfo();
     }
@@ -105,11 +104,11 @@ export class DrawTool extends AbstractMultiTool {
         ctx.beginPath();
         ctx.arc(texCoordinates.x * size.width, size.height - texCoordinates.y * size.height, 5, 0, 2 * Math.PI, false);
 
-        const c = this.drawColor.asArray();
-        ctx.fillStyle = `rgb(${c[0] * 255}, ${c[1] * 255}, ${c[2] * 255})`;
+        const c = this.drawColor;
+        ctx.fillStyle = `rgb(${c.r * 255}, ${c.g * 255}, ${c.b * 255})`;
         ctx.fill();
 
-        if (this.syncIn <= 0) this.syncIn = 10; // Avoid laggs
+        if (this.syncIn <= 0) this.syncIn = 10; // Avoid lags
         this.paintViewMode.texture.update();
     }
 
@@ -117,24 +116,26 @@ export class DrawTool extends AbstractMultiTool {
         const scene = this.instance.babylonViewer.scene;
         const line = this.sharedDrawInformation.lines[index];
 
-        if (this.lineMeshSize.length > index && line.length == this.lineMeshSize[index]) return;
+        // Performance optimization: If line has not changed, keep it
+        if (this.lineMeshSize.length > index && line.path.length == this.lineMeshSize[index]) return;
         if (this.lineMeshes[index]) scene.removeMesh(this.lineMeshes[index]);
 
 
-        this.lineMeshSize[index] = line.length;
+        this.lineMeshSize[index] = line.path.length;
 
-        if (line.length < 2) return;
+        if (line.path.length < 2) return;
 
         // Updatable not possible, because position size changes
         this.lineMeshes[index] = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: line.map(v => Utils.createVector(v)),
+            path: line.path.map(v => Utils.createVector(v)),
             radius: 0.01,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         }, scene);
         this.lineMeshes[index].setParent(this.instance.babylonViewer.baseNode);
 
-        this.mat.diffuseColor = this.drawColor;
-        this.lineMeshes[index].material = this.mat;
+        let mat = new BABYLON.StandardMaterial("matDrawPen", this.instance.realitybox.viewer._babylonBox.scene);
+        mat.diffuseColor = Utils.createColor(line.color);
+        this.lineMeshes[index].material = mat;
     }
 
     override onRoomChanged(): void {
@@ -167,7 +168,7 @@ export class DrawTool extends AbstractMultiTool {
             this.sharedDrawInformation = {
                 texture: undefined,
                 lastUpdate: undefined,
-                lines: [[]]
+                lines: []
             };
         }
 
@@ -195,12 +196,6 @@ export class DrawTool extends AbstractMultiTool {
         this.uiPanel.isVisible = false;
         ui.addControl(this.uiPanel);
 
-        var textBlock = new TextBlock();
-        textBlock.text = "Draw Color";
-        textBlock.height = "30px";
-        textBlock.color = "white";
-        this.uiPanel.addControl(textBlock);
-
         var picker = new ColorPicker();
         picker.value = DrawTool.DEFAULT_COLOR;
         picker.height = "150px";
@@ -217,7 +212,12 @@ export class DrawTool extends AbstractMultiTool {
 interface SharedDrawInformation {
     texture: Texture;
     lastUpdate: number;
-    lines: BABYLON.Vector3[][];
+    lines: Line[];
+}
+
+interface Line {
+    path: BABYLON.Vector3[];
+    color: BABYLON.Color3;
 }
 
 interface Texture {

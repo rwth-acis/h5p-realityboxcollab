@@ -34,4 +34,8 @@ export class Utils {
         return new BABYLON.Vector3(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
     }
 
+    static createColor(color: BABYLON.Color3): BABYLON.Color3 {
+        return new BABYLON.Color3(color.r, color.g, color.b);
+    }
+
 }
