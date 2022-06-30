@@ -1,4 +1,5 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { AdvancedDynamicTexture, ColorPicker, Control, StackPanel, TextBlock } from "@babylonjs/gui";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
@@ -7,6 +8,8 @@ import { PaintViewMode } from "./viewModes/ViewModes";
 
 
 export class DrawTool extends AbstractMultiTool {
+
+    static readonly DEFAULT_COLOR = new BABYLON.Color3(1, 0, 0); // Red
 
     lineMeshes: BABYLON.Mesh[] = [];
     lineMeshSize: number[] = [];
@@ -18,6 +21,8 @@ export class DrawTool extends AbstractMultiTool {
     lineIndex: number = 0;
     sharedDrawInformation: SharedDrawInformation;
     syncIn: number = -1;
+    drawColor: BABYLON.Color3 = DrawTool.DEFAULT_COLOR;
+    uiPanel: any;
 
     // Color picker: https://www.babylonjs-playground.com/#91I2RE#1
     constructor(private instance: RealityBoxCollab, container: JQuery, private orbitTool: OrbitTool, private paintViewMode: PaintViewMode) {
@@ -37,10 +42,16 @@ export class DrawTool extends AbstractMultiTool {
                 if (this.syncIn == 0) this.writeDrawInfo();
             }
         });
+
+        this.createColorPicker();
     }
 
     onSubToolSwitched(subtool: SubTool): void {
-        if (subtool) this.paintViewMode.toolbar.activateTool(this.paintViewMode);
+        if (subtool) {
+            this.paintViewMode.toolbar.activateTool(this.paintViewMode);
+            this.uiPanel.isVisible = true;
+        }
+        else this.uiPanel.isVisible = false;
 
         if (!this.initTools) {
             const scene = this.instance.realitybox.viewer._babylonBox.scene;
@@ -93,7 +104,9 @@ export class DrawTool extends AbstractMultiTool {
 
         ctx.beginPath();
         ctx.arc(texCoordinates.x * size.width, size.height - texCoordinates.y * size.height, 5, 0, 2 * Math.PI, false);
-        ctx.fillStyle = "#ff0000"; // Red
+
+        const c = this.drawColor.asArray();
+        ctx.fillStyle = `rgb(${c[0] * 255}, ${c[1] * 255}, ${c[2] * 255})`;
         ctx.fill();
 
         if (this.syncIn <= 0) this.syncIn = 10; // Avoid laggs
@@ -120,6 +133,7 @@ export class DrawTool extends AbstractMultiTool {
         }, scene);
         this.lineMeshes[index].setParent(this.instance.babylonViewer.baseNode);
 
+        this.mat.diffuseColor = this.drawColor;
         this.lineMeshes[index].material = this.mat;
     }
 
@@ -167,6 +181,36 @@ export class DrawTool extends AbstractMultiTool {
         };
         this.sharedDrawInformation.lastUpdate = Date.now();
         this.currentRoom.doc.getMap().set("DrawToolTexture", this.sharedDrawInformation);
+    }
+
+    private createColorPicker() {
+        let ui = AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.instance.babylonViewer.scene as any);
+
+        this.uiPanel = new StackPanel();
+        this.uiPanel.width = "200px";
+        this.uiPanel.isVertical = true;
+        this.uiPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        this.uiPanel.left = "400 px";
+        this.uiPanel.top = "50 px";
+        this.uiPanel.isVisible = false;
+        ui.addControl(this.uiPanel);
+
+        var textBlock = new TextBlock();
+        textBlock.text = "Draw Color";
+        textBlock.height = "30px";
+        textBlock.color = "white";
+        this.uiPanel.addControl(textBlock);
+
+        var picker = new ColorPicker();
+        picker.value = DrawTool.DEFAULT_COLOR;
+        picker.height = "150px";
+        picker.width = "150px";
+        picker.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        picker.onValueChangedObservable.add((value: BABYLON.Color3) => { // value is a color3
+            this.drawColor = value;
+        });
+
+        this.uiPanel.addControl(picker);
     }
 }
 
