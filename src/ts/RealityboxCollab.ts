@@ -97,6 +97,7 @@ export class RealityBoxCollab {
         this.paintViewMode = new PaintViewMode(this.babylonViewer);
         this.wireframeViewMode = new WireframeViewMode(this.babylonViewer);
 
+        // Create Toolbars
         let toolbar = new Toolbar(container, "collabToolbar", false, [
             this.moveTool, this.pointerTool, this.annotationTool, this.drawTool
         ]);

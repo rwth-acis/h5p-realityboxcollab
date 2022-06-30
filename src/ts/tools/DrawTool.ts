@@ -22,6 +22,7 @@ export class DrawTool extends AbstractMultiTool {
     syncIn: number = -1;
     drawColor: BABYLON.Color3 = DrawTool.DEFAULT_COLOR;
     uiPanel: any;
+    picker: ColorPicker;
 
     // Color picker: https://www.babylonjs-playground.com/#91I2RE#1
     constructor(private instance: RealityBoxCollab, container: JQuery) {
@@ -196,16 +197,21 @@ export class DrawTool extends AbstractMultiTool {
         this.uiPanel.isVisible = false;
         ui.addControl(this.uiPanel);
 
-        var picker = new ColorPicker();
-        picker.value = DrawTool.DEFAULT_COLOR;
-        picker.height = "150px";
-        picker.width = "150px";
-        picker.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        picker.onValueChangedObservable.add((value: BABYLON.Color3) => { // value is a color3
+        this.picker = new ColorPicker();
+        this.picker.value = DrawTool.DEFAULT_COLOR;
+        this.setPickerSize(false);
+        this.picker.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        this.picker.onValueChangedObservable.add((value: BABYLON.Color3) => { // value is a color3
             this.drawColor = value;
         });
 
-        this.uiPanel.addControl(picker);
+        this.uiPanel.addControl(this.picker);
+    }
+
+    setPickerSize(big: boolean) {
+        const n = big ? 200 : 150;
+        this.picker.height = n + "px";
+        this.picker.width = n + "px";
     }
 }
 

@@ -13,8 +13,9 @@ export class XrGui {
         this.createXRGui();
     }
 
-    onXRStateChanged(newState: boolean): void {
-        this.xrGuiPanel.isVisible = newState;
+    onXRStateChanged(inXR: boolean): void {
+        this.xrGuiPanel.isVisible = inXR;
+        this.instance.drawTool.setPickerSize(inXR);
         this.updateButtons();
     }
 
