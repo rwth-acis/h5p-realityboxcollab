@@ -21,7 +21,7 @@ export class BabylonViewer extends NetworkListener {
     modelNodes: BABYLON.TransformNode[] = [];
     remoteModelInfo: Y.Map<ModelInformation>;
     localModelInfo: Map<string, ModelInformation> = new Map();
-    isInXR: boolean = false;
+    xrState: XRState = XRState.NONE;
     xrGui: XrGui[] = [];
     baseNode: BABYLON.TransformNode;
 
@@ -51,6 +51,10 @@ export class BabylonViewer extends NetworkListener {
         this.xrGui.push(new XrGui(toolbar, this.scene, this.instance));
     }
 
+    isInXR(): boolean {
+        return this.xrState != XRState.NONE;
+    }
+
     adjustModelScale() {
         for (let m of this.models) {
             let max = new BABYLON.Vector3(0, 0, 0);
@@ -72,8 +76,8 @@ export class BabylonViewer extends NetworkListener {
         cam.wheelPrecision = 50 * BabylonViewer.WORLD_SIZE;
     }
 
-    onXRStateChanged(newState: boolean): void {
-        this.isInXR = newState;
+    onXRStateChanged(newState: XRState): void {
+        this.xrState = newState;
         this.xrGui.forEach(g => g.onXRStateChanged(newState));
     }
 
@@ -137,6 +141,10 @@ export class BabylonViewer extends NetworkListener {
         else this.babylonBox.hideAllAnnotations();
     }
 
+}
+
+export enum XRState {
+    AR, VR, NONE
 }
 
 const RED = new BABYLON.Color3(1, 0, 0);

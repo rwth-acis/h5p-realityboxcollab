@@ -1,4 +1,5 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { XRState } from "../../gui/BabylonViewer";
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 
@@ -10,7 +11,7 @@ import { AbstractTool } from "../AbstractTool";
 export abstract class AbstractXRView extends AbstractTool {
     experience: BABYLON.WebXRDefaultExperience;
 
-    constructor(private instance: RealityBoxCollab, name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType) {
+    constructor(private instance: RealityBoxCollab, private state: XRState, name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType) {
         super(name, icon);
     }
 
@@ -23,7 +24,7 @@ export abstract class AbstractXRView extends AbstractTool {
         }
 
         this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
-        this.instance.babylonViewer.onXRStateChanged(true);
+        this.instance.babylonViewer.onXRStateChanged(this.state);
         this.pOnXREnter();
     }
 
@@ -46,7 +47,7 @@ export abstract class AbstractXRView extends AbstractTool {
     override onDeactivate(): void {
         if (this.experience) {
             this.experience.baseExperience.exitXRAsync();
-            this.instance.babylonViewer.onXRStateChanged(false);
+            this.instance.babylonViewer.onXRStateChanged(XRState.NONE);
             this.onXRExit();
         }
         this.experience = null;

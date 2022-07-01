@@ -3,6 +3,7 @@ import { AdvancedDynamicTexture, Button, Control, StackPanel } from "@babylonjs/
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { AbstractMultiTool } from "../tools/AbstractMultiTool";
 import { AbstractTool } from "../tools/AbstractTool";
+import { XRState } from "./BabylonViewer";
 import { Toolbar } from "./Toolbar";
 
 
@@ -14,10 +15,10 @@ export class XrGui {
         this.createXRGui();
     }
 
-    onXRStateChanged(inXR: boolean): void {
-        this.xrGuiPanel.isVisible = inXR;
-        this.instance.drawTool.setPickerState(inXR);
-        this.updateButtons();
+    onXRStateChanged(state: XRState): void {
+        this.xrGuiPanel.isVisible = state != XRState.NONE;
+        this.instance.drawTool.setPickerState(state != XRState.NONE);
+        this.updatePanel(state);
     }
 
     createXRGui(): void {
@@ -25,35 +26,33 @@ export class XrGui {
         this.xrGuiPanel = new StackPanel();
         this.xrGuiPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         this.xrGuiPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-        this.xrGuiPanel.left = "20 px";
-        this.xrGuiPanel.top = "20 px";
         xrGui.addControl(this.xrGuiPanel);
 
         this.xrGuiPanel.isVisible = false;
     }
 
-    createTool(tool: AbstractTool): Button[] {
+    createTool(state: XRState, tool: AbstractTool): Button[] {
         let subs: Button[] = [];
         if (tool instanceof AbstractMultiTool && tool.active) {
             subs = tool.subtools.map(s =>
-                this.createButton(s.name, tool.activeTool == s, () => {
+                this.createButton(state, s.name, tool.activeTool == s, () => {
                     tool.activeTool = s;
                     tool.onSubToolSwitched(s);
-                    this.updateButtons();
+                    this.updatePanel(state);
                 }));
             subs.forEach(b => b.left = "100px");
         }
-        return [this.createButton(tool.name, tool.active, () => {
+        return [this.createButton(state, tool.name, tool.active, () => {
             this.toolbar.toolClicked(tool);
-            this.updateButtons();
+            this.updatePanel(state);
         }), ...subs];
     }
 
-    createButton(name: string, active: boolean, callback: () => void): Button {
+    createButton(state: XRState, name: string, active: boolean, callback: () => void): Button {
         var button = Button.CreateSimpleButton("but", name);
         button.width = 0.5;
-        button.fontSize = "60px";
-        button.height = "120px";
+        button.fontSize = state == XRState.AR ? "60px" : "30px";
+        button.height = state == XRState.AR ? "120px" : "60px";
         button.background = "gray";
         button.paddingTop = "20px";
         button.color = active ? "red" : "black";
@@ -62,10 +61,13 @@ export class XrGui {
         return button;
     }
 
-    updateButtons(): void {
+    updatePanel(state: XRState): void {
+        this.xrGuiPanel.left = XRState.AR ? "20px" : "100px";
+        this.xrGuiPanel.top = XRState.AR ? "20px" : "100px";
+
         this.xrGuiPanel.clearControls();
         for (let tool of this.toolbar.tools) {
-            this.createTool(tool).forEach(b => {
+            this.createTool(state, tool).forEach(b => {
                 this.buttons.set(tool, b);
                 this.xrGuiPanel.addControl(b);
             });
