@@ -10,15 +10,30 @@ import { Toolbar } from "./Toolbar";
 export class XrGui {
     xrGuiPanel: StackPanel;
     buttons: Map<AbstractTool, Button> = new Map();
+    experience: BABYLON.WebXRDefaultExperience;
 
     constructor(private toolbar: Toolbar, private scene: BABYLON.Scene, private instance: RealityBoxCollab) {
         this.createXRGui();
     }
 
-    onXRStateChanged(state: XRState): void {
+    onXRStateChanged(state: XRState, experience: BABYLON.WebXRDefaultExperience): void {
         this.xrGuiPanel.isVisible = state != XRState.NONE;
         this.instance.drawTool.setPickerState(state != XRState.NONE);
         this.updatePanel(state);
+
+        this.experience = experience;
+        this.experience.input.onControllerAddedObservable.clear();
+
+        this.experience.input.onControllerAddedObservable.add((evt) => {
+            if (evt.inputSource.handedness === "right") {
+                console.log(evt);
+                console.log(evt.motionController);
+                let a = evt.motionController.components["a-button"];
+                a.onButtonStateChangedObservable.add((evt) => {
+                    console.log(evt.pressed);
+                });
+            }
+        });
     }
 
     createXRGui(): void {
@@ -50,7 +65,7 @@ export class XrGui {
 
     createButton(state: XRState, name: string, active: boolean, callback: () => void): Button {
         var button = Button.CreateSimpleButton("but", name);
-        button.width = 0.5;
+        button.width = state == XRState.AR ? 0.5 : 0.15;
         button.fontSize = state == XRState.AR ? "60px" : "30px";
         button.height = state == XRState.AR ? "120px" : "60px";
         button.background = "gray";
@@ -62,8 +77,8 @@ export class XrGui {
     }
 
     updatePanel(state: XRState): void {
-        this.xrGuiPanel.left = XRState.AR ? "20px" : "100px";
-        this.xrGuiPanel.top = XRState.AR ? "20px" : "100px";
+        this.xrGuiPanel.left = XRState.AR ? "20px" : "1000px";
+        this.xrGuiPanel.top = XRState.AR ? "20px" : "400px";
 
         this.xrGuiPanel.clearControls();
         for (let tool of this.toolbar.tools) {

@@ -76,9 +76,9 @@ export class BabylonViewer extends NetworkListener {
         cam.wheelPrecision = 50 * BabylonViewer.WORLD_SIZE;
     }
 
-    onXRStateChanged(newState: XRState): void {
+    onXRStateChanged(newState: XRState, ex:  BABYLON.WebXRDefaultExperience): void {
         this.xrState = newState;
-        this.xrGui.forEach(g => g.onXRStateChanged(newState));
+        this.xrGui.forEach(g => g.onXRStateChanged(newState, ex));
     }
 
     /**

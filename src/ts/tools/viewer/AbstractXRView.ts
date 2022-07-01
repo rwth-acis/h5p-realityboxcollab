@@ -24,7 +24,7 @@ export abstract class AbstractXRView extends AbstractTool {
         }
 
         this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
-        this.instance.babylonViewer.onXRStateChanged(this.state);
+        this.instance.babylonViewer.onXRStateChanged(this.state, this.experience);
         this.pOnXREnter();
     }
 
@@ -47,7 +47,7 @@ export abstract class AbstractXRView extends AbstractTool {
     override onDeactivate(): void {
         if (this.experience) {
             this.experience.baseExperience.exitXRAsync();
-            this.instance.babylonViewer.onXRStateChanged(XRState.NONE);
+            this.instance.babylonViewer.onXRStateChanged(XRState.NONE, this.experience);
             this.onXRExit();
         }
         this.experience = null;
