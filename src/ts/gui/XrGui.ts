@@ -77,8 +77,8 @@ export class XrGui {
     }
 
     updatePanel(state: XRState): void {
-        this.xrGuiPanel.left = XRState.AR ? "20px" : "1000px";
-        this.xrGuiPanel.top = XRState.AR ? "20px" : "400px";
+        this.xrGuiPanel.left = state == XRState.AR ? "20px" : "1000px";
+        this.xrGuiPanel.top = state == XRState.AR ? "20px" : "500px";
 
         this.xrGuiPanel.clearControls();
         for (let tool of this.toolbar.tools) {
