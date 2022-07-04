@@ -85,7 +85,7 @@ export class XrGui {
         this.xrGuiPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         xrGui.addControl(this.xrGuiPanel);
 
-        this.xrGuiPanel.isVisible = false;
+        this.xrGuiPanel.isVisible = true;//false;
     }
 
     createTool(tool: AbstractTool): Button[] {
