@@ -21,14 +21,14 @@ export abstract class AbstractMultiTool extends AbstractTool {
       {this.subtools.map(tool =>
         <button className={tool == this.activeTool ? "toolbarBtnActive toolbarBtn" : "toolbarBtn"}
           data-toggle="tooltip" data-placement="bottom"
-          title={tool.name} onClick={e => this.toolClicked(tool, e)}>
+          title={tool.name} onClick={e => this.toolClicked(tool)}>
           {tool.icon ? <i className={tool.icon}></i> : tool.name}
         </button>
       )}
     </div>
   }
 
-  toolClicked(tool: SubTool, e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+  toolClicked(tool: SubTool): void {
     if (this.active) {
       this.activeTool = tool;
       this.render();
