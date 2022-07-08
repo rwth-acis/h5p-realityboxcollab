@@ -61,6 +61,7 @@ export class PointerTool extends AbstractMultiTool {
         }
     }
 
+    // https://doc.babylonjs.com/divingDeeper/cameras/webVRHelper
     private updateOwnPointer(scene: BABYLON.Scene): void {
         const cam = scene.activeCamera;
         const model = this.instance.realitybox.viewer._babylonBox.model.env;

@@ -15,9 +15,6 @@ export abstract class AbstractXRView extends AbstractTool {
         super(name, icon);
     }
 
-    // https://doc.babylonjs.com/divingDeeper/webXR/introToWebXR
-    // https://codingxr.com/articles/webxr-with-babylonjs/
-    // https://doc.babylonjs.com/divingDeeper/webXR/webXRDemos
     override async onActivate() {
         if (!this.experience) {
             await this.createXR();

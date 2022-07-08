@@ -1,4 +1,6 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { Ray } from "@babylonjs/core/Legacy/legacy";
+import { Scene } from "@babylonjs/core/scene";
 import { BabylonViewer } from "../gui/BabylonViewer";
 
 export class InputManager {
@@ -14,7 +16,7 @@ export class InputManager {
 
     private pressedKeys: boolean[] = [];
 
-    constructor(babylonViewer: BabylonViewer) {
+    constructor(private babylonViewer: BabylonViewer) {
         babylonViewer.scene.onKeyboardObservable.add((e) => {
             if (e.type == BABYLON.KeyboardEventTypes.KEYDOWN) {
                 this.pressedKeys[e.event.keyCode] = true;
@@ -27,5 +29,21 @@ export class InputManager {
 
     isKeyDown(code: number): boolean {
         return this.pressedKeys[code] != undefined ? this.pressedKeys[code] : false;
+    }
+
+    pickWithPointer(): BABYLON.PickingInfo {
+        const scene = this.babylonViewer.scene;
+        const model = this.babylonViewer.models[0]; // Remove?
+
+        if (this.babylonViewer.isInXR) {
+            let ray = {} as BABYLON.Ray;
+            this.babylonViewer.xrGui[0].experience.pointerSelection
+                .getXRControllerByPointerId(0)
+                .getWorldPointerRayToRef(ray);
+            return scene.pickWithRay(ray);
+        }
+        else {
+            return scene.pick(scene.pointerX, scene.pointerY, mesh => model.getChildMeshes().find(c => c == mesh) != undefined);
+        }
     }
 }
