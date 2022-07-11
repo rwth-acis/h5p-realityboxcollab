@@ -1,4 +1,5 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { RealityBoxCollab } from "../RealityboxCollab";
 
 export class Utils {
 
@@ -36,6 +37,21 @@ export class Utils {
 
     static createColor(color: BABYLON.Color3): BABYLON.Color3 {
         return new BABYLON.Color3(color.r, color.g, color.b);
+    }
+
+    static getJoinURL(instance: RealityBoxCollab): string {
+        let uri = window.location.toString();
+        if (uri.indexOf('#') > 0) {
+            // remove hash in uri
+            uri = uri.substring(0, uri.indexOf("#"));
+        }
+
+        let room = "";
+        if (!instance.room.isLocal) {
+            room = `?room=${encodeURIComponent(instance.room.roomInfo.name)}&password=${encodeURIComponent(instance.room.roomInfo.password)}`;
+        }
+
+        return uri + "#openViewer=" + instance.id + room;
     }
 
 }

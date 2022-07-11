@@ -7,6 +7,7 @@ import { RealityBoxCollab } from '../RealityboxCollab';
 import { AbstractGuiElement } from './AbstractGuiElement';
 import React = require('react');
 import { Popups } from './popup/Popups';
+import { Utils } from '../utils/Utils';
 
 export class Settings extends AbstractGuiElement {
 
@@ -37,8 +38,6 @@ export class Settings extends AbstractGuiElement {
       <button className='btn btn-primary' onClick={e => this.joinRoom(true)}>Create Room</button>
       <br></br>
       <button style={{ marginTop: "10px" }} className='btn btn-primary' onClick={e => this.joinRoom(false)}>Join Room</button>
-      <br></br>
-      <Button onClick={e => this.test()}>Test</Button>
     </>;
   }
 
@@ -57,7 +56,9 @@ export class Settings extends AbstractGuiElement {
             Room Name: {this.currentRoom.roomInfo.name}<br></br>
             Users: {this.currentRoom.users.size}<br></br>
             Role: {this.currentRoom.user.role}<br></br>
-            <button className='btn' onClick={e => this.currentRoom.disconnect()}>Leave Room</button>
+            <button className='btn btn-secondary'style={{ marginTop: "10px" }} onClick={e => Popups.showQRCode(this.instance, Utils.getJoinURL(this.instance))}>Share...</button>
+            <br></br>
+            <button className='btn btn-secondary' style={{ marginTop: "10px" }} onClick={e => this.currentRoom.disconnect()}>Leave Room</button>
           </Accordion.Body>
         </Accordion.Item>
         {(this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST)
@@ -74,10 +75,6 @@ export class Settings extends AbstractGuiElement {
         }
       </Accordion>
     </>;
-  }
-
-  test() {
-    Popups.showQRCode(this.instance);
   }
 
   onRoomChanged(): void {

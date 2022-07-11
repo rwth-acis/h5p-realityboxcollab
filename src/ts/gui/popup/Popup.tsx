@@ -8,7 +8,6 @@ import ReactDOM = require("react-dom");
  */
 export class Popup {
     root: JQuery;
-    handler: (event: any) => void;
 
     constructor(title: string, content: ReactNode, maxWidth: string) { // Change HTML to React
         const react = <><div className="viewer--popup">
@@ -36,14 +35,9 @@ export class Popup {
 
     open() {
         $('body').append(this.root);
-        this.handler = (event) => {
-            this.close();
-        }
-        this.root.on('click', this.handler);
     }
 
     close() {
         this.root.detach();
-        this.root.off('click', this.handler);
     }
 }
