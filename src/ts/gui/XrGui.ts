@@ -13,6 +13,7 @@ export class XrGui {
     experience: BABYLON.WebXRDefaultExperience;
     buttonState: any = {};
     currentState: XRState;
+    rightController: BABYLON.WebXRInputSource;
 
     constructor(private toolbar: Toolbar, private scene: BABYLON.Scene, private instance: RealityBoxCollab) {
         this.createXRGui();
@@ -30,6 +31,7 @@ export class XrGui {
         this.experience.input.onControllerAddedObservable.add((evt) => {
             if (evt.inputSource.handedness === "right") {
                 evt.onMeshLoadedObservable.add((data, state) => {
+                    this.rightController = evt;
                     evt.motionController.getAllComponentsOfType("button").forEach(c => {
                         c.onButtonStateChangedObservable.add((evt) => {
                             if (this.buttonState[c.id] != evt.pressed) {
@@ -69,7 +71,7 @@ export class XrGui {
 
         // No borders, cycle through
         if (index == this.toolbar.tools.length) index = 0;
-        else if (index == -1) index = this.toolbar.tools.length - 1;
+        else if (index < 0) index = this.toolbar.tools.length - 1;
 
         this.toolbar.toolClicked(this.toolbar.tools[index]);
 

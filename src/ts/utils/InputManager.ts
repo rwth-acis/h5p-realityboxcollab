@@ -1,7 +1,5 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { Ray } from "@babylonjs/core/Legacy/legacy";
-import { Scene } from "@babylonjs/core/scene";
-import { BabylonViewer } from "../gui/BabylonViewer";
+import { BabylonViewer, XRState } from "../gui/BabylonViewer";
 
 export class InputManager {
 
@@ -35,12 +33,14 @@ export class InputManager {
         const scene = this.babylonViewer.scene;
         const model = this.babylonViewer.models[0]; // Remove?
 
-        if (this.babylonViewer.isInXR) {
-            let ray = {} as BABYLON.Ray;
-            this.babylonViewer.xrGui[0].experience.pointerSelection
-                .getXRControllerByPointerId(0)
-                .getWorldPointerRayToRef(ray);
-            return scene.pickWithRay(ray);
+        if (this.babylonViewer.xrState == XRState.VR) {
+            let ray = new BABYLON.Ray(new BABYLON.Vector3(), new BABYLON.Vector3()); // Dummy, will be overridden
+            let c = this.babylonViewer.xrGui[0].rightController;
+            c.getWorldPointerRayToRef(ray);
+            console.log(ray);
+
+            ray.origin = c.pointer.position;
+            return scene.pickWithRay(ray, mesh => model.getChildMeshes().find(c => c == mesh) != undefined);
         }
         else {
             return scene.pick(scene.pointerX, scene.pointerY, mesh => model.getChildMeshes().find(c => c == mesh) != undefined);

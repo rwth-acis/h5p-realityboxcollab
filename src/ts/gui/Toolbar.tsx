@@ -115,6 +115,9 @@ export class Toolbar extends AbstractGuiElement {
      * Permissions might have been updated. Therefore, redraw the toolbar
      */
     override onSettingsChanged(): void {
+        if (this.activeTool && !this.activeTool.canActivate()) {
+            this.deactivateActiveTool();
+        }
         this.updateView();
     }
 

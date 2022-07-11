@@ -4,6 +4,7 @@ import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { BabylonViewer } from "../gui/BabylonViewer";
+import { InputManager } from "../utils/InputManager";
 
 export class PointerTool extends AbstractMultiTool {
 
@@ -70,7 +71,8 @@ export class PointerTool extends AbstractMultiTool {
         pos.y -= this.instance.babylonViewer.isInXR ? 0.5 : 1.4;
         let hit: BABYLON.PickingInfo;
         if (this.activeTool == this.subtools[0]) {
-            hit = scene.pick(scene.pointerX, scene.pointerY, mesh => model.getChildMeshes().find(c => c == mesh) != undefined);
+            hit = this.instance.inputManager.pickWithPointer();
+            console.log(hit);
         }
         else {
             hit = scene.pickWithRay(new BABYLON.Ray(cam.position, cam.getDirection(BABYLON.Vector3.Forward())),
