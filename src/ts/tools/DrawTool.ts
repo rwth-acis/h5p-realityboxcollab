@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { AdvancedDynamicTexture, ColorPicker, Control, StackPanel } from "@babylonjs/gui";
+import { XRState } from "../gui/BabylonViewer";
 import { RealityBoxCollab } from "../RealityboxCollab";
+import { BabylonBox } from "../RealityboxTypes";
 import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
 
@@ -81,7 +83,8 @@ export class DrawTool extends AbstractMultiTool {
 
 
     drawAir(scene: BABYLON.Scene) {
-        let pick = scene.pick(scene.pointerX, scene.pointerY);
+        let pick = this.pickDrawPoint(scene);
+
         let pos = pick.ray.origin.add(pick.ray.direction.scale(1));
         if (this.lastPosition && Utils.vectorEquals(this.lastPosition, pos)) return;
         this.lastPosition = pos;
@@ -93,7 +96,8 @@ export class DrawTool extends AbstractMultiTool {
     }
 
     drawMat(scene: BABYLON.Scene) {
-        let pick = scene.pick(scene.pointerX, scene.pointerY);
+        let pick = this.pickDrawPoint(scene);
+        
         let texCoordinates = pick.getTextureCoordinates();
         if (!texCoordinates) return;
 
@@ -139,6 +143,15 @@ export class DrawTool extends AbstractMultiTool {
 
     override onRoomChanged(): void {
         this.sharedDrawInformation = undefined; // Reset
+    }
+
+    private pickDrawPoint(scene: BABYLON.Scene): BABYLON.PickingInfo {
+        if (this.instance.babylonViewer.xrState == XRState.VR) {
+            return this.instance.inputManager.pickWithPointer();
+        }
+        else {
+            return scene.pick(scene.pointerX, scene.pointerY);
+        }
     }
 
     private updateSharedTexture(): void {
