@@ -14,6 +14,7 @@ export class XrGui {
     buttonState: any = {};
     currentState: XRState;
     rightController: BABYLON.WebXRInputSource;
+    leftController: BABYLON.WebXRInputSource;
 
     constructor(private toolbar: Toolbar, private scene: BABYLON.Scene, private instance: RealityBoxCollab) {
         this.createXRGui();
@@ -30,34 +31,44 @@ export class XrGui {
 
         this.experience.input.onControllerAddedObservable.add((evt) => {
             if (evt.inputSource.handedness === "right") {
-                evt.onMeshLoadedObservable.add((data, state) => {
-                    this.rightController = evt;
-                    evt.motionController.getAllComponentsOfType("button").forEach(c => {
-                        c.onButtonStateChangedObservable.add((evt) => {
-                            if (this.buttonState[c.id] != evt.pressed) {
-                                this.onButtonStateChanged(c.id, evt.pressed);
-                            }
-                            this.buttonState[c.id] = evt.pressed;
-                        });
-                    });
-                });
-
+                this.rightController = evt;
             }
+            else if (evt.inputSource.handedness === "left") {
+                this.leftController = evt;
+            }
+            this.initController(evt);
         });
     }
 
-    onButtonStateChanged(id: string, down: boolean) {
-        if (id === "b-button" && down) { // Cycle tools
+    private initController(controller: BABYLON.WebXRInputSource) {
+        controller.onMotionControllerInitObservable.add((data, state) => {
+            controller.motionController.getAllComponentsOfType("button").forEach(c => {
+                c.onButtonStateChangedObservable.add((evt) => {
+                    if (this.buttonState[c.id] != evt.pressed) {
+                        this.onButtonStateChanged(c.id, evt.pressed, controller);
+                    }
+                    this.buttonState[c.id] = evt.pressed;
+                });
+            });
+        });
+    }
+
+    private onButtonStateChanged(id: string, down: boolean, controller: BABYLON.WebXRInputSource) {
+        if ((id === "b-button" || id === "y-button") && down) { // Cycle tools
             this.selectTool(false);
             this.updatePanel();
         }
-        else if (id === "a-button" && down) { // Cycle tools
+        else if ((id === "a-button" || id === "x-button") && down) { // Cycle tools
             this.selectTool(true);
             this.updatePanel();
         }
     }
 
-    selectTool(forward: boolean) {
+    getActiveController(): BABYLON.WebXRInputSource {
+        return this.rightController; // At the moment fixed at right controller
+    }
+
+    private selectTool(forward: boolean) {
         const offset = forward ? 1 : -1;
         let active = this.toolbar.activeTool;
         if (active instanceof AbstractMultiTool) {
@@ -80,7 +91,7 @@ export class XrGui {
         }
     }
 
-    createXRGui(): void {
+    private createXRGui(): void {
         let xrGui = AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene as any);
         this.xrGuiPanel = new StackPanel();
         this.xrGuiPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
@@ -90,7 +101,7 @@ export class XrGui {
         this.xrGuiPanel.isVisible = true;//false;
     }
 
-    createTool(tool: AbstractTool): Button[] {
+    private createTool(tool: AbstractTool): Button[] {
         let subs: Button[] = [];
         if (tool instanceof AbstractMultiTool && tool.active) {
             subs = tool.subtools.map(s =>
@@ -107,7 +118,7 @@ export class XrGui {
         }), ...subs];
     }
 
-    createButton(name: string, active: boolean, callback: () => void): Button {
+    private createButton(name: string, active: boolean, callback: () => void): Button {
         var button = Button.CreateSimpleButton("but", name);
         button.width = this.currentState == XRState.AR ? 0.5 : 0.15;
         button.fontSize = this.currentState == XRState.AR ? "60px" : "30px";
@@ -120,7 +131,7 @@ export class XrGui {
         return button;
     }
 
-    updatePanel(): void {
+    private updatePanel(): void {
         this.xrGuiPanel.left = this.currentState == XRState.AR ? "20px" : "1000px";
         this.xrGuiPanel.top = this.currentState == XRState.AR ? "20px" : "500px";
 

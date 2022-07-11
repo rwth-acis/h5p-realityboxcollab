@@ -72,7 +72,6 @@ export class PointerTool extends AbstractMultiTool {
         let hit: BABYLON.PickingInfo;
         if (this.activeTool == this.subtools[0]) {
             hit = this.instance.inputManager.pickWithPointer();
-            console.log(hit);
         }
         else {
             hit = scene.pickWithRay(new BABYLON.Ray(cam.position, cam.getDirection(BABYLON.Vector3.Forward())),

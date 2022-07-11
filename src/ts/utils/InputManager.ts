@@ -35,10 +35,8 @@ export class InputManager {
 
         if (this.babylonViewer.xrState == XRState.VR) {
             let ray = new BABYLON.Ray(new BABYLON.Vector3(), new BABYLON.Vector3()); // Dummy, will be overridden
-            let c = this.babylonViewer.xrGui[0].rightController;
+            let c = this.babylonViewer.xrGui[0].getActiveController();
             c.getWorldPointerRayToRef(ray);
-            console.log(ray);
-
             ray.origin = c.pointer.position;
             return scene.pickWithRay(ray, mesh => model.getChildMeshes().find(c => c == mesh) != undefined);
         }
