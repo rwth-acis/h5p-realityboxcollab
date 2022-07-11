@@ -1,11 +1,12 @@
 import { ReactElement, ReactNode } from 'react';
-import { Accordion } from 'react-bootstrap';
+import { Accordion, Button } from 'react-bootstrap';
 import { Role, Room } from '../networking/Room';
 import { RoomInformation } from '../networking/RoomManager';
 import { SETTINGS } from '../networking/RoomSettings';
 import { RealityBoxCollab } from '../RealityboxCollab';
 import { AbstractGuiElement } from './AbstractGuiElement';
 import React = require('react');
+import { Popups } from './popup/Popups';
 
 export class Settings extends AbstractGuiElement {
 
@@ -36,6 +37,8 @@ export class Settings extends AbstractGuiElement {
       <button className='btn btn-primary' onClick={e => this.joinRoom(true)}>Create Room</button>
       <br></br>
       <button style={{ marginTop: "10px" }} className='btn btn-primary' onClick={e => this.joinRoom(false)}>Join Room</button>
+      <br></br>
+      <Button onClick={e => this.test()}>Test</Button>
     </>;
   }
 
@@ -73,6 +76,9 @@ export class Settings extends AbstractGuiElement {
     </>;
   }
 
+  test() {
+    Popups.showQRCode(this.instance);
+  }
 
   onRoomChanged(): void {
     super.updateView();

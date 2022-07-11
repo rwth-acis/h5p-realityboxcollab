@@ -48,7 +48,7 @@ export class RealityBoxCollab {
     wireframeViewMode: WireframeViewMode;
     normalViewMode: NormalViewMode;
 
-    constructor(options: any, private id: any) {
+    constructor(options: any, public id: any) {
         this.options = options.realityboxcollab;
 
         this.roomManager = new RoomManager();
