@@ -21,13 +21,7 @@ export class MoveTool extends AbstractMultiTool {
         const scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
         const mesh: BABYLON.Mesh = this.instance.realitybox.viewer._babylonBox.model.env;
 
-        if (!this.gizmoManager) {
-            let layer = new BABYLON.UtilityLayerRenderer(scene); // Fixes unknown bug in babylonjs
-            this.gizmoManager = new BABYLON.GizmoManager(scene, 1, layer, layer);
-            this.gizmoManager.boundingBoxGizmoEnabled = true;
-            this.gizmoManager.gizmos.boundingBoxGizmo.scaleBoxSize = 0.05;
-            this.gizmoManager.usePointerToAttachGizmos = false; // Might be changed for multiple models
-        }
+        if (!this.gizmoManager) this.gizmoManager = MoveTool.createGizmosManager(scene);
 
         // Select gizmo
         this.gizmoManager.positionGizmoEnabled = (tool == this.subtools[0]);
@@ -50,6 +44,15 @@ export class MoveTool extends AbstractMultiTool {
 
     override onRoomChanged(): void {
 
+    }
+
+    static createGizmosManager(scene: BABYLON.Scene): BABYLON.GizmoManager {
+        let layer = new BABYLON.UtilityLayerRenderer(scene); // Fixes unknown bug in babylonjs
+        let gizmoManager = new BABYLON.GizmoManager(scene, 1, layer, layer);
+        gizmoManager.boundingBoxGizmoEnabled = true;
+        gizmoManager.gizmos.boundingBoxGizmo.scaleBoxSize = 0.05;
+        gizmoManager.usePointerToAttachGizmos = false; // Might be changed for multiple models
+        return gizmoManager;
     }
 
 }

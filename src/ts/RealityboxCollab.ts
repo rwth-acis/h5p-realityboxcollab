@@ -84,7 +84,7 @@ export class RealityBoxCollab {
         // Main Toolbar
         this.orbitTool = new OrbitTool(this);
         this.drawTool = new DrawTool(this, container);
-        this.annotationTool = new AnnotationTool(this);
+        this.annotationTool = new AnnotationTool(this, container);
         this.pointerTool = new PointerTool(this, container);
         this.moveTool = new MoveTool(this, container);
 
@@ -123,7 +123,8 @@ export class RealityBoxCollab {
             this.realitybox.viewer._babylonBox.addAnnotation({
                 content: a[0].content,
                 normalRef: new BABYLON.Vector3(0, 1, 0),
-                position: new BABYLON.Vector3(1, 0, 2)
+                position: new BABYLON.Vector3(1, 0, 2),
+                drawing: undefined
             });
         }
 

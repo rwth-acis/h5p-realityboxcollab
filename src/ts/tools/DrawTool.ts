@@ -2,7 +2,6 @@ import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { AdvancedDynamicTexture, ColorPicker, Control, StackPanel } from "@babylonjs/gui";
 import { XRState } from "../gui/BabylonViewer";
 import { RealityBoxCollab } from "../RealityboxCollab";
-import { BabylonBox } from "../RealityboxTypes";
 import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
 
