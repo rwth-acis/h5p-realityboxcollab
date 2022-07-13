@@ -1,13 +1,13 @@
 import { ReactElement, ReactNode } from 'react';
-import { Accordion, Button } from 'react-bootstrap';
+import { Accordion } from 'react-bootstrap';
 import { Role, Room } from '../networking/Room';
 import { RoomInformation } from '../networking/RoomManager';
 import { SETTINGS } from '../networking/RoomSettings';
 import { RealityBoxCollab } from '../RealityboxCollab';
-import { AbstractGuiElement } from './AbstractGuiElement';
-import React = require('react');
-import { Popups } from './popup/Popups';
 import { Utils } from '../utils/Utils';
+import { AbstractGuiElement } from './AbstractGuiElement';
+import { Popups } from './popup/Popups';
+import React = require('react');
 
 export class Settings extends AbstractGuiElement {
 

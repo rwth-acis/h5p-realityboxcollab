@@ -105,7 +105,7 @@ export class Toolbar extends AbstractGuiElement {
     override onRoomChanged(): void {
         if (this.activeTool) this.deactivateActiveTool();
 
-        this.tools.forEach(t => { t.onRoomChanged(); t.currentRoom = this.currentRoom; });
+        this.tools.forEach(t => { t.currentRoom = this.currentRoom; t.onRoomChanged(); });
 
         if (this.alwaysActive) this.selectFirst();
         this.updateView();
