@@ -49,6 +49,7 @@ export interface RealityboxAnnotation {
     normalRef: BABYLON.Vector3;
     content: H5PContent;
     drawing: BABYLON.AbstractMesh;
+    id?: string;
 }
 
 export interface H5PContent {

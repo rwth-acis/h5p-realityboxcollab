@@ -13,8 +13,7 @@ export class AnnotationTool extends AbstractMultiTool {
     activeAnnotation: RealityboxAnnotation;
     gizmoManager: BABYLON.GizmoManager;
     lastPosition: BABYLON.Vector3;
-    annotations: Y.Array<RemoteAnnotation>;
-    ownChange: boolean = false;
+    annotations: Y.Map<RemoteAnnotation>;
 
     constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Annotation Tool", "fa-solid fa-note-sticky", container, [
@@ -26,6 +25,7 @@ export class AnnotationTool extends AbstractMultiTool {
         this.instance.babylonViewer.scene.registerBeforeRender(() => {
             if (this.activeAnnotation && !Utils.vectorEquals(this.activeAnnotation.drawing.position, this.lastPosition)) {
                 this.onPositionChanged();
+                this.set(this.activeAnnotation);
             }
         });
     }
@@ -40,21 +40,28 @@ export class AnnotationTool extends AbstractMultiTool {
             this.callbackRegistered = true;
         }
 
-        this.annotations.observe((evt) => {
-            if (!this.ownChange) this.recreateAll();
-
-            this.ownChange = false;
-        });
-
         this.onChange();
         super.onActivate();
     }
 
-    private recreateAll() {
+    private processChanges() {
         const babylonBox = this.instance.babylonViewer.babylonBox;
 
-        babylonBox.getAnnotations().forEach(a => babylonBox.removeAnnotation(a)); // Remove all
-        this.annotations.forEach(a => babylonBox.addAnnotation(fromRemote(a))); // Recreate all
+        let local: RealityboxAnnotation[] = babylonBox.getAnnotations();
+        local.forEach(a => {
+            let remote = this.annotations.get(a.id);
+            if (remote) {
+                a.drawing.position = Utils.createVector(remote.position);
+                a.position = Utils.createVector(remote.position);
+            }
+            else {
+                babylonBox.removeAnnotation(a);
+            }
+        });
+        this.annotations.forEach(a => {
+            if (!local.find(x => x.id === a.id))
+                babylonBox.addAnnotation(fromRemote(a));
+        }); // Recreate all
     }
 
     override onDeactivate(): void {
@@ -65,11 +72,15 @@ export class AnnotationTool extends AbstractMultiTool {
     }
 
     override onRoomChanged(): void {
-        this.annotations = this.currentRoom.doc.getArray("annotations");
+        this.annotations = this.currentRoom.doc.getMap("annotations");
         if (this.currentRoom.user.role == Role.HOST) {
-            this.annotations.push(this.instance.babylonViewer.babylonBox.getAnnotations().map(a => createRemote(a)));
+            for (let a of this.instance.babylonViewer.babylonBox.getAnnotations()) {
+                a.id = this.generateId();
+                this.set(a);
+            }
         }
-        this.recreateAll();
+        this.annotations.observe((evt) => this.processChanges());
+        this.processChanges();
     }
 
     onSubToolSwitched(subtool: SubTool): void {
@@ -105,9 +116,10 @@ export class AnnotationTool extends AbstractMultiTool {
                 content: this.activeAnnotation.content,
                 position: this.activeAnnotation.drawing.position.add(new BABYLON.Vector3(0, 0.2, 0)),
                 normalRef: this.activeAnnotation.normalRef,
+                id: this.generateId(),
                 drawing: undefined
             };
-            this.add(n);
+            this.set(n);
         }
         else if (this.activeTool == this.subtools[2]) { // Delete
             if (confirm("Are you sure to delete this annotation for this room?")) {
@@ -117,31 +129,26 @@ export class AnnotationTool extends AbstractMultiTool {
         }
     }
 
-    private add(a: RealityboxAnnotation) {
-        this.annotations.push([createRemote(a)]);
+    private set(a: RealityboxAnnotation) {
+        this.annotations.set(a.id, createRemote(a));
     }
 
     private delete(a: RealityboxAnnotation) {
-        let index = -1, x = 0;
-        this.annotations.forEach(a => {
-            if (remoteEquals(a, this.activeAnnotation)) {
-                index = x;
-            }
-            x++;
-        });
-        console.log(index);
-        console.log(this.annotations.length);
-        this.annotations.delete(index);
-        console.log(this.annotations.length);
+        this.annotations.delete(a.id);
     }
 
     private onPositionChanged() {
         this.activeAnnotation.position = this.activeAnnotation.drawing.position;
         this.lastPosition = this.activeAnnotation.position.clone();
-        this.delete(this.activeAnnotation);
-        this.add(this.activeAnnotation);
-        this.ownChange = true;
-        console.log(this.activeAnnotation.position);
+        this.set(this.activeAnnotation);
+    }
+
+    private generateId(): string {
+        let id = null;
+        do {
+            id = Math.random() + ""; // Just some random string
+        } while (this.annotations.get(id));
+        return id;
     }
 }
 
@@ -149,13 +156,15 @@ interface RemoteAnnotation {
     content: any;
     position: BABYLON.Vector3;
     normal: BABYLON.Vector3;
+    id: string;
 }
 
 function createRemote(a: RealityboxAnnotation): RemoteAnnotation {
     return {
         content: a.content,
         position: a.position,
-        normal: a.normalRef
+        normal: a.normalRef,
+        id: a.id
     };
 }
 
@@ -164,7 +173,8 @@ function fromRemote(a: RemoteAnnotation): RealityboxAnnotation {
         content: a.content,
         position: Utils.createVector(a.position),
         normalRef: a.normal,
-        drawing: undefined
+        drawing: undefined,
+        id: a.id
     }
 }
 
