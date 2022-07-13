@@ -87,3 +87,11 @@ $background: whitesmoke;
 .nocursor {
   cursor: none;
 }
+
+.centerContents {
+  position: relative;
+
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+}

@@ -25,12 +25,16 @@ export class BabylonViewer extends NetworkListener {
     constructor(private instance: RealityBoxCollab) {
         super();
 
+        // Get fields
         this.models = [instance.realitybox.viewer._babylonBox.model.env];
         this.scene = instance.realitybox.viewer._babylonBox.scene;
         this.babylonBox = instance.realitybox.viewer._babylonBox;
         this.baseNode = new BABYLON.TransformNode("Base Node", this.scene);
 
-
+        // Parent objects to baseNode
+        for (let a of this.instance.realitybox.viewer._babylonBox.getAnnotations()) {
+            a.drawing.parent = this.baseNode;
+        }
         for (let model of this.models) {
             let node = new BABYLON.TransformNode("Parent Node for " + model.name, this.scene);
             node.parent = this.baseNode;
