@@ -10,13 +10,13 @@ export class Popup {
     root: JQuery;
 
     constructor(title: string, content: ReactNode, maxWidth: string) { // Change HTML to React
-        const react = <><div className="viewer--popup">
+        const react = <><div>
             <div className="outer">
                 <div className="container" style={{ maxWidth: maxWidth }}>
                     <div className="header">
                         <div>{title}</div>
                         <div>
-                            <button onClick={e => this.close()}>
+                            <button className="btn" onClick={e => this.close()}>
                                 <i className="material-icons">close</i>
                             </button>
                         </div>
@@ -26,7 +26,8 @@ export class Popup {
                     </div>
                 </div>
             </div>
-        </div></>;
+        </div>
+        </>;
         let e = document.createElement("div");
         ReactDOM.render(react, e);
         this.root = $(e);

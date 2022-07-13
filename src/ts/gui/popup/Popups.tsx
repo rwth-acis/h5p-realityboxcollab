@@ -9,10 +9,11 @@ H5P = H5P || {};
 export class Popups {
 
   static showQRCode(instance: RealityBoxCollab, url: string) {
-    const react: ReactNode = <> <div className="inner-content">
-      Open this room with the following URL or QR Code
+    const react: ReactNode = <> <div className="centerContents">
+      Open this room with the following URL or QR Code:
       <div className="kewar"></div>
       <input
+      style={{}}
         className="url-input"
         type="text"
         value={url}
@@ -34,7 +35,6 @@ export class Popups {
       }
     }, instance.id, undefined, undefined, { parent: this });
     popup.open();
-
     kewar.attach(popup.root.find('.kewar'));
   }
 }

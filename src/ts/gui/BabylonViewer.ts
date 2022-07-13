@@ -1,5 +1,4 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import * as Y from "yjs";
 import { NetworkListener } from "../networking/NetworkListener";
 import { Role, User } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
@@ -19,8 +18,6 @@ export class BabylonViewer extends NetworkListener {
     userMeshes: Map<string, UserMesh> = new Map();
     models: BABYLON.Mesh[];
     modelNodes: BABYLON.TransformNode[] = [];
-    remoteModelInfo: Y.Map<ModelInformation>;
-    localModelInfo: Map<string, ModelInformation> = new Map();
     xrState: XRState = XRState.NONE;
     xrGui: XrGui[] = [];
     baseNode: BABYLON.TransformNode;
@@ -109,23 +106,6 @@ export class BabylonViewer extends NetworkListener {
                 }
             });
         }
-
-        this.models.forEach(mesh => {
-            let remote = this.remoteModelInfo.get(mesh.name);
-            let local = this.localModelInfo.get(mesh.name);
-            let now = getInformation(mesh);
-            if (!local) this.localModelInfo.set(mesh.name, local = now);
-            if (!remote) this.remoteModelInfo.set(mesh.name, remote = now);
-
-            if (!informationEquals(remote, local)) { // Remote changes
-                applyInformation(mesh, remote);
-            }
-            else if (!informationEquals(local, now)) { // Local changes
-                this.remoteModelInfo.set(mesh.name, now);
-            }
-
-            this.localModelInfo.set(mesh.name, now);
-        });
     }
 
     onRoomChanged(): void {
@@ -133,7 +113,6 @@ export class BabylonViewer extends NetworkListener {
             this.scene.removeMesh(mesh.mesh);
         });
         this.userMeshes.clear();
-        this.remoteModelInfo = this.currentRoom.doc.getMap("models");
     }
 
     override onSettingsChanged(): void {
@@ -184,22 +163,4 @@ export interface ModelInformation {
     position: BABYLON.Vector3;
     rotation: BABYLON.Quaternion;
     scale: BABYLON.Vector3;
-}
-
-function applyInformation(mesh: BABYLON.Mesh, info: ModelInformation): void {
-    mesh.position = Utils.createVector(info.position);
-    mesh.rotationQuaternion = Utils.createQuaternion(info.rotation);
-    mesh.scaling = Utils.createVector(info.scale);
-}
-
-function getInformation(mesh: BABYLON.Mesh): ModelInformation {
-    return {
-        position: mesh.position.clone(),
-        rotation: mesh.rotationQuaternion.clone(),
-        scale: mesh.scaling.clone()
-    };
-}
-
-function informationEquals(a: ModelInformation, b: ModelInformation): boolean {
-    return Utils.vectorEquals(a.position, b.position) && Utils.quaternionEquals(a.rotation, b.rotation) && Utils.vectorEquals(a.scale, b.scale);
 }
