@@ -2,7 +2,7 @@ import { ReactElement, ReactNode } from 'react';
 import { Accordion } from 'react-bootstrap';
 import { Role, Room } from '../networking/Room';
 import { RoomInformation } from '../networking/RoomManager';
-import { SETTINGS } from '../networking/RoomSettings';
+import { DEFAULT_SETTINGS, SETTINGS } from '../networking/RoomSettings';
 import { RealityBoxCollab } from '../RealityboxCollab';
 import { Utils } from '../utils/Utils';
 import { AbstractGuiElement } from './AbstractGuiElement';
@@ -56,7 +56,7 @@ export class Settings extends AbstractGuiElement {
             Room Name: {this.currentRoom.roomInfo.name}<br></br>
             Users: {this.currentRoom.users.size}<br></br>
             Role: {this.currentRoom.user.role}<br></br>
-            <button className='btn btn-secondary'style={{ marginTop: "10px" }} onClick={e => Popups.showQRCode(this.instance, Utils.getJoinURL(this.instance))}>Share...</button>
+            <button className='btn btn-secondary' style={{ marginTop: "10px" }} onClick={e => Popups.showQRCode(this.instance, Utils.getJoinURL(this.instance))}>Share...</button>
             <br></br>
             <button className='btn btn-secondary' style={{ marginTop: "10px" }} onClick={e => this.currentRoom.disconnect()}>Leave Room</button>
           </Accordion.Body>
@@ -94,27 +94,25 @@ export class Settings extends AbstractGuiElement {
 
   joinRoom(create: boolean) {
     const manager = this.instance.roomManager;
-    let info: RoomInformation;
 
     if (create) {
-      let name = prompt("Enter a name for the new room");
-      if (name) {
-        info = manager.createRoom(name, "");
-      }
+      let p = Popups.createRoom((room, password, user) => {
+        let info = manager.createRoom(room, password);
+        p.close();
+        this.instance.room = new Room(this.instance, this.instance.getListeners(), info, create, user, false);
+      });
     }
     else {
-      let name = prompt("Enter the name of the room");
-      if (name) {
-        info = manager.getRoom(name);
-        if (!info) {
-          alert("This room does not exist");
+      let p = Popups.joinRoom((room, password) => {
+        let info = manager.getRoom(room);
+        if (!info || info.password !== password) {
+          alert("Invalid roomname or password")
           return;
         }
-      }
+        p.close();
+        this.instance.room = new Room(this.instance, this.instance.getListeners(), info, create, undefined, false);
+      });
     }
 
-    if (info) {
-      this.instance.room = new Room(this.instance, this.instance.getListeners(), info, create, false);
-    }
   }
 }

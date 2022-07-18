@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import React = require("react");
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { Popup } from "./Popup";
@@ -8,12 +8,12 @@ H5P = H5P || {};
 
 export class Popups {
 
-  static showQRCode(instance: RealityBoxCollab, url: string) {
+  static showQRCode(instance: RealityBoxCollab, url: string): Popup {
     const react: ReactNode = <> <div className="centerContents">
       Open this room with the following URL or QR Code:
       <div className="kewar"></div>
       <input
-      style={{}}
+        style={{}}
         className="url-input"
         type="text"
         value={url}
@@ -36,5 +36,61 @@ export class Popups {
     }, instance.id, undefined, undefined, { parent: this });
     popup.open();
     kewar.attach(popup.root.find('.kewar'));
+    return popup;
   }
+
+  static createRoom(callback: (name: string, password: string, user: string) => void): Popup {
+    const react: ReactNode = <> <div className="centerContents">
+      Create a new room:
+      <form>
+        <div className="form-group">
+          <label htmlFor="inputRoomName">Room Name</label>
+          <input className="form-control" id="inputRoomName" placeholder="Enter a roomname" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="inputPassword">Password</label>
+          <input type="password" className="form-control" id="inputPassword" placeholder="Enter a new password" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="inputUsername">Username</label>
+          <input className="form-control" id="inputUsername" placeholder="Enter your new username" />
+        </div>
+      </form>
+      <br></br>
+      <button className="btn btn-primary" onClick={(e) => callback(val("inputRoomName"), val("inputPassword"), val("inputUsername"))}>Create room</button>
+    </div>
+    </>;
+
+    let popup = new Popup('', react, "800px");
+    popup.open();
+    return popup;
+  }
+
+  static joinRoom(callback: (name: string, password: string) => void): Popup {
+    const react: ReactNode = <> <div className="centerContents">
+      Join an existing room:
+      <form>
+        <div className="form-group">
+          <label htmlFor="inputRoomName">Room Name</label>
+          <input className="form-control" id="inputRoomName" placeholder="Enter the name of the room" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="inputPassword">Password</label>
+          <input type="password" className="form-control" id="inputPassword" placeholder="Enter the password of the room" />
+        </div>
+      </form>
+      <br></br>
+      <button className="btn btn-primary" onClick={(e) => callback(val("inputRoomName"), val("inputPassword"))}>Join</button>
+    </div>
+    </>;
+
+    let popup = new Popup('', react, "800px");
+    popup.open();
+    return popup;
+  }
+
+}
+
+function val(id: string): string {
+  return (document.getElementById(id) as HTMLInputElement).value;
 }

@@ -2,6 +2,7 @@ import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { AbstractGuiElement } from './gui/AbstractGuiElement';
 import { BabylonViewer } from './gui/BabylonViewer';
 import { Chat } from './gui/Chat';
+import { Popups } from "./gui/popup/Popups";
 import { Settings } from './gui/Settings';
 import { Toolbar } from './gui/Toolbar';
 import { NetworkListener } from './networking/NetworkListener';
@@ -132,7 +133,7 @@ export class RealityBoxCollab {
             name: "Local Room",
             password: "",
             settings: DEFAULT_SETTINGS
-        }, true, true);
+        }, true, undefined, true);
     }
 
     getListeners(): NetworkListener[] {

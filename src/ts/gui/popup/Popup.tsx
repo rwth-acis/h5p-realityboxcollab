@@ -4,7 +4,7 @@ import React = require("react");
 import ReactDOM = require("react-dom");
 
 /**
- * Explain Realitybox
+ * <Explain Realitybox>
  */
 export class Popup {
     root: JQuery;
@@ -29,6 +29,7 @@ export class Popup {
         </div>
         </>;
         let e = document.createElement("div");
+        e.classList.add("viewer--popup");
         ReactDOM.render(react, e);
         this.root = $(e);
     }

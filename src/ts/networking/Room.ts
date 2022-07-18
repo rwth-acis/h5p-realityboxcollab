@@ -30,7 +30,7 @@ export class Room {
      * @param isCreator Whether this user is the creator of the room
      * @param isLocal Whether this room is a local / pseudo room
      */
-    constructor(private instance: RealityBoxCollab, private listeners: NetworkListener[], public roomInfo: RoomInformation, public isCreator: boolean, public isLocal: boolean) {
+    constructor(private instance: RealityBoxCollab, private listeners: NetworkListener[], public roomInfo: RoomInformation, public isCreator: boolean, username: string, public isLocal: boolean) {
         this.doc = new Y.Doc();
         this.manager = this.instance.roomManager;
 
@@ -38,7 +38,7 @@ export class Room {
             this.wsProvider = new WebsocketProvider('ws://192.168.0.10:1234', "room:" + roomInfo.name, this.doc);
             this.wsProvider.on('status', (event: any) => {
                 if (event.status === "connected") {
-                    this.onConnect();
+                    this.onConnect(username);
                 }
                 else if (event.status === "disconnected") {
                     this.onDisconnect();
@@ -46,18 +46,18 @@ export class Room {
             });
         }
         else {
-            this.onConnect();
+            this.onConnect(undefined);
         }
     }
 
     /**
      * Called when beeing connected to a room. This method might be called multiples times, e.g. when reconnecting to the local room
+     * @param username if set, the username will be used for non local rooms. If not set, the username will be asked (used, if not creator)
      */
-    onConnect(): void {
+    onConnect(username: string): void {
         this.users = this.doc.getMap("userdata");
-        let username: string = this.isLocal ? "Local User" : this.askUsername();
         this.user = {
-            username: username,
+            username: this.isLocal ? "Local User" : (username || this.askUsername()),
             position: null,
             role: this.isCreator ? Role.HOST : Role.USER
         };
@@ -103,7 +103,7 @@ export class Room {
             this.hostUpdater.clear();
         }
         this.instance.room = this.instance.localRoom;
-        this.instance.room.onConnect();
+        this.instance.room.onConnect(undefined);
     }
 
     /**
