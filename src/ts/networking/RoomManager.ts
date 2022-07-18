@@ -1,5 +1,6 @@
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
+import { Popups } from "../gui/popup/Popups";
 import { DEFAULT_SETTINGS, RoomSettings } from "./RoomSettings";
 
 /**
@@ -33,11 +34,11 @@ export class RoomManager {
      */
     createRoom(name: string, password: string): RoomInformation {
         if (!this.rooms) {
-            alert("Cannot reach signaling server");
+            Popups.alert("Cannot reach signaling server");
             return null;
         }
         if (this.getRoom(name)) {
-            alert("Unable to create room: Name already in use");
+            Popups.alert("Unable to create room: Name already in use");
             return null;
         }
 

@@ -133,7 +133,7 @@ export class Room {
                 if (!Room.checkUsername(username)) return;
 
                 else if (this.users.get(username)) {
-                    alert(`Username "${username}" already taken`);
+                    Popups.alert(`Username "${username}" already taken`);
                 }
                 else {
                     p.close();
@@ -147,11 +147,11 @@ export class Room {
     static checkUsername(username: string): boolean {
         let r = null;
         if (!username || username.length < 3) {
-           r = "Your username needs to be at least 3 characters long";
+            r = "Your username needs to be at least 3 characters long";
         }
-        
+
         if (r) {
-            alert(r);
+            Popups.alert(r);
         }
         return r == null;
     }

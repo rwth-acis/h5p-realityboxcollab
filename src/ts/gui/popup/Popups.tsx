@@ -95,7 +95,7 @@ export class Popups {
       <form>
         <div className="form-group">
           <label htmlFor="inputStr">{description}</label>
-          <input className="form-control" id="inputStr"/>
+          <input className="form-control" id="inputStr" />
         </div>
       </form>
       <br></br>
@@ -104,6 +104,17 @@ export class Popups {
     </>;
 
     let popup = new Popup('', react, "800px");
+    popup.open();
+    return popup;
+  }
+
+  static alert(title: string): Popup {
+    const react: ReactNode = <> <div className="centerContents" style={{border: "1px solid red"}}>
+      {title}
+    </div>
+    </>;
+
+    let popup = new Popup('', react, "500px");
     popup.open();
     return popup;
   }

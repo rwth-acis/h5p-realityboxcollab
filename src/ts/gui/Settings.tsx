@@ -110,7 +110,7 @@ export class Settings extends AbstractGuiElement {
       let p = Popups.joinRoom((room, password) => {
         let info = manager.getRoom(room);
         if (!info || info.password !== password) {
-          alert("Invalid roomname or password")
+          Popups.alert("Invalid roomname or password")
           return;
         }
         p.close();
