@@ -97,7 +97,11 @@ export class Settings extends AbstractGuiElement {
 
     if (create) {
       let p = Popups.createRoom((room, password, user) => {
+        if (!Room.checkUsername(user)) return;
+
         let info = manager.createRoom(room, password);
+        if (!info) return;
+
         p.close();
         this.instance.room = new Room(this.instance, this.instance.getListeners(), info, create, user, false);
       });

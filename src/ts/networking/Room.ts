@@ -2,6 +2,7 @@ import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 import { Chat } from "../gui/Chat";
+import { Popups } from "../gui/popup/Popups";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
@@ -54,10 +55,10 @@ export class Room {
      * Called when beeing connected to a room. This method might be called multiples times, e.g. when reconnecting to the local room
      * @param username if set, the username will be used for non local rooms. If not set, the username will be asked (used, if not creator)
      */
-    onConnect(username: string): void {
+    async onConnect(username: string) {
         this.users = this.doc.getMap("userdata");
         this.user = {
-            username: this.isLocal ? "Local User" : (username || this.askUsername()),
+            username: this.isLocal ? "Local User" : (username || await this.askUsername()),
             position: null,
             role: this.isCreator ? Role.HOST : Role.USER
         };
@@ -126,18 +127,33 @@ export class Room {
         this.instance.chat.sendMessage(Chat.createMessage(msg, "Room " + this.roomInfo.name));
     }
 
-    private askUsername(): string {
-        while (true) {
-            let username = prompt("Please enter a username");
-            if (username) {
-                if (this.users.get(username)) {
+    private async askUsername(): Promise<string> {
+        let promise = new Promise<string>((resolve) => {
+            let p = Popups.input("Please enter a new username for this room", "New username", (username) => {
+                if (!Room.checkUsername(username)) return;
+
+                else if (this.users.get(username)) {
                     alert(`Username "${username}" already taken`);
                 }
                 else {
-                    return username;
+                    p.close();
+                    resolve(username);
                 }
-            }
+            });
+        });
+        return promise;
+    }
+
+    static checkUsername(username: string): boolean {
+        let r = null;
+        if (!username || username.length < 3) {
+           r = "Your username needs to be at least 3 characters long";
         }
+        
+        if (r) {
+            alert(r);
+        }
+        return r == null;
     }
 }
 

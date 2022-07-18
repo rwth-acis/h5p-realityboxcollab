@@ -89,6 +89,25 @@ export class Popups {
     return popup;
   }
 
+  static input(title: string, description: string, callback: (str: string) => void): Popup {
+    const react: ReactNode = <> <div className="centerContents">
+      {title}
+      <form>
+        <div className="form-group">
+          <label htmlFor="inputStr">{description}</label>
+          <input className="form-control" id="inputStr"/>
+        </div>
+      </form>
+      <br></br>
+      <button className="btn btn-primary" onClick={(e) => callback(val("inputStr"))}>Ok</button>
+    </div>
+    </>;
+
+    let popup = new Popup('', react, "800px");
+    popup.open();
+    return popup;
+  }
+
 }
 
 function val(id: string): string {
