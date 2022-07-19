@@ -2,6 +2,9 @@ import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { BabylonViewer } from "../../gui/BabylonViewer";
 import { AbstractTool } from "../AbstractTool";
 
+/**
+ * The normal view mode is just the default lit version of the scene. It is its own class to be easily accessible as a tool.
+ */
 export class NormalViewMode extends AbstractTool {
 
     constructor(private babylonViewer: BabylonViewer) {
@@ -79,6 +82,11 @@ export class WireframeViewMode extends AbstractTool {
 
 }
 
+/**
+ * Helper function to iterate over all child meshes of all models of this instance
+ * @param babylonViewer The babylonvier of the instance
+ * @param callback Function to be executed on every child mesh of every model of this instance
+ */
 function forMeshes(babylonViewer: BabylonViewer, callback: (mesh: BABYLON.AbstractMesh) => void) {
     for (let model of babylonViewer.models) {
         for (let mesh of model.getChildMeshes()) {

@@ -141,6 +141,8 @@ export class DrawTool extends AbstractMultiTool {
     }
 
     override onRoomChanged(): void {
+        this.lineMeshes.forEach(m => this.instance.babylonViewer.scene.removeMesh(m));
+        this.lineMeshes = [];
         this.sharedDrawInformation = undefined; // Reset
     }
 

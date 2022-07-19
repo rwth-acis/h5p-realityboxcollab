@@ -4,6 +4,10 @@ import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 
 /**
+ * Abstraction layer for XR Tools (namely the ARTool and the VRTool).
+ * 
+ * Note for WebXR:
+ * --------------
  * WebXR will not work properly if not accessed via https or localhost. 
  * When used in a local development environment, the best option to access the app via an other device (like a smartphone)
  * is to setup a port forwarding using the chrome devtools at chrome://inspect/#devices (the device must be connect via adb).
