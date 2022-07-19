@@ -1,10 +1,9 @@
-import { User } from "../networking/Room";
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { BabylonViewer } from "../gui/BabylonViewer";
+import { User } from "../networking/Room";
+import { RealityBoxCollab } from "../RealityboxCollab";
 import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
-import { RealityBoxCollab } from "../RealityboxCollab";
-import { BabylonViewer } from "../gui/BabylonViewer";
-import { InputManager } from "../utils/InputManager";
 
 export class PointerTool extends AbstractMultiTool {
 
@@ -66,6 +65,7 @@ export class PointerTool extends AbstractMultiTool {
     private updateOwnPointer(scene: BABYLON.Scene): void {
         const cam = scene.activeCamera;
         const model = this.instance.realitybox.viewer._babylonBox.model.env;
+        const base = this.instance.babylonViewer.baseNode.position;
 
         let pos = cam.position.clone();
         pos.y -= this.instance.babylonViewer.isInXR ? 0.5 : 1.4;
@@ -82,7 +82,7 @@ export class PointerTool extends AbstractMultiTool {
         if (!target) target = pos;
 
         let info = {
-            pos: pos,
+            pos: pos.subtract(base),
             target: target,
             active: hit.pickedPoint != undefined
         }
@@ -119,7 +119,6 @@ class Pointer {
         this.sphere = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
             diameter: 0.05
         }, scene);
-        this.sphere.setParent(this.babylonViewer.baseNode);
         this.sphere.material = this.mat;
     }
 
@@ -128,18 +127,18 @@ class Pointer {
         this.sphere.setEnabled(info.active);
         if (!info.active) return;
 
+        const base = this.babylonViewer.baseNode.position;
+
         this.line = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: [Utils.createVector(info.pos), Utils.createVector(info.target)],
+            path: [Utils.createVector(info.pos).add(base), Utils.createVector(info.target).add(base)],
             radius: 0.005,
             updatable: true,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE,
             instance: this.line
         }, this.scene);
-        this.line.setParent(this.babylonViewer.baseNode);
         this.line.material = this.mat;
 
-        let target = Utils.createVector(info.target);
-        this.sphere.position.set(target.x, target.y, target.z);
+        this.sphere.position = Utils.createVector(info.target).add(base);
     }
 
     removeFromScene(): void {

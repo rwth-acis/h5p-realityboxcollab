@@ -43,10 +43,6 @@ export class BabylonViewer extends NetworkListener {
         this.babylonBox = instance.realitybox.viewer._babylonBox;
         this.baseNode = new BABYLON.TransformNode("Base Node", this.scene);
 
-        // Parent objects to baseNode
-        for (let a of this.instance.realitybox.viewer._babylonBox.getAnnotations()) {
-            a.drawing.parent = this.baseNode;
-        }
         for (let model of this.models) {
             let node = new BABYLON.TransformNode("Parent Node for " + model.name, this.scene);
             node.parent = this.baseNode;
@@ -111,7 +107,12 @@ export class BabylonViewer extends NetworkListener {
      * Called on every frame before rendering. Handles the updates for the user meshes.
      */
     private onRender(): void {
-        this.currentRoom.user.position = this.scene.activeCamera.position;
+        // Annotations sometimes change
+        for (let a of this.instance.realitybox.viewer._babylonBox.getAnnotations()) {
+            a.drawing.parent = this.baseNode;
+        }
+
+        this.currentRoom.user.position = this.scene.activeCamera.position.subtract(this.baseNode.position);
         this.currentRoom.onUserUpdated();
 
         this.currentRoom.users
@@ -119,7 +120,7 @@ export class BabylonViewer extends NetworkListener {
                 if (user.username === this.currentRoom.user.username) return;
 
                 let mesh: UserMesh = this.userMeshes.get(user.username);
-                if (!mesh) this.userMeshes.set(user.username, mesh = new UserMesh(user, this.scene));
+                if (!mesh) this.userMeshes.set(user.username, mesh = new UserMesh(user, this.scene, this.baseNode));
 
                 if (!user.position) return; // If position is set, than all are set
 
@@ -174,7 +175,7 @@ class UserMesh {
     static matHost: BABYLON.StandardMaterial;
     static matUser: BABYLON.StandardMaterial;
 
-    constructor(public user: User, scene: BABYLON.Scene) {
+    constructor(public user: User, scene: BABYLON.Scene, baseNode: BABYLON.Node) {
         if (!UserMesh.matHost) UserMesh.createMats(scene);
 
         this.mesh = BABYLON.MeshBuilder.CreateCapsule(user.username, {
@@ -184,6 +185,7 @@ class UserMesh {
             capSubdivisions: undefined,
             tessellation: undefined
         }, scene);
+        this.mesh.parent = baseNode;
         this.mesh.material = user.role == Role.HOST ? UserMesh.matHost : UserMesh.matUser;
     }
 

@@ -84,7 +84,7 @@ export class DrawTool extends AbstractMultiTool {
     drawAir(scene: BABYLON.Scene) {
         let pick = this.pickDrawPoint(scene);
 
-        let pos = pick.ray.origin.add(pick.ray.direction.scale(1));
+        let pos = pick.ray.origin.add(pick.ray.direction.scale(1)).subtract(this.instance.babylonViewer.baseNode.position);
         if (this.lastPosition && Utils.vectorEquals(this.lastPosition, pos)) return;
         this.lastPosition = pos;
 
@@ -129,7 +129,7 @@ export class DrawTool extends AbstractMultiTool {
 
         // Updatable not possible, because position size changes
         this.lineMeshes[index] = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: line.path.map(v => Utils.createVector(v)),
+            path: line.path.map(v => Utils.createVector(v).add(this.instance.babylonViewer.baseNode.position)),
             radius: 0.01,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         }, scene);

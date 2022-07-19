@@ -19,7 +19,6 @@ export class MoveTool extends AbstractMultiTool {
 
     override onSubToolSwitched(tool: SubTool): void {
         const scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
-        const mesh: BABYLON.Mesh = this.instance.realitybox.viewer._babylonBox.model.env;
 
         if (!this.gizmoManager) this.gizmoManager = MoveTool.createGizmosManager(scene);
 
@@ -33,8 +32,8 @@ export class MoveTool extends AbstractMultiTool {
         if (this.gizmoManager.gizmos.rotationGizmo) this.gizmoManager.gizmos.rotationGizmo.scaleRatio = 2;
         if (this.gizmoManager.gizmos.scaleGizmo) this.gizmoManager.gizmos.scaleGizmo.scaleRatio = 2;
 
-        // Mesh
-        this.gizmoManager.attachToMesh(mesh);
+        // Attach to the base node
+        this.gizmoManager.attachToNode(this.instance.babylonViewer.baseNode);
     }
 
     override onDeactivate(): void {
