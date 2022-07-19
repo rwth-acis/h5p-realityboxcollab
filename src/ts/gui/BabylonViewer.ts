@@ -13,15 +13,27 @@ import { XrGui } from "./XrGui";
 export class BabylonViewer extends NetworkListener {
     static readonly WORLD_SIZE = 1;
 
+    /** Reference to the current babylonjs scene */
     scene: BABYLON.Scene;
+    /** Reference to Realitybox's babylonbox instance */
     babylonBox: BabylonBox;
+    /** User meshes currently in the scene */
     userMeshes: Map<string, UserMesh> = new Map();
+    /** The 3D models in the scene. Currently only one can be added due to Realitybox. */
     models: BABYLON.Mesh[];
+    /** The base nodes for the 3D models. Just as 'models', only one is used at the moment. */
     modelNodes: BABYLON.TransformNode[] = [];
+    /** The current XR State of the application */
     xrState: XRState = XRState.NONE;
+    /** The XR GUIS */
     xrGui: XrGui[] = [];
+    /** The base node, all meshes are parented to. This node allows simple manipulation of all meshes in the scene. */
     baseNode: BABYLON.TransformNode;
 
+    /**
+     * Create the instance of the BabylonViewer
+     * @param instance The main instance of RealityboxCollab
+     */
     constructor(private instance: RealityBoxCollab) {
         super();
 
@@ -48,15 +60,33 @@ export class BabylonViewer extends NetworkListener {
         });
     }
 
+    /**
+     * Register a toolbar to be used in XR
+     * @param toolbar The toolbar a XR Gui should be created for
+     */
     registerToolbar(toolbar: Toolbar) {
         this.xrGui.push(new XrGui(toolbar, this.scene, this.instance));
     }
 
+    /**
+     * Checks whether the application is currently in XR
+     * @returns true, if currently in XR (that is in VR or AR)
+     */
     isInXR(): boolean {
         return this.xrState != XRState.NONE;
     }
 
-    adjustModelScale() {
+    /**
+     * Called by AbstractXRView when the XR state changes
+     * @param newState The new state
+     * @param ex The XR experience (will be used of the XR GUI)
+     */
+    onXRStateChanged(newState: XRState, ex: BABYLON.WebXRDefaultExperience): void {
+        this.xrState = newState;
+        this.xrGui.forEach(g => g.onXRStateChanged(newState, ex));
+    }
+
+    private adjustModelScale() {
         for (let m of this.models) {
             let max = new BABYLON.Vector3(0, 0, 0);
             let min = new BABYLON.Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
@@ -71,19 +101,14 @@ export class BabylonViewer extends NetworkListener {
         const cam = this.instance.realitybox.viewer._babylonBox.camera.babylonObj;
         cam.lowerRadiusLimit = 0.05 * BabylonViewer.WORLD_SIZE;
         cam.upperRadiusLimit = 30 * BabylonViewer.WORLD_SIZE;
-        cam.speed = 0.2 * BabylonViewer.WORLD_SIZE; 
+        cam.speed = 0.2 * BabylonViewer.WORLD_SIZE;
         cam.minZ = 0; // Near clipping plane
         cam.radius = 2 * BabylonViewer.WORLD_SIZE;
         cam.wheelPrecision = 50 * BabylonViewer.WORLD_SIZE;
     }
 
-    onXRStateChanged(newState: XRState, ex:  BABYLON.WebXRDefaultExperience): void {
-        this.xrState = newState;
-        this.xrGui.forEach(g => g.onXRStateChanged(newState, ex));
-    }
-
     /**
-     * Called on every frame before rendering
+     * Called on every frame before rendering. Handles the updates for the user meshes.
      */
     private onRender(): void {
         this.currentRoom.user.position = this.scene.activeCamera.position;
@@ -112,6 +137,9 @@ export class BabylonViewer extends NetworkListener {
         }
     }
 
+    /**
+     * When the room changes, all userMeshes are removed. The new meshes will be created automatically in the update loop.
+     */
     onRoomChanged(): void {
         this.userMeshes.forEach(mesh => {
             this.scene.removeMesh(mesh.mesh);
@@ -119,6 +147,9 @@ export class BabylonViewer extends NetworkListener {
         this.userMeshes.clear();
     }
 
+    /**
+     * Listens for setting changes to check whether annotations are currently enabled
+     */
     override onSettingsChanged(): void {
         if (this.currentRoom.roomInfo.settings.annotationEnabled) this.babylonBox.showAllAnnotations();
         else this.babylonBox.hideAllAnnotations();
@@ -134,6 +165,9 @@ const RED = new BABYLON.Color3(1, 0, 0);
 const GREEN = new BABYLON.Color3(0, 1, 0);
 const BLUE = new BABYLON.Color3(0, 0, 1);
 
+/**
+ * Represents the 3D model of a user
+ */
 class UserMesh {
 
     mesh: BABYLON.Mesh;
@@ -153,6 +187,10 @@ class UserMesh {
         this.mesh.material = user.role == Role.HOST ? UserMesh.matHost : UserMesh.matUser;
     }
 
+    /**
+     * Only called once to create the materials used for the user geometry
+     * @param scene The scene of the application
+     */
     static createMats(scene: BABYLON.Scene) {
         UserMesh.matHost = new BABYLON.StandardMaterial("matHost", scene);
         UserMesh.matUser = new BABYLON.StandardMaterial("matUser", scene);

@@ -4,11 +4,17 @@ import React = require("react");
 import ReactDOM = require("react-dom");
 
 /**
- * <Explain Realitybox>
+ * This Popup class has been created as a react port of Realityboxs Popups, because they cannot be accessed from this module and to make working with react easier.
  */
 export class Popup {
     root: JQuery;
 
+    /**
+     * Create a new popup. The popup will not be opened automatically
+     * @param title The title of the popup
+     * @param content The content as ReactNode. Will be placed inside a div container
+     * @param maxWidth The maximal width for the popup as html style description
+     */
     constructor(title: string, content: ReactNode, maxWidth: string) { // Change HTML to React
         const react = <><div>
             <div className="outer">
@@ -34,11 +40,16 @@ export class Popup {
         this.root = $(e);
     }
 
-
+    /**
+     * Open this Popup
+     */
     open() {
         $('body').append(this.root);
     }
 
+    /**
+     * Close this popup
+     */
     close() {
         this.root.detach();
     }

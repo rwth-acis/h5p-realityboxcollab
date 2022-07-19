@@ -1,13 +1,22 @@
-import { ReactNode, useRef } from "react";
-import React = require("react");
+import { ReactNode } from "react";
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { Popup } from "./Popup";
+import React = require("react");
 
 declare let H5P: any;
 H5P = H5P || {};
 
+/**
+ * This class defines the popups used in RealityboxCollab
+ */
 export class Popups {
 
+  /**
+   * Open a popup showing an url as text and QR code using KewArCode
+   * @param instance The RealityboxCollab instance, used to attach KewArCode
+   * @param url The url to display
+   * @returns The created popup, which is already open
+   */
   static showQRCode(instance: RealityBoxCollab, url: string): Popup {
     const react: ReactNode = <> <div className="centerContents">
       Open this room with the following URL or QR Code:
@@ -39,6 +48,11 @@ export class Popups {
     return popup;
   }
 
+  /**
+   * Opens the create room dialog, asking for a room name, password and the username of the creating user. This dialog will not auto close.
+   * @param callback Called when the 'Create Room' button is pressed
+   * @returns The created popup, which is already open
+   */
   static createRoom(callback: (name: string, password: string, user: string) => void): Popup {
     const react: ReactNode = <> <div className="centerContents">
       Create a new room:
@@ -66,6 +80,11 @@ export class Popups {
     return popup;
   }
 
+   /**
+   * Opens the join room dialog, asking for a room name and the password. This dialog will not auto close.
+   * @param callback Called when the 'Join' button is pressed
+   * @returns The created popup, which is already open
+   */
   static joinRoom(callback: (name: string, password: string) => void): Popup {
     const react: ReactNode = <> <div className="centerContents">
       Join an existing room:
@@ -89,6 +108,13 @@ export class Popups {
     return popup;
   }
 
+  /**
+   * Generic input dialog. This dialog will not auto close.
+   * @param title The title for this dialog
+   * @param description The description used as title for the input field
+   * @param callback The callback function, invoked when 'Ok' is clicked
+   * @returns The created popup, which is already open
+   */
   static input(title: string, description: string, callback: (str: string) => void): Popup {
     const react: ReactNode = <> <div className="centerContents">
       {title}
@@ -108,6 +134,11 @@ export class Popups {
     return popup;
   }
 
+  /**
+   * Simple message output dialog
+   * @param title The title / message this popup shows
+   * @returns The created popup, which is already open
+   */
   static alert(title: string): Popup {
     const react: ReactNode = <> <div className="centerContents" style={{border: "1px solid red"}}>
       {title}
@@ -121,6 +152,11 @@ export class Popups {
 
 }
 
+/**
+ * Helper method to get the input value of a HTML input element
+ * @param id The id of the HTML input element. It will not be checked if the component is actually a input element
+ * @returns The input value
+ */
 function val(id: string): string {
   return (document.getElementById(id) as HTMLInputElement).value;
 }
