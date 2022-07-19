@@ -3,7 +3,7 @@ import { BabylonViewer } from "../../gui/BabylonViewer";
 import { AbstractTool } from "../AbstractTool";
 
 /**
- * The normal view mode is just the default lit version of the scene. It is its own class to be easily accessible as a tool.
+ * The normal view mode is just the default lit version of the scene. It is its own class to be easily accessible as a tool and has no functionality itself.
  */
 export class NormalViewMode extends AbstractTool {
 
