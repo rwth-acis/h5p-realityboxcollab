@@ -7,9 +7,14 @@ import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
 
 export class PointerTool extends AbstractMultiTool {
 
+    /**
+     * The color to be used for the pointer line and sphere
+     */
     static readonly LINE_COLOR = new BABYLON.Color4(1, 0, 0);
 
+    /** The material for the pointer */
     mat: BABYLON.StandardMaterial;
+    /** Maps the usernames to the pointer instances */
     pointers: Map<string, Pointer> = new Map<string, Pointer>();
 
     constructor(private instance: RealityBoxCollab, container: JQuery) {
@@ -27,20 +32,24 @@ export class PointerTool extends AbstractMultiTool {
         });
     }
 
-    onSubToolSwitched(subtool: SubTool): void {
+    override onSubToolSwitched(subtool: SubTool): void {
 
     }
 
+    /**
+     * Called every frame, independent of whether this tool is active or not. If the tool is active, the users pointer is updated.
+     * In any case, the pointers of the other users are updated.  
+     * @param scene The babylonjs scene
+     */
     private onRender(scene: BABYLON.Scene) {
-        if (this.active) {
-            this.updateOwnPointer(scene);
-        }
+        if (this.active) this.updateOwnPointer(scene);
 
+        // Update pointers
         this.currentRoom.users.forEach((user: User, username: string) => {
             let pointer = this.pointers.get(username);
 
             if (user.pointer) {
-                // Create Pointer
+                // Create pointer
                 if (!pointer) this.pointers.set(username, pointer = new Pointer(this.instance.babylonViewer, this.mat, scene));
 
                 pointer.update(user.pointer);
@@ -51,6 +60,7 @@ export class PointerTool extends AbstractMultiTool {
             }
         });
 
+        // Remove unused pointer instances
         if (this.pointers.size != this.currentRoom.users.size) {
             this.pointers.forEach((p, username) => {
                 if (!this.currentRoom.users.get(username)) {
@@ -61,13 +71,16 @@ export class PointerTool extends AbstractMultiTool {
         }
     }
 
-    // https://doc.babylonjs.com/divingDeeper/cameras/webVRHelper
+    /**
+     * Updates the pointer of this user
+     * @param scene The babylon scene of this instance
+     */
     private updateOwnPointer(scene: BABYLON.Scene): void {
         const cam = scene.activeCamera;
         const model = this.instance.realitybox.viewer._babylonBox.model.env;
 
         let pos = cam.position.clone();
-        pos.y -= this.instance.babylonViewer.isInXR ? 0.5 : 1.4;
+        pos.y -= 0.5;
         let hit: BABYLON.PickingInfo;
         if (this.activeTool == this.subtools[0]) {
             hit = this.instance.inputManager.pickWithPointer();
@@ -82,21 +95,25 @@ export class PointerTool extends AbstractMultiTool {
 
         let info = {
             pos: Utils.getRelativePosition(this.instance.babylonViewer, pos),
-            target:  Utils.getRelativePosition(this.instance.babylonViewer, target),
+            target: Utils.getRelativePosition(this.instance.babylonViewer, target),
             active: hit.pickedPoint != undefined
         }
         this.currentRoom.user.pointer = info;
         this.currentRoom.onUserUpdated();
     }
 
+    /**
+     * Removes the users pointer
+     */
     override onDeactivate(): void {
-        if (this.currentRoom) {
-            this.currentRoom.user.pointer = undefined;
-            this.currentRoom.onUserUpdated();
-        }
+        this.currentRoom.user.pointer = undefined;
+        this.currentRoom.onUserUpdated();
         super.onDeactivate();
     }
 
+    /**
+     * Removes all pointers
+     */
     override onRoomChanged(): void {
         this.pointers.forEach(p => p.removeFromScene());
         this.pointers.clear();
@@ -104,6 +121,9 @@ export class PointerTool extends AbstractMultiTool {
 
 }
 
+/**
+ * Information about the current state of a pointer, exchanged via yjs
+ */
 export interface PointerInfo {
     pos: BABYLON.Vector3;
     target: BABYLON.Vector3;
