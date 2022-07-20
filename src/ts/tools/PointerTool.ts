@@ -81,8 +81,8 @@ export class PointerTool extends AbstractMultiTool {
         if (!target) target = pos;
 
         let info = {
-            pos: Utils.getRelativePosition(this.instance.babylonViewer.baseNode, pos, this.instance.babylonViewer.scene),
-            target:  Utils.getRelativePosition(this.instance.babylonViewer.baseNode, target, this.instance.babylonViewer.scene),
+            pos: Utils.getRelativePosition(this.instance.babylonViewer, pos),
+            target:  Utils.getRelativePosition(this.instance.babylonViewer, target),
             active: hit.pickedPoint != undefined
         }
         this.currentRoom.user.pointer = info;

@@ -112,7 +112,7 @@ export class BabylonViewer extends NetworkListener {
             a.drawing.parent = this.baseNode;
         }
 
-        this.currentRoom.user.position = this.scene.activeCamera.position.subtract(this.baseNode.position);
+        this.currentRoom.user.position = Utils.getRelativePosition(this, this.scene.activeCamera.position);
         this.currentRoom.onUserUpdated();
 
         this.currentRoom.users

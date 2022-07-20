@@ -89,7 +89,7 @@ export class DrawTool extends AbstractMultiTool {
         this.lastPosition = pos;
 
         const line = this.sharedDrawInformation.lines[this.lineIndex];
-        line.path.push(Utils.getRelativePosition(this.instance.babylonViewer.baseNode, pos, this.instance.babylonViewer.scene));
+        line.path.push(Utils.getRelativePosition(this.instance.babylonViewer, pos));
         this.updateLine(this.lineIndex);
         this.writeDrawInfo();
     }

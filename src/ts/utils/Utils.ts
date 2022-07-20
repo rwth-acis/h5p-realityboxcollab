@@ -1,4 +1,5 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
+import { BabylonViewer } from "../gui/BabylonViewer";
 import { RealityBoxCollab } from "../RealityboxCollab";
 
 export class Utils {
@@ -98,19 +99,20 @@ export class Utils {
     }
 
     /**
-     * Get the relative position to a node
-     * @param node The node
-     * @param position The absolute position
+     * Get the relative position to a node. This method is used to extract the relative position to the base node 
+     * to make sure every tool etc is rendered at the same relative position for every user.
+     * @param babylonViewer The babylonviewer instance
+     * @param position The absolute position, which is to be converted
      * @returns The position relative to the origin of the node
      */
-    static getRelativePosition(node: BABYLON.TransformNode, position: BABYLON.Vector3, scene: BABYLON.Scene): BABYLON.Vector3 {
+    static getRelativePosition(babylonViewer: BabylonViewer, position: BABYLON.Vector3): BABYLON.Vector3 {
         let s = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
             diameter: 0.05
-        }, scene);
-        s.setParent(node);
+        }, babylonViewer.scene);
+        s.setParent(babylonViewer.baseNode);
         s.setAbsolutePosition(position);
         let p = s.position;
-        scene.removeMesh(s);
+        babylonViewer.scene.removeMesh(s);
         return p;
     }
 }
