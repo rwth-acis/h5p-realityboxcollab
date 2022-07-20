@@ -86,7 +86,6 @@ export class Utils {
     static getJoinURL(instance: RealityBoxCollab): string {
         let uri = window.location.toString();
         if (uri.indexOf('#') > 0) {
-            // remove hash in uri
             uri = uri.substring(0, uri.indexOf("#"));
         }
 
@@ -98,4 +97,20 @@ export class Utils {
         return uri + "#openViewer=" + instance.id + room;
     }
 
+    /**
+     * Get the relative position to a node
+     * @param node The node
+     * @param position The absolute position
+     * @returns The position relative to the origin of the node
+     */
+    static getRelativePosition(node: BABYLON.TransformNode, position: BABYLON.Vector3, scene: BABYLON.Scene): BABYLON.Vector3 {
+        let s = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
+            diameter: 0.05
+        }, scene);
+        s.setParent(node);
+        s.setAbsolutePosition(position);
+        let p = s.position;
+        scene.removeMesh(s);
+        return p;
+    }
 }

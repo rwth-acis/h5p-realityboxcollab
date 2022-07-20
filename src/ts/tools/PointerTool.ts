@@ -65,7 +65,6 @@ export class PointerTool extends AbstractMultiTool {
     private updateOwnPointer(scene: BABYLON.Scene): void {
         const cam = scene.activeCamera;
         const model = this.instance.realitybox.viewer._babylonBox.model.env;
-        const base = this.instance.babylonViewer.baseNode.position;
 
         let pos = cam.position.clone();
         pos.y -= this.instance.babylonViewer.isInXR ? 0.5 : 1.4;
@@ -82,8 +81,8 @@ export class PointerTool extends AbstractMultiTool {
         if (!target) target = pos;
 
         let info = {
-            pos: pos.subtract(base),
-            target: target,
+            pos: Utils.getRelativePosition(this.instance.babylonViewer.baseNode, pos, this.instance.babylonViewer.scene),
+            target:  Utils.getRelativePosition(this.instance.babylonViewer.baseNode, target, this.instance.babylonViewer.scene),
             active: hit.pickedPoint != undefined
         }
         this.currentRoom.user.pointer = info;
@@ -127,18 +126,18 @@ class Pointer {
         this.sphere.setEnabled(info.active);
         if (!info.active) return;
 
-        const base = this.babylonViewer.baseNode.position;
-
         this.line = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: [Utils.createVector(info.pos).add(base), Utils.createVector(info.target).add(base)],
+            path: [Utils.createVector(info.pos), Utils.createVector(info.target)],
             radius: 0.005,
             updatable: true,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE,
             instance: this.line
         }, this.scene);
+        this.line.parent = this.babylonViewer.baseNode;
         this.line.material = this.mat;
 
-        this.sphere.position = Utils.createVector(info.target).add(base);
+        this.sphere.parent = this.babylonViewer.baseNode;
+        this.sphere.position = Utils.createVector(info.target);
     }
 
     removeFromScene(): void {

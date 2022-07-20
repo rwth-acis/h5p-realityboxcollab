@@ -84,12 +84,12 @@ export class DrawTool extends AbstractMultiTool {
     drawAir(scene: BABYLON.Scene) {
         let pick = this.pickDrawPoint(scene);
 
-        let pos = pick.ray.origin.add(pick.ray.direction.scale(1)).subtract(this.instance.babylonViewer.baseNode.position);
+        let pos = pick.ray.origin.add(pick.ray.direction.scale(1));
         if (this.lastPosition && Utils.vectorEquals(this.lastPosition, pos)) return;
         this.lastPosition = pos;
 
         const line = this.sharedDrawInformation.lines[this.lineIndex];
-        line.path.push(pos);
+        line.path.push(Utils.getRelativePosition(this.instance.babylonViewer.baseNode, pos, this.instance.babylonViewer.scene));
         this.updateLine(this.lineIndex);
         this.writeDrawInfo();
     }
@@ -122,18 +122,17 @@ export class DrawTool extends AbstractMultiTool {
         if (this.lineMeshSize.length > index && line.path.length == this.lineMeshSize[index]) return;
         if (this.lineMeshes[index]) scene.removeMesh(this.lineMeshes[index]);
 
-
         this.lineMeshSize[index] = line.path.length;
 
         if (line.path.length < 2) return;
 
         // Updatable not possible, because position size changes
         this.lineMeshes[index] = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: line.path.map(v => Utils.createVector(v).add(this.instance.babylonViewer.baseNode.position)),
+            path: line.path.map(v => Utils.createVector(v)),
             radius: 0.01,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         }, scene);
-        this.lineMeshes[index].setParent(this.instance.babylonViewer.baseNode);
+        this.lineMeshes[index].parent = this.instance.babylonViewer.baseNode;
 
         let mat = new BABYLON.StandardMaterial("matDrawPen", this.instance.realitybox.viewer._babylonBox.scene);
         mat.diffuseColor = Utils.createColor(line.color);
