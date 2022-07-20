@@ -158,6 +158,9 @@ export class BabylonViewer extends NetworkListener {
 
 }
 
+/**
+ * XR / Mixed Reality State of this application
+ */
 export enum XRState {
     AR, VR, NONE
 }
@@ -175,6 +178,12 @@ class UserMesh {
     static matHost: BABYLON.StandardMaterial;
     static matUser: BABYLON.StandardMaterial;
 
+    /**
+     * Create a new mesh for a user of a room
+     * @param user The user this mesh is created for
+     * @param scene The babylonjs scene to add this mesh to
+     * @param baseNode The parent node fo the user mesh
+     */
     constructor(public user: User, scene: BABYLON.Scene, baseNode: BABYLON.Node) {
         if (!UserMesh.matHost) UserMesh.createMats(scene);
 
@@ -201,10 +210,4 @@ class UserMesh {
         UserMesh.matUser.diffuseColor = RED;
     }
 
-}
-
-export interface ModelInformation {
-    position: BABYLON.Vector3;
-    rotation: BABYLON.Quaternion;
-    scale: BABYLON.Vector3;
 }

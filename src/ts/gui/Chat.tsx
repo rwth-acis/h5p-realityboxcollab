@@ -29,15 +29,20 @@ export class Chat extends AbstractGuiElement {
     </span>
   }
 
+  /**
+   * Determines, whether the chat can be used by the user of this instance
+   * @returns true, if the chat can be used (that is, the chat is enabled or the user is host / co-host of the room)
+   */
   private canUse(): boolean {
-    if (!this.currentRoom.roomInfo.settings) {
-      console.log("No settings... (Temp)");
-      return true;
-    }
+    if (!this.currentRoom.roomInfo.settings) throw "No settings in this room";
+    
     return !this.currentRoom.isLocal && (this.currentRoom.roomInfo.settings.canUseChat || this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST);
   }
 
-  override onRoomChanged(): void {
+  /**
+   * Clears out messages from the last rooms and sets up message listener for the new room, if not local
+   */
+  override onRoomChanged() {
     $("#chatMessageField").empty();
     this.chatMessages = this.currentRoom.doc.getArray("chatMessages");
 
@@ -55,14 +60,17 @@ export class Chat extends AbstractGuiElement {
     this.updateView();
   }
 
-  override onSettingsChanged(): void {
+  /**
+   * Update the view, chat related settings might have changed
+   */
+  override onSettingsChanged() {
     super.updateView();
   }
 
   /**
    * Send the current input of the input field.
    */
-  private sendInput(): void {
+  private sendInput() {
     if (!this.canUse()) return;
 
     this.sendMessage(Chat.createMessage($("#chatInput").val() as string, this.currentRoom.user.username));
@@ -83,7 +91,7 @@ export class Chat extends AbstractGuiElement {
    * Add a chatmessage to the chat gui. The message will not be added, if the user is in their local room
    * @param cm The chat message to add
    */
-  private addMessage(cm: ChatMessage): void {
+  private addMessage(cm: ChatMessage) {
     if (this.currentRoom.isLocal) return;
 
     let own = cm.username === this.currentRoom.user.username;

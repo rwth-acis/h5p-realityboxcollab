@@ -6,7 +6,9 @@ import { AbstractTool } from "../tools/AbstractTool";
 import { XRState } from "./BabylonViewer";
 import { Toolbar } from "./Toolbar";
 
-
+/**
+ * A XR GUI represents a toolbar useable in XR
+ */
 export class XrGui {
     xrGuiPanel: StackPanel;
     buttons: Map<AbstractTool, Button> = new Map();
@@ -20,6 +22,11 @@ export class XrGui {
         this.createXRGui();
     }
 
+    /**
+     * Notifies this GUI of XR changes
+     * @param state The new state of this instance 
+     * @param experience Reference to the XR experience
+     */
     onXRStateChanged(state: XRState, experience: BABYLON.WebXRDefaultExperience): void {
         this.xrGuiPanel.isVisible = state != XRState.NONE;
         this.instance.drawTool.setPickerState(state != XRState.NONE);

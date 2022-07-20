@@ -144,15 +144,18 @@ export class Room {
         return promise;
     }
 
+    /**
+     * Check whether a username is allowed to be used. This method will open a alert popup, if the username is not allowed
+     * @param username The username to check
+     * @returns true, if the username is allowed
+     */
     static checkUsername(username: string): boolean {
         let r = null;
         if (!username || username.length < 3) {
             r = "Your username needs to be at least 3 characters long";
         }
 
-        if (r) {
-            Popups.alert(r);
-        }
+        if (r) Popups.alert(r);
         return r == null;
     }
 }

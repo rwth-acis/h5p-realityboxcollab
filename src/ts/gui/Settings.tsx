@@ -1,14 +1,16 @@
 import { ReactElement, ReactNode } from 'react';
 import { Accordion } from 'react-bootstrap';
 import { Role, Room } from '../networking/Room';
-import { RoomInformation } from '../networking/RoomManager';
-import { DEFAULT_SETTINGS, SETTINGS } from '../networking/RoomSettings';
+import { SETTINGS } from '../networking/RoomSettings';
 import { RealityBoxCollab } from '../RealityboxCollab';
 import { Utils } from '../utils/Utils';
 import { AbstractGuiElement } from './AbstractGuiElement';
 import { Popups } from './popup/Popups';
 import React = require('react');
 
+/**
+ * Settings GUI Element
+ */
 export class Settings extends AbstractGuiElement {
 
   lastSize: number = 0;
@@ -77,7 +79,7 @@ export class Settings extends AbstractGuiElement {
     </>;
   }
 
-  onRoomChanged(): void {
+  onRoomChanged() {
     super.updateView();
 
     this.currentRoom.users.observe((e) => {
@@ -88,11 +90,15 @@ export class Settings extends AbstractGuiElement {
     });
   }
 
-  override onSettingsChanged(): void {
+  override onSettingsChanged() {
     super.updateView();
   }
 
-  joinRoom(create: boolean) {
+  /**
+   * Opens the create / join popup
+   * @param create if true, a room will be created, otherwise an existing room will be joined
+   */
+  private joinRoom(create: boolean) {
     const manager = this.instance.roomManager;
 
     if (create) {
