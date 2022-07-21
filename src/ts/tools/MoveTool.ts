@@ -27,10 +27,13 @@ export class MoveTool extends AbstractMultiTool {
         this.gizmoManager.rotationGizmoEnabled = (tool == this.subtools[1]);
         this.gizmoManager.scaleGizmoEnabled = (tool == this.subtools[2]);
 
+        console.log(this.gizmoManager);
+
         // Sizes
-        if (this.gizmoManager.gizmos.positionGizmo) this.gizmoManager.gizmos.positionGizmo.scaleRatio = 2;
-        if (this.gizmoManager.gizmos.rotationGizmo) this.gizmoManager.gizmos.rotationGizmo.scaleRatio = 2;
-        if (this.gizmoManager.gizmos.scaleGizmo) this.gizmoManager.gizmos.scaleGizmo.scaleRatio = 2;
+        if (this.gizmoManager.gizmos.positionGizmo) this.modfiyGizmo(this.gizmoManager.gizmos.positionGizmo);
+        if (this.gizmoManager.gizmos.rotationGizmo) this.modfiyGizmo(this.gizmoManager.gizmos.rotationGizmo);
+        if (this.gizmoManager.gizmos.scaleGizmo) this.modfiyGizmo(this.gizmoManager.gizmos.scaleGizmo);
+        this.modfiyGizmo(this.gizmoManager.gizmos.boundingBoxGizmo);
 
         // Attach to the base node
         this.gizmoManager.attachToNode(this.instance.babylonViewer.baseNode);
@@ -52,6 +55,16 @@ export class MoveTool extends AbstractMultiTool {
         gizmoManager.gizmos.boundingBoxGizmo.scaleBoxSize = 0.05;
         gizmoManager.usePointerToAttachGizmos = false; // Might be changed for multiple models
         return gizmoManager;
+    }
+
+    private modfiyGizmo(g: BABYLON.PositionGizmo | BABYLON.RotationGizmo | BABYLON.ScaleGizmo | BABYLON.BoundingBoxGizmo) {
+        g.scaleRatio = 2;
+    }
+
+    isHovered(): boolean {
+        if (!this.gizmoManager) return false;
+
+        return this.gizmoManager.isHovered || this.instance.moveTool.gizmoManager.boundingBoxDragBehavior.dragging;
     }
 
 }

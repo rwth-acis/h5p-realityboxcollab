@@ -23,9 +23,7 @@ export class FirstPersonTool extends AbstractTool {
         const scene = this.instance.realitybox.viewer._babylonBox.scene;
         const oldCamera = scene.cameras[0];
 
-        if (!this.camera) {
-            this.createComponents();
-        }
+        if (!this.camera) this.createComponents();
 
         // 3 m from world origin
         this.camera.position = oldCamera.getDirection(BABYLON.Vector3.Forward()).scale(-3);
@@ -94,9 +92,7 @@ export class FirstPersonTool extends AbstractTool {
 
     override onDeactivate(): void {
         const scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
-        scene.activeCamera = scene.cameras[0];
-        // Reactivate camera
-        
+        scene.activeCamera = scene.cameras[0]; // Reactivate camera
     }
 
     override onRoomChanged(): void {

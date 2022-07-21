@@ -113,6 +113,7 @@ export class Utils {
                 diameter: 0.05,
                 updatable: true
             }, babylonViewer.scene);
+            Utils.dummy.setEnabled(false);
         }
         Utils.dummy.setParent(null);
         Utils.dummy.position = new BABYLON.Vector3();
