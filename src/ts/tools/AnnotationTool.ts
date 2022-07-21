@@ -26,12 +26,12 @@ export class AnnotationTool extends AbstractMultiTool {
         this.instance.babylonViewer.scene.registerBeforeRender(() => {
             if (this.activeAnnotation && !Utils.vectorEquals(this.activeAnnotation.drawing.position, this.lastPosition)) {
                 this.onPositionChanged();
-                this.set(this.activeAnnotation);
+                this.updateAnnotation(this.activeAnnotation);
             }
         });
     }
 
-    override onActivate(): void {
+    override onActivate() {
         const babylonBox = this.instance.babylonViewer.babylonBox;
 
         // Prevent default behavior (RealityBoxs WebXR is not used anyway)
@@ -68,21 +68,24 @@ export class AnnotationTool extends AbstractMultiTool {
         });
     }
 
-    override onDeactivate(): void {
+    override onDeactivate() {
         (this.instance.babylonViewer.babylonBox as any).webXR.inWebXR = false;
         this.selectAnnotation(null);
         this.onChange();
         super.onDeactivate();
     }
 
-    override onRoomChanged(): void {
+    /**
+     * If host, copy annotations, else clear all existing
+     */
+    override onRoomChanged() {
         this.annotations = this.currentRoom.doc.getMap("annotations");
         if (this.currentRoom.isLocal) this.annotations.clear();
 
         if (this.currentRoom.user.role == Role.HOST) {
             for (let a of this.instance.babylonViewer.babylonBox.getAnnotations()) {
                 a.id = this.generateId();
-                this.set(a);
+                this.updateAnnotation(a);
             }
         }
         else {
@@ -93,21 +96,31 @@ export class AnnotationTool extends AbstractMultiTool {
         this.processChanges();
     }
 
-    onSubToolSwitched(subtool: SubTool): void {
+    /**
+     * Deselects the selected annotation
+     * @param subtool The new subtool
+     */
+    onSubToolSwitched(subtool: SubTool) {
         this.selectAnnotation(null);
         this.onChange();
     }
 
+    /**
+     * Event handler, called when a annotation has been picked by the user
+     * @param a The picked annotation
+     */
     private onAnnotationPicked(a: RealityboxAnnotation) {
         this.selectAnnotation(a);
         this.lastPosition = a.drawing.position.clone();
         this.onChange();
     }
 
+    /**
+     * Called when clicking on an annotation or deselecting it. Handles subtool functionality 
+     */
     private onChange() {
         // Reset 
         if (this.gizmoManager) this.gizmoManager.attachToMesh(null);
-
         if (!this.activeAnnotation) return;
 
         // Select tool
@@ -129,7 +142,7 @@ export class AnnotationTool extends AbstractMultiTool {
                 id: this.generateId(),
                 drawing: undefined
             };
-            this.set(n);
+            this.updateAnnotation(n);
         }
         else if (this.activeTool == this.subtools[2]) { // Delete
             let selected = false;
@@ -151,26 +164,45 @@ export class AnnotationTool extends AbstractMultiTool {
         }
     }
 
+    /**
+     * Select a annotation and propagate it to the other users of the room
+     * @param a The annotation to select
+     */
     private selectAnnotation(a: RealityboxAnnotation) {
         this.activeAnnotation = a;
         this.currentRoom.user.selectedAnnotation = a ? createRemote(a) : null;
         this.currentRoom.onUserUpdated();
     }
 
-    private set(a: RealityboxAnnotation) {
+    /**
+     * Update a annotations remote state for the other users
+     * @param a The annotation to update
+     */
+    private updateAnnotation(a: RealityboxAnnotation) {
         this.annotations.set(a.id, createRemote(a));
     }
 
+    /**
+     * Delete a annotation
+     * @param a The annotation to delete
+     */
     private delete(a: RealityboxAnnotation) {
-        this.annotations.delete(a.id);
+        this.annotations.delete(a.id); // Will be removed in babylonbox due to change event
     }
 
+    /**
+     * Called when the select annotation changes its position
+     */
     private onPositionChanged() {
         this.activeAnnotation.position = this.activeAnnotation.drawing.position;
         this.lastPosition = this.activeAnnotation.position.clone();
-        this.set(this.activeAnnotation);
+        this.updateAnnotation(this.activeAnnotation);
     }
 
+    /**
+     * Generate a random id. It is made sure that the id is not assigned to an annotation yet.
+     * @returns The generated id
+     */
     private generateId(): string {
         let id = null;
         do {
@@ -180,6 +212,9 @@ export class AnnotationTool extends AbstractMultiTool {
     }
 }
 
+/**
+ * Represents an annotation exchanged via yjs
+ */
 export interface RemoteAnnotation {
     content: any;
     position: BABYLON.Vector3;
@@ -187,6 +222,11 @@ export interface RemoteAnnotation {
     id: string;
 }
 
+/**
+ * Convert a visual annotation to its remote object
+ * @param a The annotation from babylonbox
+ * @returns The remote representation
+ */
 function createRemote(a: RealityboxAnnotation): RemoteAnnotation {
     return {
         content: a.content,
@@ -196,6 +236,11 @@ function createRemote(a: RealityboxAnnotation): RemoteAnnotation {
     };
 }
 
+/**
+ * Convert a remote annotation to its babylonbox object
+ * @param a The annotation exchanged via yjs
+ * @returns The visual annotation, which can be added to babylonbox
+ */
 function fromRemote(a: RemoteAnnotation): RealityboxAnnotation {
     return {
         content: a.content,
