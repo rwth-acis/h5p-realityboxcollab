@@ -22,6 +22,7 @@ export class Room {
     user: User;
     /** All users of the current room (including the user of this instance) */
     users: Y.Map<User>;
+    connected: boolean = false;
 
     /**
      * Create a new room
@@ -38,11 +39,14 @@ export class Room {
         if (!isLocal) {
             this.wsProvider = new WebsocketProvider('ws://192.168.0.10:1234', "room:" + roomInfo.name, this.doc);
             this.wsProvider.on('status', (event: any) => {
-                if (event.status === "connected") {
+                if (event.status === "connected" && !this.connected) {
+                    this.connected = true;
                     this.onConnect(username);
                 }
                 else if (event.status === "disconnected") {
                     this.onDisconnect();
+                    // Prevents yjs bug, where yjs reconnects randomly to the old room while reloading the page
+                    setTimeout(() => this.connected = false, 1000);
                 }
             });
         }

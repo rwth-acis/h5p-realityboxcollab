@@ -45,6 +45,8 @@ export class AnnotationTool extends AbstractMultiTool {
     }
 
     private processChanges() {
+        if (!this.currentRoom.connected) return;
+
         const babylonBox = this.instance.babylonViewer.babylonBox;
 
         let local: RealityboxAnnotation[] = babylonBox.getAnnotations();
@@ -58,10 +60,11 @@ export class AnnotationTool extends AbstractMultiTool {
                 babylonBox.removeAnnotation(a);
             }
         });
-        this.annotations.forEach(a => {
+
+        this.annotations.forEach(a => { // Recreate all
             if (!local.find(x => x.id === a.id))
                 babylonBox.addAnnotation(fromRemote(a));
-        }); // Recreate all
+        });
     }
 
     override onDeactivate(): void {
@@ -176,8 +179,4 @@ function fromRemote(a: RemoteAnnotation): RealityboxAnnotation {
         drawing: undefined,
         id: a.id
     }
-}
-
-function remoteEquals(remote: RemoteAnnotation, local: RealityboxAnnotation) {
-    return remote.content === local.content && Utils.vectorEquals(remote.position, local.position);
 }
