@@ -169,9 +169,16 @@ export class Room {
         if (!username || username.length < 3) {
             r = "Your username needs to be at least 3 characters long";
         }
+        else if (!Room.checkCharacters(username)) {
+            r = "Your username can only contain characters a-z, A-Z, 0-9 and _";
+        }
 
         if (r) Popups.alert(r);
         return r == null;
+    }
+    
+    static checkCharacters(str: string): boolean {
+        return /[\w_\d]+/.test(str);
     }
 }
 

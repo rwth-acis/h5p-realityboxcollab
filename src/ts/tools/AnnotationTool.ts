@@ -46,6 +46,8 @@ export class AnnotationTool extends AbstractMultiTool {
     }
 
     private processChanges() {
+        if (!this.currentRoom.connected) return;
+
         const babylonBox = this.instance.babylonViewer.babylonBox;
 
         let local: RealityboxAnnotation[] = babylonBox.getAnnotations();
@@ -75,6 +77,8 @@ export class AnnotationTool extends AbstractMultiTool {
 
     override onRoomChanged(): void {
         this.annotations = this.currentRoom.doc.getMap("annotations");
+        if (this.currentRoom.isLocal) this.annotations.clear();
+
         if (this.currentRoom.user.role == Role.HOST) {
             for (let a of this.instance.babylonViewer.babylonBox.getAnnotations()) {
                 a.id = this.generateId();

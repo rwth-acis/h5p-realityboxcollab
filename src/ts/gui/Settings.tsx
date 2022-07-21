@@ -121,6 +121,10 @@ export class Settings extends AbstractGuiElement {
     if (create) {
       let p = Popups.createRoom((room, password, user) => {
         if (!Room.checkUsername(user)) return;
+        if (!Room.checkCharacters(room)) {
+          Popups.alert("The room name can only contain characters a-z, A-Z, 0-9 and _");
+          return;
+        }
 
         let info = manager.createRoom(room, password);
         if (!info) return;
