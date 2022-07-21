@@ -108,7 +108,7 @@ export class AnnotationTool extends AbstractMultiTool {
         if (this.activeTool == this.subtools[0]) { // Move
             if (!this.gizmoManager) {
                 this.gizmoManager = MoveTool.createGizmosManager(this.instance.babylonViewer.scene);
-                this.gizmoManager.boundingBoxGizmoEnabled = true;
+                this.gizmoManager.boundingBoxGizmoEnabled = false;
             }
 
             this.gizmoManager.positionGizmoEnabled = true;
