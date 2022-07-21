@@ -52,6 +52,7 @@ export class Room {
             });
         }
         else {
+            this.connected = true;
             this.onConnect(undefined);
         }
     }

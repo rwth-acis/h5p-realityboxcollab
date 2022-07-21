@@ -46,8 +46,6 @@ export class AnnotationTool extends AbstractMultiTool {
     }
 
     private processChanges() {
-        if (!this.currentRoom.connected) return;
-
         const babylonBox = this.instance.babylonViewer.babylonBox;
 
         let local: RealityboxAnnotation[] = babylonBox.getAnnotations();
@@ -82,6 +80,10 @@ export class AnnotationTool extends AbstractMultiTool {
                 a.id = this.generateId();
                 this.set(a);
             }
+        }
+        else {
+            let local: RealityboxAnnotation[] = this.instance.realitybox.viewer._babylonBox.getAnnotations();
+            local.forEach(a => this.instance.realitybox.viewer._babylonBox.removeAnnotation(a));
         }
         this.annotations.observe((evt) => this.processChanges());
         this.processChanges();

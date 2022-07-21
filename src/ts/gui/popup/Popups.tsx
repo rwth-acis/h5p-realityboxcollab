@@ -162,9 +162,9 @@ export class Popups {
     let fcancel: () => void;
     const react: ReactNode = <> <div className="centerContents">
       <p>{title}</p>
+    </div>
       <button className="btn btn-primary" onClick={() => fok()} style={{ marginRight: "10px" }}>OK</button>
       <button className="btn btn-primary" onClick={() => fcancel()}>Cancel</button>
-    </div>
     </>;
 
     let popup = new Popup('', react, "500px");
