@@ -7,7 +7,7 @@ declare let H5P: any;
 H5P = H5P || {};
 
 /**
- * This class defines the popups used in RealityboxCollab
+ * This class defines the popups used in RealityboxCollab. The popups are not expected to be opened multiple times!
  */
 export class Popups {
 
@@ -151,7 +151,7 @@ export class Popups {
   }
 
   /**
-   * Simple confirm output dialog with an ok and a cancel button
+   * Simple confirm dialog with an ok and a cancel button
    * @param title The title / message this popup shows
    * @param ok Executed when the ok button is pressed (popup will closed automatically)
    * @param cancel Executed when the cancel button is pressed (popup will closed automatically)
@@ -161,10 +161,10 @@ export class Popups {
     let fok: () => void;
     let fcancel: () => void;
     const react: ReactNode = <> <div className="centerContents">
-      {title}
-    </div>
+      <p>{title}</p>
       <button className="btn btn-primary" onClick={() => fok()} style={{ marginRight: "10px" }}>OK</button>
       <button className="btn btn-primary" onClick={() => fcancel()}>Cancel</button>
+    </div>
     </>;
 
     let popup = new Popup('', react, "500px");
@@ -173,6 +173,46 @@ export class Popups {
     fok = () => {
       popup.close();
       ok();
+    }
+    fcancel = () => {
+      popup.close();
+      if (cancel) cancel();
+    }
+    return popup;
+  }
+
+  /**
+   * Select dialog with an ok and a cancel button
+   * @param title The title / message this popup shows
+   * @param values The value to select from
+   * @param toString Function which converts a value into its string representation
+   * @param ok Executed when the ok button is pressed , returning the selected value (popup will closed automatically)
+   * @param cancel Executed when the cancel button is pressed (popup will closed automatically)
+   * @returns The created popup, which is already open
+   */
+  static select<T>(title: string, values: T[], toString: (t: T) => string, ok: (t: T) => void, cancel?: () => void): Popup {
+    let fok: () => void;
+    let fcancel: () => void;
+    const react: ReactNode = <> <div className="centerContents">
+      <p>{title} </p>
+      <select className="form-select" id="popupSelect">
+        {values.map(v => toString(v)).map((s, i) => <option value={i}>{s}</option>)}
+      </select>
+    </div>
+      <br></br>
+      <button className="btn btn-primary" onClick={() => fok()} style={{ marginRight: "10px" }}>OK</button>
+      <button className="btn btn-primary" onClick={() => fcancel()}>Cancel</button>
+    </>;
+
+    let popup = new Popup('', react, "500px");
+    popup.open();
+
+    fok = () => {
+      let index = parseInt((document.getElementById("popupSelect") as HTMLSelectElement).value);
+      if (index !== undefined) {
+        popup.close();
+        ok(values[index]);
+      }
     }
     fcancel = () => {
       popup.close();

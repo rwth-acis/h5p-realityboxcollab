@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode } from 'react';
 import { Accordion } from 'react-bootstrap';
-import { Role, Room } from '../networking/Room';
+import { Role, Room, User } from '../networking/Room';
 import { SETTINGS } from '../networking/RoomSettings';
 import { RealityBoxCollab } from '../RealityboxCollab';
 import { Utils } from '../utils/Utils';
@@ -57,7 +57,7 @@ export class Settings extends AbstractGuiElement {
           <Accordion.Body>
             Room Name: {this.currentRoom.roomInfo.name}<br></br>
             Users: {this.currentRoom.users.size}<br></br>
-            Role: {this.currentRoom.user.role}<br></br>
+            Role: {Role[this.currentRoom.user.role]}<br></br>
             <button className='btn btn-secondary' style={{ marginTop: "10px" }} onClick={e => Popups.showQRCode(this.instance, Utils.getJoinURL(this.instance))}>Share...</button>
             <br></br>
             <button className='btn btn-secondary' style={{ marginTop: "10px" }} onClick={e => this.currentRoom.disconnect()}>Leave Room</button>
@@ -72,11 +72,28 @@ export class Settings extends AbstractGuiElement {
               {SETTINGS.map(e =>
                 e.createElement(this.currentRoom)
               )}
+              <br></br>
+              <button className="btn btn-secondary" onClick={() => this.coHost()}>Make Co-Host...</button>
             </Accordion.Body>
           </Accordion.Item>
         }
       </Accordion>
     </>;
+  }
+
+  private coHost() {
+    let users: User[] = [];
+    this.currentRoom.users.forEach(u => {if (u.role != Role.HOST && u.role != Role.CO_HOST) users.push(u)});
+    if (users.length == 0) {
+      Popups.alert("There is no suer in the room, who is not CO-Host already");
+      return;
+    }
+
+    Popups.select("Select a user to make co-host", users, u => u.username, u => {
+      u.role = Role.CO_HOST;
+      this.currentRoom.updateUser(u);
+      this.currentRoom.onSettingsUpdated();
+    });
   }
 
   onRoomChanged() {

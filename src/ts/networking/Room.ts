@@ -83,6 +83,11 @@ export class Room {
             this.listeners.forEach(l => l.onSettingsChanged());
         });
 
+        this.users.observe((e) => {
+            let self = this.users.get(this.user.username);
+            if (self) this.user.role = self.role;
+        });
+
         if (this.user.role == Role.HOST && !this.isLocal) {
             this.hostUpdater = new HostUpdater(this);
         }
@@ -92,7 +97,7 @@ export class Room {
      * Manually disconnect from the current room
      * @throws Error, if the current room is the local room
      */
-    disconnect(): void {
+    disconnect() {
         if (this.isLocal) throw new Error("Cannot disconnect from the local room");
 
         this.sendRoomMessage(`User ${this.user.username} left the room`);
@@ -104,7 +109,7 @@ export class Room {
     /**
      * Called when disconnecting from the room
      */
-    onDisconnect(): void {
+    onDisconnect() {
         if (this.hostUpdater) {
             this.hostUpdater.clear();
         }
@@ -115,12 +120,16 @@ export class Room {
     /**
      * Propagate changes to the user object to the other users of the room
      */
-    onUserUpdated(): void {
-        this.user.lastUpdate = Date.now();
-        this.users.set(this.user.username, this.user);
+    onUserUpdated() {
+        this.updateUser(this.user);
     }
 
-    onSettingsUpdated(): void {
+    updateUser(user: User) {
+        user.lastUpdate = Date.now();
+        this.users.set(user.username, user);
+    }
+
+    onSettingsUpdated() {
         this.manager.updateRoom(this.roomInfo);
     }
 
@@ -128,7 +137,7 @@ export class Room {
      * Send a message as this room.
      * @param msg The message to send
      */
-    sendRoomMessage(msg: string): void {
+    sendRoomMessage(msg: string) {
         this.instance.chat.sendMessage(Chat.createMessage(msg, "Room " + this.roomInfo.name));
     }
 
