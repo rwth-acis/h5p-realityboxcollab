@@ -37,7 +37,7 @@ export class SettingsGuiElement {
  */
 export interface RoomSettings {
     canUseChat: boolean;
-    canUseMoveTool: boolean;
+    canUseMoveTool: boolean; // Currently not set able
     canUsePointerTool: boolean;
     canUseAnnotationTool: boolean;
     canUsePenTool: boolean;
@@ -57,7 +57,6 @@ export const SETTINGS: SettingsGuiElement[] = [
     new SettingsGuiElement("Annotations", SettingsType.Checkbox, s => s.annotationEnabled, (s, v) => s.annotationEnabled = v),
     new SettingsGuiElement("Users can use...", SettingsType.Heading),
     new SettingsGuiElement("Chat", SettingsType.Checkbox, s => s.canUseChat, (s, v) => s.canUseChat = v),
-    new SettingsGuiElement("Move Tool", SettingsType.Checkbox, s => s.canUseMoveTool, (s, v) => s.canUseMoveTool = v),
     new SettingsGuiElement("Pointer Tool", SettingsType.Checkbox, s => s.canUsePointerTool, (s, v) => s.canUsePointerTool = v),
     new SettingsGuiElement("Annotation Tool", SettingsType.Checkbox, s => s.canUseAnnotationTool, (s, v) => s.canUseAnnotationTool = v),
     new SettingsGuiElement("Pen Tool", SettingsType.Checkbox, s => s.canUsePenTool, (s, v) => s.canUsePenTool = v)
