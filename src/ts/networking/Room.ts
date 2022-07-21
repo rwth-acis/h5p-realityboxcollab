@@ -4,6 +4,7 @@ import * as Y from "yjs";
 import { Chat } from "../gui/Chat";
 import { Popups } from "../gui/popup/Popups";
 import { RealityBoxCollab } from "../RealityboxCollab";
+import { RemoteAnnotation } from "../tools/AnnotationTool";
 import { PointerInfo } from "../tools/PointerTool";
 import { HostUpdater } from "./HostUpdater";
 import { NetworkListener } from "./NetworkListener";
@@ -178,6 +179,7 @@ export interface User {
     lastUpdate?: number;
     /** Set when the user is using the pointer tool */
     pointer?: PointerInfo;
+    selectedAnnotation?: RemoteAnnotation;
 }
 
 export enum Role {

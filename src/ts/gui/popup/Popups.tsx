@@ -80,11 +80,11 @@ export class Popups {
     return popup;
   }
 
-   /**
-   * Opens the join room dialog, asking for a room name and the password. This dialog will not auto close.
-   * @param callback Called when the 'Join' button is pressed
-   * @returns The created popup, which is already open
-   */
+  /**
+  * Opens the join room dialog, asking for a room name and the password. This dialog will not auto close.
+  * @param callback Called when the 'Join' button is pressed
+  * @returns The created popup, which is already open
+  */
   static joinRoom(callback: (name: string, password: string) => void): Popup {
     const react: ReactNode = <> <div className="centerContents">
       Join an existing room:
@@ -140,13 +140,44 @@ export class Popups {
    * @returns The created popup, which is already open
    */
   static alert(title: string): Popup {
-    const react: ReactNode = <> <div className="centerContents" style={{border: "1px solid red"}}>
+    const react: ReactNode = <> <div className="centerContents" style={{ border: "3px solid red" }}>
       {title}
     </div>
     </>;
 
     let popup = new Popup('', react, "500px");
     popup.open();
+    return popup;
+  }
+
+  /**
+   * Simple confirm output dialog with an ok and a cancel button
+   * @param title The title / message this popup shows
+   * @param ok Executed when the ok button is pressed (popup will closed automatically)
+   * @param cancel Executed when the cancel button is pressed (popup will closed automatically)
+   * @returns The created popup, which is already open
+   */
+  static confirm(title: string, ok: () => void, cancel?: () => void): Popup {
+    let fok: () => void;
+    let fcancel: () => void;
+    const react: ReactNode = <> <div className="centerContents">
+      {title}
+    </div>
+      <button className="btn btn-primary" onClick={() => fok()} style={{ marginRight: "10px" }}>OK</button>
+      <button className="btn btn-primary" onClick={() => fcancel()}>Cancel</button>
+    </>;
+
+    let popup = new Popup('', react, "500px");
+    popup.open();
+
+    fok = () => {
+      popup.close();
+      ok();
+    }
+    fcancel = () => {
+      popup.close();
+      if (cancel) cancel();
+    }
     return popup;
   }
 

@@ -1,5 +1,6 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import * as Y from 'yjs';
+import { Popups } from "../gui/popup/Popups";
 import { Role } from "../networking/Room";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { RealityboxAnnotation } from "../RealityboxTypes";
@@ -69,7 +70,7 @@ export class AnnotationTool extends AbstractMultiTool {
 
     override onDeactivate(): void {
         (this.instance.babylonViewer.babylonBox as any).webXR.inWebXR = false;
-        this.activeAnnotation = null;
+        this.selectAnnotation(null);
         this.onChange();
         super.onDeactivate();
     }
@@ -87,12 +88,12 @@ export class AnnotationTool extends AbstractMultiTool {
     }
 
     onSubToolSwitched(subtool: SubTool): void {
-        this.activeAnnotation = null;
+        this.selectAnnotation(null);
         this.onChange();
     }
 
     private onAnnotationPicked(a: RealityboxAnnotation) {
-        this.activeAnnotation = a;
+        this.selectAnnotation(a);
         this.lastPosition = a.drawing.position.clone();
         this.onChange();
     }
@@ -125,11 +126,29 @@ export class AnnotationTool extends AbstractMultiTool {
             this.set(n);
         }
         else if (this.activeTool == this.subtools[2]) { // Delete
-            if (confirm("Are you sure to delete this annotation for this room?")) {
-                this.delete(this.activeAnnotation);
-                this.activeAnnotation = null;
+            let selected = false;
+            this.currentRoom.users.forEach((user) => {
+                if (user.username !== this.currentRoom.user.username && user.selectedAnnotation
+                    && user.selectedAnnotation.id == this.activeAnnotation.id)
+                    selected = true;
+            });
+            if (selected) {
+                Popups.alert("Cannot delete annotation. The annotation is locked by another user.");
+                this.selectAnnotation(null);
+                return;
             }
+
+            Popups.confirm("Are you sure to delete this annotation for this room?", () => {
+                this.delete(this.activeAnnotation);
+                this.selectAnnotation(null);
+            });
         }
+    }
+
+    private selectAnnotation(a: RealityboxAnnotation) {
+        this.activeAnnotation = a;
+        this.currentRoom.user.selectedAnnotation = a ? createRemote(a) : null;
+        this.currentRoom.onUserUpdated();
     }
 
     private set(a: RealityboxAnnotation) {
@@ -155,7 +174,7 @@ export class AnnotationTool extends AbstractMultiTool {
     }
 }
 
-interface RemoteAnnotation {
+export interface RemoteAnnotation {
     content: any;
     position: BABYLON.Vector3;
     normal: BABYLON.Vector3;
