@@ -110,10 +110,12 @@ export class Utils {
     static getRelativePosition(babylonViewer: BabylonViewer, position: BABYLON.Vector3): BABYLON.Vector3 {
         if (!Utils.dummy) {
             Utils.dummy = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
-                diameter: 0.05
+                diameter: 0.05,
+                updatable: true
             }, babylonViewer.scene);
-            Utils.dummy.setEnabled(false);
         }
+        Utils.dummy.setParent(null);
+        Utils.dummy.position = new BABYLON.Vector3();
         Utils.dummy.setParent(babylonViewer.baseNode);
         Utils.dummy.setAbsolutePosition(position);
         return Utils.dummy.position;;
