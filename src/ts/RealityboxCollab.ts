@@ -5,6 +5,7 @@ import { Chat } from './gui/Chat';
 import { Popups } from "./gui/popup/Popups";
 import { Settings } from './gui/Settings';
 import { Toolbar } from './gui/Toolbar';
+import { Evaluation } from "./networking/Evaluation";
 import { NetworkListener } from './networking/NetworkListener';
 import { Room } from './networking/Room';
 import { RoomManager } from './networking/RoomManager';
@@ -52,6 +53,7 @@ export class RealityBoxCollab {
     firstPersonTool: FirstPersonTool;
     wireframeViewMode: WireframeViewMode;
     normalViewMode: NormalViewMode;
+    evluation: Evaluation;
 
     constructor(options: any, public id: any) {
         this.options = options.realityboxcollab;
@@ -138,6 +140,8 @@ export class RealityBoxCollab {
             password: "",
             settings: DEFAULT_SETTINGS
         }, true, undefined, true);
+
+        this.evluation = new Evaluation(this);
     }
 
     getListeners(): NetworkListener[] {
