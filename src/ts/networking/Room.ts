@@ -38,7 +38,7 @@ export class Room {
         this.manager = this.instance.roomManager;
 
         if (!isLocal) {
-            this.wsProvider = new WebsocketProvider('ws://192.168.0.10:1234', "room:" + roomInfo.name, this.doc);
+            this.wsProvider = new WebsocketProvider(RealityBoxCollab.SIGNALING_SERVER, "room:" + roomInfo.name, this.doc);
             this.wsProvider.on('status', (event: any) => {
                 if (event.status === "connected" && !this.connected) {
                     this.connected = true;

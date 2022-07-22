@@ -29,6 +29,10 @@ H5P = H5P || {};
 
 export class RealityBoxCollab {
 
+    public static readonly SIGNALING_SERVER: string = "ws://192.168.0.10:1234";
+    public static readonly EVALUATION_SERVER: string = "http://192.168.0.10:8080";
+    public static readonly EVALUATION_MODE: boolean = true;
+
     realitybox: Realitybox;
     options: any;
     guiElements: AbstractGuiElement[];
