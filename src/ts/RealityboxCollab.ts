@@ -54,6 +54,9 @@ export class RealityBoxCollab {
     wireframeViewMode: WireframeViewMode;
     normalViewMode: NormalViewMode;
     evluation: Evaluation;
+    toolbar: Toolbar;
+    viewToolbar: Toolbar;
+    viewModesToolbar: Toolbar;
 
     constructor(options: any, public id: any) {
         this.options = options.realityboxcollab;
@@ -105,7 +108,7 @@ export class RealityBoxCollab {
         this.wireframeViewMode = new WireframeViewMode(this.babylonViewer);
 
         // Create Toolbars
-        let toolbar = new Toolbar(container, "collabToolbar", false, [
+        this.toolbar = new Toolbar(container, "collabToolbar", false, [
             this.moveTool, this.pointerTool, this.annotationTool, this.drawTool
         ]);
 
@@ -113,16 +116,16 @@ export class RealityBoxCollab {
         if (!Utils.isMobile) viewTools = [this.firstPersonTool, ...viewTools];
         if (Utils.isMobile) viewTools = [...viewTools, new ARTool(this)];
 
-        let viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
-        let viewModesToolbar = new Toolbar(container, "collabViewModeToolbar", true, [
+        this.viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
+        this.viewModesToolbar = new Toolbar(container, "collabViewModeToolbar", true, [
             this.normalViewMode, this.paintViewMode, this.wireframeViewMode
         ]);
 
         this.chat = new Chat(container);
-        this.guiElements = [viewToolbar, toolbar, this.chat, new Settings(this, container), viewModesToolbar];
+        this.guiElements = [this.viewToolbar, this.toolbar, this.chat, new Settings(this, container), this.viewModesToolbar];
         this.inputManager = new InputManager(this.babylonViewer);
         this.guiElements.forEach(e => e.init());
-        this.babylonViewer.registerToolbar(toolbar);
+        this.babylonViewer.registerToolbar(this.toolbar);
 
         // Debug
         let a = this.realitybox.viewer._babylonBox.getAnnotations();
