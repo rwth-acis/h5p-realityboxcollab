@@ -14,6 +14,10 @@ RealityboxCollab depends on [h5p-realitybox](https://github.com/rwth-acis/h5p-re
 - Run `npm run build` to build into the `dist` folder
 - Run `npm run build:watch` to automatically build when the source code gets modified
 
+# Build as h5p package
+- Install [h5p-cli](https://github.com/h5p/h5p-cli)
+- Run `h5p pack h5p-realitybox-collab realityboxcollab.h5p` outside of the project directory (h5p-realitybox-collab  is the name of the project directory)
+
 # Debugging environment
 
 ## Signaling Server
