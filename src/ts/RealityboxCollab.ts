@@ -8,7 +8,7 @@ import { Toolbar } from './gui/Toolbar';
 import { Evaluation } from "./networking/Evaluation";
 import { NetworkListener } from './networking/NetworkListener';
 import { Room } from './networking/Room';
-import { RoomManager } from './networking/RoomManager';
+import { RoomManager, RoomInformation } from './networking/RoomManager';
 import { DEFAULT_SETTINGS } from "./networking/RoomSettings";
 import { Realitybox } from './RealityboxTypes';
 import { AbstractTool } from "./tools/AbstractTool";
@@ -69,7 +69,7 @@ export class RealityBoxCollab {
         this.options.hideVrButton = true;
 
         this.realitybox = H5P.newRunnable({
-            library: 'H5P.RealityBox 1.0',
+            library: 'H5P.RealityBox 1.1',
             params: { realitybox: this.options },
             metadata: undefined
         }, this.id, undefined, undefined, { parent: this });
@@ -80,12 +80,24 @@ export class RealityBoxCollab {
         this.realitybox._viewer = new Proxy(this.realitybox._viewer, {
             set: this.onPropertySet.bind(this)
         });
+
+        setTimeout(() => {
+            let join = Utils.extractURLOptions();
+            if (join && join.viewer == this.id) {
+                this.realitybox.viewer.show();
+                this.buildComponents((this.realitybox.viewer as any).$el);
+                let info = this.roomManager.getRoom(join.room);
+                if (!info || info.password !== join.password) {
+                    Popups.alert("Invalid roomname or password")
+                    return;
+                }
+                this.room = new Room(this, this.getListeners(), info, false, undefined, false);
+            }
+        }, 500); // Wait for init, e.g. RoomManager to connect
     }
 
     onPropertySet(target: any, key: string, value: any): boolean {
-        if (key === "$el") {
-            this.buildComponents(value);
-        }
+        if (key === "$el") this.buildComponents(value); // Trigger init
         target[key] = value;
         return true;
     }

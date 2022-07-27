@@ -11,6 +11,7 @@ export interface RealityBoxViewer {
     $container: JQuery;
     _babylonBox: BabylonBox;
     activeAnnotation: any;
+    show: () => void;
 }
 
 export interface BabylonBox {

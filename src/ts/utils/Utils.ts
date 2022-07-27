@@ -82,22 +82,45 @@ export class Utils {
     }
 
     /**
-     * Compute the URL uses can use to join the room associated with the RealityboxCollab instance 
+     * Computes the URL uses can use to join the room associated with the RealityboxCollab instance. The query parameters
+     * 'viewer', 'room' and 'password' will be set. Other parameters will be preserved.
      * @param instance The RealityboxCollab instance
      * @returns The URL to join
      */
     static getJoinURL(instance: RealityBoxCollab): string {
         let uri = window.location.toString();
-        if (uri.indexOf('#') > 0) {
-            uri = uri.substring(0, uri.indexOf("#"));
-        }
+        // Remove # and ? (and whats behind)
+        if (uri.indexOf('#') > 0) uri = uri.substring(0, uri.indexOf("#"));
+        if (uri.indexOf('?') > 0) uri = uri.substring(0, uri.indexOf("?"));
 
-        let room = "";
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set("viewer", instance.id);
         if (!instance.room.isLocal) {
-            room = `?room=${encodeURIComponent(instance.room.roomInfo.name)}&password=${encodeURIComponent(instance.room.roomInfo.password)}`;
+            urlParams.set("room", encodeURIComponent(instance.room.roomInfo.name));
+            urlParams.set("password", encodeURIComponent(instance.room.roomInfo.password));
+        }
+        else {
+            urlParams.delete("room");
+            urlParams.delete("password");
         }
 
-        return uri + "#openViewer=" + instance.id + room;
+        return uri + "?" + urlParams.toString();
+    }
+
+    static extractURLOptions(): URLJoinOptions {
+        let uri = window.location.toString();
+        let i = uri.indexOf("?");
+        if (i > 0) {
+            const urlParams = new URLSearchParams(window.location.search);
+            let o: URLJoinOptions = {
+                viewer: parseInt(urlParams.get('viewer')),
+                room: urlParams.get('room'),
+                password: urlParams.get('password')
+            };
+
+            return o.viewer == o.viewer && o.room != undefined ? o : null;
+        }
+        return null;
     }
 
     /**
@@ -121,4 +144,10 @@ export class Utils {
         Utils.dummy.setAbsolutePosition(position);
         return Utils.dummy.position;;
     }
+}
+
+export interface URLJoinOptions {
+    viewer: number;
+    room: string;
+    password: string;
 }

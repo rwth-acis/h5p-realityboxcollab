@@ -1,7 +1,10 @@
 import { RealityBoxCollab } from "../RealityboxCollab";
 
+/**
+ * This class handles sending metrics and potential error to the evaluation backend, if {@link RealityBoxCollab.EVALUATION_MODE} is enabled.
+ */
 export class Evaluation {
-    static readonly SEND_INTERVALL = 10_000; // in ms
+    static readonly SEND_INTERVAL = 10_000; // in ms
     lastSend: number = 0;
     frames: number = 0;
 
@@ -10,7 +13,7 @@ export class Evaluation {
             this.instance.babylonViewer.scene.registerBeforeRender(() => {
                 this.frames++;
                 let time = Date.now();
-                if (time - this.lastSend > Evaluation.SEND_INTERVALL) {
+                if (time - this.lastSend > Evaluation.SEND_INTERVAL) {
                     this.sendMetrics();
                     this.lastSend = time;
                     this.frames = 0;
@@ -22,13 +25,13 @@ export class Evaluation {
 
     private sendMetrics() {
         let metrics: Metrics = {
-            fps: this.frames / (Evaluation.SEND_INTERVALL / 1_000.0),
+            fps: this.frames / (Evaluation.SEND_INTERVAL / 1_000.0), // Average FPS over the send interval
             time: Date.now(),
             activeTool: this.instance.toolbar.activeTool?.name,
             activeNavigationMode: this.instance.viewToolbar.activeTool?.name,
             activeViewMode: this.instance.viewModesToolbar.activeTool?.name,
             room: this.instance.room.roomInfo.name,
-            username: this.instance.room.user.username
+            username: this.instance.room.user?.username // User could be in the joining process
         };
         this.send("/metrics", metrics);
     }
