@@ -58,6 +58,9 @@ export abstract class AbstractXRView extends AbstractTool {
         });
     }
 
+    /**
+     * If in an XR session, exit it
+     */
     override onDeactivate(): void {
         if (this.experience) {
             this.experience.baseExperience.exitXRAsync();
