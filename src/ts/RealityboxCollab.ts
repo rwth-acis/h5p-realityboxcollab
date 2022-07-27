@@ -1,4 +1,3 @@
-import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { AbstractGuiElement } from './gui/AbstractGuiElement';
 import { BabylonViewer } from './gui/BabylonViewer';
 import { Chat } from './gui/Chat';
@@ -8,7 +7,7 @@ import { Toolbar } from './gui/Toolbar';
 import { Evaluation } from "./networking/Evaluation";
 import { NetworkListener } from './networking/NetworkListener';
 import { Room } from './networking/Room';
-import { RoomManager, RoomInformation } from './networking/RoomManager';
+import { RoomManager } from './networking/RoomManager';
 import { DEFAULT_SETTINGS } from "./networking/RoomSettings";
 import { Realitybox } from './RealityboxTypes';
 import { AbstractTool } from "./tools/AbstractTool";
@@ -34,6 +33,24 @@ export class RealityBoxCollab {
     public static readonly EVALUATION_SERVER: string = "http://buche.informatik.rwth-aachen.de:8080";
     public static readonly EVALUATION_MODE: boolean = true;
 
+    // Tools
+    drawTool: DrawTool;
+    orbitTool: OrbitTool;
+    paintViewMode: PaintViewMode;
+    annotationTool: AnnotationTool;
+    pointerTool: PointerTool;
+    moveTool: MoveTool;
+    vrTool: VRTool;
+    firstPersonTool: FirstPersonTool;
+    // View Modes
+    wireframeViewMode: WireframeViewMode;
+    normalViewMode: NormalViewMode;
+    evaluation: Evaluation;
+    // Toolbars
+    toolbar: Toolbar;
+    viewToolbar: Toolbar;
+    viewModesToolbar: Toolbar;
+    // Other properties
     realitybox: Realitybox;
     options: any;
     guiElements: AbstractGuiElement[];
@@ -43,27 +60,23 @@ export class RealityBoxCollab {
     localRoom: Room;
     babylonViewer: BabylonViewer;
     inputManager: InputManager;
-    drawTool: DrawTool;
-    orbitTool: OrbitTool;
-    paintViewMode: PaintViewMode;
-    annotationTool: AnnotationTool;
-    pointerTool: PointerTool;
-    moveTool: MoveTool;
-    vrTool: VRTool;
-    firstPersonTool: FirstPersonTool;
-    wireframeViewMode: WireframeViewMode;
-    normalViewMode: NormalViewMode;
-    evluation: Evaluation;
-    toolbar: Toolbar;
-    viewToolbar: Toolbar;
-    viewModesToolbar: Toolbar;
 
+    /**
+     * Creates a new instance of RealityboxCollab (invoked by the underlying H5P system)
+     * @param options The H5P options
+     * @param id The H5P id
+     */
     constructor(options: any, public id: any) {
         this.options = options.realityboxcollab;
 
         this.roomManager = new RoomManager();
     }
 
+    /**
+     * Called when this H5P instance is attached. Will create a Realitybox instance and wait for the viewer to be opened.´
+     * If query parameters are set, the viewer might be opened automatically.
+     * @param $container The container for this H5P instance
+     */
     async attach($container: JQuery) {
         // Hide Realityboxs VR Button
         this.options.hideVrButton = true;
@@ -96,12 +109,24 @@ export class RealityBoxCollab {
         }, 500); // Wait for init, e.g. RoomManager to connect
     }
 
+    /**
+     * Workaround for Realitybox by replacing its viewer with a proxy. This method is executed when a property of the Realitbox Viewer is set.
+     * This method will execute {@link RealityBoxCollab.buildComponents} when '$el' of the viewer has been set. 
+     * @param target The viewer
+     * @param key The key of the target which has been assigned to a value
+     * @param value The assignment value
+     * @returns Always true
+     */
     onPropertySet(target: any, key: string, value: any): boolean {
         if (key === "$el") this.buildComponents(value); // Trigger init
         target[key] = value;
         return true;
     }
 
+    /**
+     * Creates all tools and toolbars
+     * @param container The container which is used to attach e.g. the toolbars to
+     */
     buildComponents(container: JQuery): void {
         // Some tools need reference to others
         this.babylonViewer = new BabylonViewer(this);
@@ -127,11 +152,13 @@ export class RealityBoxCollab {
             this.moveTool, this.pointerTool, this.annotationTool, this.drawTool
         ]);
 
+        // Navigation modes
         let viewTools: AbstractTool[] = [this.orbitTool, this.vrTool];
         if (!Utils.isMobile) viewTools = [this.firstPersonTool, ...viewTools];
         if (Utils.isMobile) viewTools = [...viewTools, new ARTool(this)];
-
         this.viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
+
+        // ViewModes
         this.viewModesToolbar = new Toolbar(container, "collabViewModeToolbar", true, [
             this.normalViewMode, this.paintViewMode, this.wireframeViewMode
         ]);
@@ -142,26 +169,21 @@ export class RealityBoxCollab {
         this.guiElements.forEach(e => e.init());
         this.babylonViewer.registerToolbar(this.toolbar);
 
-        // Debug
-        let a = this.realitybox.viewer._babylonBox.getAnnotations();
-        if (a.length > 0) {
-            this.realitybox.viewer._babylonBox.addAnnotation({
-                content: a[0].content,
-                normalRef: new BABYLON.Vector3(0, 1, 0),
-                position: new BABYLON.Vector3(1, 0, 2),
-                drawing: undefined
-            });
-        }
-
+        // Create a local room (used when not in a remote room)
         this.room = this.localRoom = new Room(this, this.getListeners(), {
             name: "Local Room",
             password: "",
             settings: DEFAULT_SETTINGS
         }, true, undefined, true);
 
-        this.evluation = new Evaluation(this);
+        // Create the evaluation object
+        this.evaluation = new Evaluation(this);
     }
 
+    /**
+     * Returns all objects which are NetworkListeners and should be notified on changes
+     * @returns The listeners
+     */
     getListeners(): NetworkListener[] {
         return [...this.guiElements, this.babylonViewer];
     }

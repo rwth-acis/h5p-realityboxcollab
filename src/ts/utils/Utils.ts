@@ -83,7 +83,8 @@ export class Utils {
 
     /**
      * Computes the URL uses can use to join the room associated with the RealityboxCollab instance. The query parameters
-     * 'viewer', 'room' and 'password' will be set. Other parameters will be preserved.
+     * 'viewer', 'room' and 'password' will be set. Other parameters will be preserved. This method expects that the user is currently
+     * connect to a remote room.
      * @param instance The RealityboxCollab instance
      * @returns The URL to join
      */
@@ -95,18 +96,16 @@ export class Utils {
 
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.set("viewer", instance.id);
-        if (!instance.room.isLocal) {
-            urlParams.set("room", encodeURIComponent(instance.room.roomInfo.name));
-            urlParams.set("password", encodeURIComponent(instance.room.roomInfo.password));
-        }
-        else {
-            urlParams.delete("room");
-            urlParams.delete("password");
-        }
+        urlParams.set("room", encodeURIComponent(instance.room.roomInfo.name));
+        urlParams.set("password", encodeURIComponent(instance.room.roomInfo.password));
 
         return uri + "?" + urlParams.toString();
     }
 
+    /**
+     * Extracts the options which room to join and what viewer instance to use from the current URL
+     * @returns The options or null, if the options to join a room are not set
+     */
     static extractURLOptions(): URLJoinOptions {
         let uri = window.location.toString();
         let i = uri.indexOf("?");
@@ -146,8 +145,14 @@ export class Utils {
     }
 }
 
+/**
+ * Options to join a room via URL query parameters
+ */
 export interface URLJoinOptions {
+    /** The H5P id */
     viewer: number;
+    /** The name of the room to join */
     room: string;
+    /** The password of the room (might be undefined) */
     password: string;
 }

@@ -2,6 +2,9 @@ import React = require('react');
 import { ReactNode } from 'react';
 import { Room } from './Room';
 
+/**
+ * Types of {@link SettingsGuiElement}s
+ */
 export enum SettingsType {
     Checkbox, Heading
 }
@@ -44,6 +47,9 @@ export interface RoomSettings {
     annotationEnabled: boolean;
 }
 
+/**
+ * The default settings used for a new room
+ */
 export const DEFAULT_SETTINGS: RoomSettings = {
     canUseChat: true,
     canUseMoveTool: true,
@@ -53,6 +59,9 @@ export const DEFAULT_SETTINGS: RoomSettings = {
     annotationEnabled: true
 }
 
+/**
+ * The settings as gui elements with their callbacks to get / update the current value
+ */
 export const SETTINGS: SettingsGuiElement[] = [
     new SettingsGuiElement("Annotations", SettingsType.Checkbox, s => s.annotationEnabled, (s, v) => s.annotationEnabled = v),
     new SettingsGuiElement("Users can use...", SettingsType.Heading),

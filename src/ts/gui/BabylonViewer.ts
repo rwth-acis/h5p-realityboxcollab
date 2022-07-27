@@ -82,6 +82,9 @@ export class BabylonViewer extends NetworkListener {
         this.xrGui.forEach(g => g.onXRStateChanged(newState, ex));
     }
 
+    /**
+     * Scales the model such that the maximum extend of all axis is 1m
+     */
     private adjustModelScale() {
         for (let m of this.models) {
             let max = new BABYLON.Vector3(0, 0, 0);

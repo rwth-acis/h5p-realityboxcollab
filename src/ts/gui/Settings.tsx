@@ -81,11 +81,14 @@ export class Settings extends AbstractGuiElement {
     </>;
   }
 
+  /**
+   * Show select to make other user co-host
+   */
   private coHost() {
     let users: User[] = [];
     this.currentRoom.users.forEach(u => {if (u.role != Role.HOST && u.role != Role.CO_HOST) users.push(u)});
     if (users.length == 0) {
-      Popups.alert("There is no suer in the room, who is not CO-Host already");
+      Popups.alert("There is no user in the room, who is not CO-Host already");
       return;
     }
 
@@ -96,6 +99,9 @@ export class Settings extends AbstractGuiElement {
     });
   }
 
+  /**
+   * Update view and register listeners to see, when users join or leave
+   */
   onRoomChanged() {
     super.updateView();
 
@@ -107,6 +113,9 @@ export class Settings extends AbstractGuiElement {
     });
   }
 
+  /**
+   * Update the view if settings have changed
+   */
   override onSettingsChanged() {
     super.updateView();
   }

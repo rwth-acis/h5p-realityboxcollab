@@ -23,6 +23,9 @@ export class Evaluation {
         }
     }
 
+    /**
+     * Send metrics to the evaluation backend server
+     */
     private sendMetrics() {
         let metrics: Metrics = {
             fps: this.frames / (Evaluation.SEND_INTERVAL / 1_000.0), // Average FPS over the send interval
@@ -36,6 +39,14 @@ export class Evaluation {
         this.send("/metrics", metrics);
     }
 
+    /**
+     * Report an error to the evaluation backend server
+     * @param msg The message of the error
+     * @param source The source of the error ~> Source file and origin
+     * @param line The line of the statement causing the error
+     * @param column The column of the error
+     * @param error The error as object
+     */
     private reportError(msg: string, source: string, line: number, column: number, error: any) {
         let e: Error = {
             message: msg,
@@ -47,6 +58,11 @@ export class Evaluation {
         this.send("/error", e);
     }
 
+    /**
+     * Send a POST request to the evaluation backend server. This method will immediately return and will not wait for a response.
+     * @param endpoint The endpoint to post to
+     * @param object The object to post
+     */
     private send(endpoint: string, object: any) {
         let req = new XMLHttpRequest();
         req.open("POST", RealityBoxCollab.EVALUATION_SERVER + endpoint, true); // true for async
@@ -55,6 +71,9 @@ export class Evaluation {
     }
 }
 
+/**
+ * The metrics object send to the backend server (has a corresponding Java class)
+ */
 interface Metrics {
     fps: number;
     time: number;
@@ -65,6 +84,9 @@ interface Metrics {
     room: string;
 }
 
+/**
+ * The error object send to the backend server in case of an error (has a corresponding Java class)
+ */
 interface Error {
     message: string;
     source: string;

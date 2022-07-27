@@ -1,5 +1,10 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 
+/*
+ * This files holds TypeScript types for Realitbox. These types are only declared to have a compile time check for typos 
+ * and to make use of the autocompletion during the development process. These types are not complete: properties and function might be missing on some of the types.
+ */
+
 export interface Realitybox {
     _viewer: any; // Proxy
     viewer: RealityBoxViewer;
@@ -56,8 +61,4 @@ export interface RealityboxAnnotation {
 export interface H5PContent {
     library: string;
     params: any;
-}
-
-export interface RealityBoxEditor {
-
 }

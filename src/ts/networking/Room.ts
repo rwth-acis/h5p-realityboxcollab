@@ -10,6 +10,9 @@ import { HostUpdater } from "./HostUpdater";
 import { NetworkListener } from "./NetworkListener";
 import { RoomInformation, RoomManager } from "./RoomManager";
 
+/**
+ * Represents a local or remote room. A users is always connect to exactly one room.
+ */
 export class Room {
 
     /** The provider for the YJS room */
@@ -125,11 +128,18 @@ export class Room {
         this.updateUser(this.user);
     }
 
+    /**
+     * Update a remote user. It is not checked if the user object has been modified in between by another user of the room.
+     * @param user The user to update
+     */
     updateUser(user: User) {
         user.lastUpdate = Date.now();
         this.users.set(user.username, user);
     }
 
+    /**
+     * Update the managers room information
+     */
     onSettingsUpdated() {
         this.manager.updateRoom(this.roomInfo);
     }
@@ -142,6 +152,10 @@ export class Room {
         this.instance.chat.sendMessage(Chat.createMessage(msg, "Room " + this.roomInfo.name));
     }
 
+    /**
+     * Asks the user fo a username for the current room
+     * @returns A promise, which is resolved when a proper username has been supplied, which is not already taken
+     */
     private async askUsername(): Promise<string> {
         let promise = new Promise<string>((resolve) => {
             let p = Popups.input("Please enter a new username for this room", "New username", (username) => {
@@ -177,6 +191,11 @@ export class Room {
         return r == null;
     }
     
+    /**
+     * Check if a room name or username only contains allowed characters
+     * @param str The string to check
+     * @returns true, if the string only contains characters A-Z, a-z, 0-9 or _
+     */
     static checkCharacters(str: string): boolean {
         return /[\w_\d]+/.test(str);
     }

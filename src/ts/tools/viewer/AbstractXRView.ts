@@ -15,20 +15,33 @@ import { AbstractTool } from "../AbstractTool";
 export abstract class AbstractXRView extends AbstractTool {
     experience: BABYLON.WebXRDefaultExperience;
 
+    /**
+     * Create a XR view
+     * @param instance The RealityboxCollab instance
+     * @param state The state, this XR view enters
+     * @param name The name of the tool
+     * @param icon The icon of the tool
+     * @param mode The session mode to use for this XR view
+     * @param spaceType The space type to use fo this XR view
+     */
     constructor(private instance: RealityBoxCollab, private state: XRState, name: string, icon: string, public mode: XRSessionMode, public spaceType: XRReferenceSpaceType) {
         super(name, icon);
     }
 
+    /**
+     * Calls {@link AbstractXRView.createXR}, if not called before and then enters the XR session
+     */
     override async onActivate() {
-        if (!this.experience) {
-            await this.createXR();
-        }
+        if (!this.experience) await this.createXR();
 
         this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
         this.instance.babylonViewer.onXRStateChanged(this.state, this.experience);
         this.pOnXREnter();
     }
 
+    /**
+     * Called when the tool enters its XR session first
+     */
     async createXR() {
         const scene: BABYLON.Scene = this.instance.babylonViewer.scene;
 
@@ -54,20 +67,31 @@ export abstract class AbstractXRView extends AbstractTool {
         this.experience = null;
     }
 
-    override onRoomChanged(): void {
+    override onRoomChanged(): void { }
 
-    }
-
+    /**
+     * Hides all annotations of Realitybox and calls {@link AbstractXRView.onXREnter}
+     */
     private pOnXREnter() {
         this.instance.babylonViewer.babylonBox.hideAllAnnotations();
         this.onXREnter();
     }
 
+    /**
+     * Shows all annotations of Realitybox and calls {@link AbstractXRView.onXRExit}
+     */
     private pOnXRExit() {
         this.instance.babylonViewer.babylonBox.showAllAnnotations();
         this.onXRExit();
     }
 
+    /**
+     * Called when entering the XR session
+     */
     abstract onXREnter(): void;
+
+    /**
+     * Called when exiting the XR session (also if terminated by the browser / devise by for example taking of a HMD)
+     */
     abstract onXRExit(): void;
 }
