@@ -65,6 +65,9 @@ export class RealityBoxCollab {
     }
 
     async attach($container: JQuery) {
+        // Hide Realityboxs VR Button
+        this.options.hideVrButton = true;
+
         this.realitybox = H5P.newRunnable({
             library: 'H5P.RealityBox 1.0',
             params: { realitybox: this.options },
