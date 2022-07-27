@@ -1,6 +1,6 @@
 # Dependencies
 RealityboxCollab depends on [h5p-realitybox](https://github.com/rwth-acis/h5p-realitybox) by Johannes Ballman and therefore needs the following H5P modules to work:
-- [h5p-realitybox](https://github.com/rwth-acis/h5p-realitybox) Other link! (Modified version to work with RealityboxCollab)
+- [h5p-realitybox](https://github.com/rwth-acis/h5p-realitybox)
 - [h5p-babylonbox](https://github.com/rwth-acis/h5p-babylonbox)
 - [h5p-kewar-code-1.0.0](https://github.com/otacke/h5p-kewar-code/releases/tag/1.0.0)
 - [h5p-editor-3d-model-loader](https://github.com/rwth-acis/h5p-editor-3d-model-loader)
