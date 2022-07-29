@@ -82,7 +82,7 @@ export class RealityBoxCollab {
         this.options.hideVrButton = true;
 
         this.realitybox = H5P.newRunnable({
-            library: 'H5P.RealityBox 1.1',
+            library: 'H5P.RealityBox 1.2',
             params: { realitybox: this.options },
             metadata: undefined
         }, this.id, undefined, undefined, { parent: this });
