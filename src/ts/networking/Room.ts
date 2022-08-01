@@ -6,7 +6,6 @@ import { Popups } from "../gui/popup/Popups";
 import { RealityBoxCollab } from "../RealityboxCollab";
 import { RemoteAnnotation } from "../tools/AnnotationTool";
 import { PointerInfo } from "../tools/PointerTool";
-import { HostUpdater } from "./HostUpdater";
 import { NetworkListener } from "./NetworkListener";
 import { RoomInformation, RoomManager } from "./RoomManager";
 
@@ -17,8 +16,6 @@ export class Room {
 
     /** The provider for the YJS room */
     private wsProvider: WebsocketProvider;
-    /** The host updater. Only used if the user of this instance is the room host */
-    private hostUpdater: HostUpdater;
     private manager: RoomManager
     /** The general shared document for this room */
     doc: Y.Doc;
@@ -91,10 +88,6 @@ export class Room {
             let self = this.users.get(this.user.username);
             if (self) this.user.role = self.role;
         });
-
-        if (this.user.role == Role.HOST && !this.isLocal) {
-            this.hostUpdater = new HostUpdater(this);
-        }
     }
 
     /**
@@ -114,9 +107,6 @@ export class Room {
      * Called when disconnecting from the room
      */
     onDisconnect() {
-        if (this.hostUpdater) {
-            this.hostUpdater.clear();
-        }
         this.instance.room = this.instance.localRoom;
         this.instance.room.onConnect(undefined);
     }
