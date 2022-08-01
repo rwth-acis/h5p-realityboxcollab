@@ -1,11 +1,11 @@
 import * as $ from 'jquery';
-import * as Y from 'yjs';
 import { ReactElement } from "react";
 import { Accordion } from 'react-bootstrap';
 import * as ReactDOM from "react-dom";
+import * as Y from 'yjs';
+import { Role } from '../networking/Room';
 import { AbstractGuiElement } from "./AbstractGuiElement";
 import React = require("react");
-import { Role } from '../networking/Room';
 
 
 /**
