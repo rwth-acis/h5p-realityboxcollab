@@ -31,7 +31,7 @@ export class Evaluation {
             fps: this.frames / (Evaluation.SEND_INTERVAL / 1_000.0), // Average FPS over the send interval
             time: Date.now(),
             activeTool: this.instance.toolbar.activeTool?.name,
-            activeNavigationMode: this.instance.viewToolbar.activeTool?.name,
+            activeNavigationMode: this.instance.navigationToolbar.activeTool?.name,
             activeViewMode: this.instance.viewModesToolbar.activeTool?.name,
             room: this.instance.room.roomInfo.name,
             username: this.instance.room.user?.username // User could be in the joining process

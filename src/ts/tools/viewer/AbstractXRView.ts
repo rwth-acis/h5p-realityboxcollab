@@ -1,5 +1,6 @@
 import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { XRState } from "../../gui/BabylonViewer";
+import { Popups } from "../../gui/popup/Popups";
 import { RealityBoxCollab } from "../../RealityboxCollab";
 import { AbstractTool } from "../AbstractTool";
 
@@ -34,7 +35,14 @@ export abstract class AbstractXRView extends AbstractTool {
     override async onActivate() {
         if (!this.experience) await this.createXR();
 
-        this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
+        let supported = await this.experience.baseExperience.sessionManager.isSessionSupportedAsync(this.mode);
+        console.log(supported);
+        if (!supported) {
+            Popups.alert("This type of XR mode is not supported in your browser or you do not have a proper device connected");
+            if (this.active) this.toolbar.deactivateActiveTool();
+            return;
+        }
+        await this.experience.baseExperience.enterXRAsync(this.mode, this.spaceType);
         this.instance.babylonViewer.onXRStateChanged(this.state, this.experience);
         this.pOnXREnter();
     }
@@ -46,16 +54,17 @@ export abstract class AbstractXRView extends AbstractTool {
         const scene: BABYLON.Scene = this.instance.babylonViewer.scene;
 
         await scene.createDefaultXRExperienceAsync({
-        }).then(ex => {
-            this.experience = ex;
+        })
+            .then(ex => {
+                this.experience = ex;
 
-            this.experience.baseExperience.onStateChangedObservable.add((state) => {
-                if (state == BABYLON.WebXRState.NOT_IN_XR) {
-                    if (this.active) this.toolbar.deactivateActiveTool(); // Calls onXRExit later
-                    else this.pOnXRExit(); // Manual call
-                }
+                this.experience.baseExperience.onStateChangedObservable.add((state) => {
+                    if (state == BABYLON.WebXRState.NOT_IN_XR) {
+                        if (this.active) this.toolbar.deactivateActiveTool(); // Calls onXRExit later
+                        else this.pOnXRExit(); // Manual call
+                    }
+                });
             });
-        });
     }
 
     /**

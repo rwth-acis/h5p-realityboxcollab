@@ -29,9 +29,9 @@ H5P = H5P || {};
 
 export class RealityBoxCollab {
 
-    public static readonly SIGNALING_SERVER: string = "ws://buche.informatik.rwth-aachen.de:8529";
-    public static readonly EVALUATION_SERVER: string = "http://localhost:8080"; //"http://buche.informatik.rwth-aachen.de:8080";
     public static readonly EVALUATION_MODE: boolean = true;
+    public static readonly EVALUATION_SERVER: string = "http://localhost:8080"; //"http://buche.informatik.rwth-aachen.de:8080";
+    public static readonly SIGNALING_SERVER: string = RealityBoxCollab.EVALUATION_MODE ? "ws://buche.informatik.rwth-aachen.de:8529" : "ws://localhost:1234";
 
     // Tools
     drawTool: DrawTool;
@@ -48,7 +48,7 @@ export class RealityBoxCollab {
     evaluation: Evaluation;
     // Toolbars
     toolbar: Toolbar;
-    viewToolbar: Toolbar;
+    navigationToolbar: Toolbar;
     viewModesToolbar: Toolbar;
     // Other properties
     realitybox: Realitybox;
@@ -155,8 +155,8 @@ export class RealityBoxCollab {
         // Navigation modes
         let viewTools: AbstractTool[] = [this.orbitTool, this.vrTool];
         if (!Utils.isMobile) viewTools = [this.firstPersonTool, ...viewTools];
-        if (Utils.isMobile) viewTools = [...viewTools, new ARTool(this)];
-        this.viewToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
+        if (Utils.isMobile) viewTools.push(new ARTool(this));
+        this.navigationToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
 
         // ViewModes
         this.viewModesToolbar = new Toolbar(container, "collabViewModeToolbar", true, [
@@ -164,7 +164,7 @@ export class RealityBoxCollab {
         ]);
 
         this.chat = new Chat(container);
-        this.guiElements = [this.viewToolbar, this.toolbar, this.chat, new Settings(this, container), this.viewModesToolbar];
+        this.guiElements = [this.navigationToolbar, this.toolbar, this.chat, new Settings(this, container), this.viewModesToolbar];
         this.inputManager = new InputManager(this.babylonViewer);
         this.guiElements.forEach(e => e.init());
         this.babylonViewer.registerToolbar(this.toolbar);
@@ -180,7 +180,7 @@ export class RealityBoxCollab {
         this.evaluation = new Evaluation(this);
 
         // Set Title
-        setTimeout(() => document.getElementById("mainTitle").innerHTML = "RealityBoxCollab", 500)
+        setTimeout(() => document.getElementById("mainTitle").innerHTML = "RealityBoxCollab", 100)
     }
 
     /**
