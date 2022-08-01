@@ -27,8 +27,6 @@ export class MoveTool extends AbstractMultiTool {
         this.gizmoManager.rotationGizmoEnabled = (tool == this.subtools[1]);
         this.gizmoManager.scaleGizmoEnabled = (tool == this.subtools[2]);
 
-        console.log(this.gizmoManager);
-
         // Sizes
         if (this.gizmoManager.gizmos.positionGizmo) this.modfiyGizmo(this.gizmoManager.gizmos.positionGizmo);
         if (this.gizmoManager.gizmos.rotationGizmo) this.modfiyGizmo(this.gizmoManager.gizmos.rotationGizmo);

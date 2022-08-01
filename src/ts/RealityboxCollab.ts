@@ -30,7 +30,7 @@ H5P = H5P || {};
 export class RealityBoxCollab {
 
     public static readonly SIGNALING_SERVER: string = "ws://buche.informatik.rwth-aachen.de:8529";
-    public static readonly EVALUATION_SERVER: string = "http://buche.informatik.rwth-aachen.de:8080";
+    public static readonly EVALUATION_SERVER: string = "http://localhost:8080"; //"http://buche.informatik.rwth-aachen.de:8080";
     public static readonly EVALUATION_MODE: boolean = true;
 
     // Tools
@@ -178,6 +178,9 @@ export class RealityBoxCollab {
 
         // Create the evaluation object
         this.evaluation = new Evaluation(this);
+
+        // Set Title
+        setTimeout(() => document.getElementById("mainTitle").innerHTML = "RealityBoxCollab", 500)
     }
 
     /**

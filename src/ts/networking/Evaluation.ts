@@ -13,7 +13,7 @@ export class Evaluation {
             this.instance.babylonViewer.scene.registerBeforeRender(() => {
                 this.frames++;
                 let time = Date.now();
-                if (time - this.lastSend > Evaluation.SEND_INTERVAL) {
+                if (time - this.lastSend > Evaluation.SEND_INTERVAL && !this.instance.room.isLocal) {
                     this.sendMetrics();
                     this.lastSend = time;
                     this.frames = 0;
