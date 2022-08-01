@@ -1,10 +1,12 @@
 import * as $ from 'jquery';
 import * as Y from 'yjs';
 import { ReactElement } from "react";
+import { Accordion } from 'react-bootstrap';
 import * as ReactDOM from "react-dom";
 import { AbstractGuiElement } from "./AbstractGuiElement";
 import React = require("react");
 import { Role } from '../networking/Room';
+
 
 /**
  * Gui View for the Chat window
@@ -18,15 +20,29 @@ export class Chat extends AbstractGuiElement {
 
   override createElement(): ReactElement {
     return <span>
-      <div id='collabChat' className='guiElement'>
-        <h1 className='elementHeading'>Chat</h1>
-        <div id="chatMessageField">
-
-        </div>
-        <input style={{ width: "80%" }} id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.sendInput(); }}></input>
-        <button className="btn btn-primary" style={{ float: "right" }} disabled={!this.canUse()} onClick={this.sendInput.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
-      </div>
+      <Accordion defaultActiveKey="0" id='collabChat' className='guiElement chatOpen' onSelect={e => this.expansionChanged(e)}>
+      <Accordion.Item eventKey="0">
+        <Accordion.Header>Chat</Accordion.Header>
+        <Accordion.Body>
+          <div id="chatMessageField">
+          </div>
+          <input style={{ width: "80%" }} id="chatInput" onKeyDown={e => { if (e.key === 'Enter') this.sendInput(); }}></input>
+          <button className="btn btn-primary" style={{ float: "right" }} disabled={!this.canUse()} onClick={this.sendInput.bind(this)}><i className="fa-solid fa-paper-plane"></i></button>
+      </Accordion.Body>
+    </Accordion.Item>
+    </Accordion>
     </span>
+  }
+
+  private expansionChanged(e: any) {
+    if (e != null) { // Open
+      $("#collabChat").addClass("chatOpen");
+      $("#collabChat").removeClass("chatClosed");
+    }
+    else {
+      $("#collabChat").removeClass("chatOpen");
+      $("#collabChat").addClass("chatClosed");
+    }
   }
 
   /**
@@ -35,7 +51,7 @@ export class Chat extends AbstractGuiElement {
    */
   private canUse(): boolean {
     if (!this.currentRoom.roomInfo.settings) throw "No settings in this room";
-    
+
     return !this.currentRoom.isLocal && (this.currentRoom.roomInfo.settings.canUseChat || this.currentRoom.user.role == Role.HOST || this.currentRoom.user.role == Role.CO_HOST);
   }
 
