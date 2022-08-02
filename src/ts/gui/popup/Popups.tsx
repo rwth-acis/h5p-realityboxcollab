@@ -34,7 +34,7 @@ export class Popups {
 
     let popup = new Popup('', react, "800px");
     let kewar = H5P.newRunnable({
-      library: 'H5P.KewArCode 0.1.0',
+      library: 'H5P.KewArCode 0.2.1',
       params: {
         codeType: 'url',
         url: url,

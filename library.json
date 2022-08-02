@@ -1,6 +1,6 @@
 {
   "title": "RealityBox Collab",
-  "description": "",
+  "description": "RealityboxCollab",
   "majorVersion": 1,
   "minorVersion": 1,
   "patchVersion": 0,
@@ -10,7 +10,7 @@
   "machineName": "H5P.RealityBoxCollab",
   "coreApi": {
     "majorVersion": 1,
-    "minorVersion": 0
+    "minorVersion": 1
   },
   "embedTypes": ["div"],
   "preloadedJs": [
@@ -36,8 +36,8 @@
      },
      {
        "machineName": "H5P.KewArCode",
-       "majorVersion": 1,
-       "minorVersion": 0
+       "majorVersion": 0,
+       "minorVersion": 2
      }
   ],
   "editorDependencies": [
