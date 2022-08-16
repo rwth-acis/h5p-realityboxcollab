@@ -20,6 +20,8 @@ export class DrawTool extends AbstractMultiTool {
     syncIn: number = -1;
     drawColor: BABYLON.Color3 = DrawTool.DEFAULT_COLOR;
     uiPanel: any;
+    hasAutoSwitched: boolean = false;
+    textureChanged: boolean = false;
     picker: ColorPicker;
 
     /**
@@ -46,7 +48,7 @@ export class DrawTool extends AbstractMultiTool {
     }
 
     onSubToolSwitched(subtool: SubTool) {
-        if (subtool) {
+        if (subtool == this.subtools[0]) {
             this.instance.paintViewMode.toolbar.activateTool(this.instance.paintViewMode);
             this.uiPanel.isVisible = true;
         }
@@ -110,6 +112,7 @@ export class DrawTool extends AbstractMultiTool {
         const c = this.drawColor;
         ctx.fillStyle = `rgb(${c.r * 255}, ${c.g * 255}, ${c.b * 255})`;
         ctx.fill();
+        this.textureChanged = true;
 
         if (this.syncIn <= 0) this.syncIn = 10; // Avoid lags, sync every 10 frames
         this.instance.paintViewMode.texture.update();
@@ -163,8 +166,8 @@ export class DrawTool extends AbstractMultiTool {
      */
     private updateSharedTexture() {
         let data = this.currentRoom.doc.getMap().get("DrawToolTexture") as SharedDrawInformation;
-        if (data && (!this.sharedDrawInformation || this.sharedDrawInformation.lastUpdate != data.lastUpdate)) {
-            this.sharedDrawInformation = data;
+        if (data && (!this.sharedDrawInformation || this.sharedDrawInformation.lastUpdate != data.lastUpdate)) { // Has changes
+            
             const ctx = this.instance.paintViewMode.texture.getContext();
             let r = this.sharedDrawInformation.texture;
             ctx.putImageData(new ImageData(new Uint8ClampedArray(r.data), r.width, r.height), 0, 0);
@@ -173,8 +176,15 @@ export class DrawTool extends AbstractMultiTool {
             for (let x = 0; x < this.sharedDrawInformation.lines.length; x++) {
                 this.updateLine(x);
             }
+
+            // Switch to the paint view, if another user has used the draw tool (only one time)
+            if (this.sharedDrawInformation.lastTextureUpdate != data.lastTextureUpdate && !this.hasAutoSwitched) {
+                this.instance.paintViewMode.toolbar.activateTool(this.instance.paintViewMode);
+                this.hasAutoSwitched = true;
+            }
+            this.sharedDrawInformation = data;
         }
-        else if (!data) {
+        else if (!data) { // No data yet
             this.writeDrawInfo();
         }
     }
@@ -190,6 +200,7 @@ export class DrawTool extends AbstractMultiTool {
             this.sharedDrawInformation = {
                 texture: undefined,
                 lastUpdate: undefined,
+                lastTextureUpdate: undefined,
                 lines: []
             };
         }
@@ -203,6 +214,10 @@ export class DrawTool extends AbstractMultiTool {
             data: data
         };
         this.sharedDrawInformation.lastUpdate = Date.now();
+        if (this.textureChanged) {
+            this.sharedDrawInformation.lastTextureUpdate = Date.now();
+            this.textureChanged = false;
+        }
         this.currentRoom.doc.getMap().set("DrawToolTexture", this.sharedDrawInformation);
     }
 
@@ -250,6 +265,7 @@ export class DrawTool extends AbstractMultiTool {
 interface SharedDrawInformation {
     texture: Texture;
     lastUpdate: number;
+    lastTextureUpdate: number;
     lines: Line[];
 }
 
