@@ -45,6 +45,7 @@ export interface RoomSettings {
     canUseAnnotationTool: boolean;
     canUsePenTool: boolean;
     annotationEnabled: boolean;
+    onlySeeHosts: boolean;
 }
 
 /**
@@ -56,7 +57,8 @@ export const DEFAULT_SETTINGS: RoomSettings = {
     canUsePointerTool: true,
     canUseAnnotationTool: true,
     canUsePenTool: true,
-    annotationEnabled: true
+    annotationEnabled: true,
+    onlySeeHosts: false
 }
 
 /**
@@ -64,9 +66,10 @@ export const DEFAULT_SETTINGS: RoomSettings = {
  */
 export const SETTINGS: SettingsGuiElement[] = [
     new SettingsGuiElement("Annotations", SettingsType.Checkbox, s => s.annotationEnabled, (s, v) => s.annotationEnabled = v),
+    new SettingsGuiElement("Hide non-host users", SettingsType.Checkbox, s => s.onlySeeHosts, (s, v) => s.onlySeeHosts = v),
     new SettingsGuiElement("Users can use...", SettingsType.Heading),
     new SettingsGuiElement("Chat", SettingsType.Checkbox, s => s.canUseChat, (s, v) => s.canUseChat = v),
     new SettingsGuiElement("Pointer Tool", SettingsType.Checkbox, s => s.canUsePointerTool, (s, v) => s.canUsePointerTool = v),
     new SettingsGuiElement("Annotation Tool", SettingsType.Checkbox, s => s.canUseAnnotationTool, (s, v) => s.canUseAnnotationTool = v),
-    new SettingsGuiElement("Pen Tool", SettingsType.Checkbox, s => s.canUsePenTool, (s, v) => s.canUsePenTool = v)
+    new SettingsGuiElement("Pen Tool", SettingsType.Checkbox, s => s.canUsePenTool, (s, v) => s.canUsePenTool = v) 
 ]

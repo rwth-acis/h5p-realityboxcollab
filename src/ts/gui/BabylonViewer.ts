@@ -127,6 +127,7 @@ export class BabylonViewer extends NetworkListener {
 
                 if (!user.position) return; // If position is set, than all are set
 
+                mesh.mesh.setEnabled(user.role != Role.USER || !this.currentRoom.roomInfo.settings.onlySeeHosts);
                 mesh.mesh.position = user.position;
             });
 
