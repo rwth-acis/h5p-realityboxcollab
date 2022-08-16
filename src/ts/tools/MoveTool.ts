@@ -17,7 +17,7 @@ export class MoveTool extends AbstractMultiTool {
             s => s.canUseMoveTool);
     }
 
-    override onSubToolSwitched(tool: SubTool): void {
+    override onSubToolSwitched(tool: SubTool) {
         const scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
 
         if (!this.gizmoManager) this.gizmoManager = MoveTool.createGizmosManager(scene);
@@ -37,12 +37,12 @@ export class MoveTool extends AbstractMultiTool {
         this.gizmoManager.attachToNode(this.instance.babylonViewer.baseNode);
     }
 
-    override onDeactivate(): void {
+    override onDeactivate() {
         super.onDeactivate();
         this.gizmoManager.attachToMesh(null);
     }
 
-    override onRoomChanged(): void {
+    override onRoomChanged() {
 
     }
 

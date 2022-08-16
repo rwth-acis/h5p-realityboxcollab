@@ -32,7 +32,7 @@ export class PointerTool extends AbstractMultiTool {
         });
     }
 
-    override onSubToolSwitched(subtool: SubTool): void {
+    override onSubToolSwitched(subtool: SubTool) {
 
     }
 
@@ -75,7 +75,7 @@ export class PointerTool extends AbstractMultiTool {
      * Updates the pointer of this user
      * @param scene The babylon scene of this instance
      */
-    private updateOwnPointer(scene: BABYLON.Scene): void {
+    private updateOwnPointer(scene: BABYLON.Scene) {
         const cam = scene.activeCamera;
         const model = this.instance.realitybox.viewer._babylonBox.model.env;
 
@@ -104,7 +104,7 @@ export class PointerTool extends AbstractMultiTool {
     /**
      * Removes the users pointer
      */
-    override onDeactivate(): void {
+    override onDeactivate() {
         this.currentRoom.user.pointer = undefined;
         this.currentRoom.onUserUpdated();
         super.onDeactivate();
@@ -113,7 +113,7 @@ export class PointerTool extends AbstractMultiTool {
     /**
      * Removes all pointers
      */
-    override onRoomChanged(): void {
+    override onRoomChanged() {
         this.pointers.forEach(p => p.removeFromScene());
         this.pointers.clear();
     }
@@ -129,10 +129,19 @@ export interface PointerInfo {
     active: boolean;
 }
 
+/**
+ * Represents the visual pointer for the {@link PointerTool}
+ */
 class Pointer {
     line: BABYLON.Mesh;
     sphere: BABYLON.Mesh;
 
+    /**
+     * Create an instance of a pointer which consists of a line and a sphere
+     * @param babylonViewer The babylonviewer instance to get the base node
+     * @param mat The material to use for the pointer
+     * @param scene The scene of the instance
+     */
     constructor(private babylonViewer: BabylonViewer, private mat: BABYLON.Material, private scene: BABYLON.Scene) {
         this.sphere = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
             diameter: 0.05
@@ -140,7 +149,12 @@ class Pointer {
         this.sphere.material = this.mat;
     }
 
-    update(info: PointerInfo, self: boolean): void {
+    /**
+     * Update the pointer
+     * @param info The pointer info of the pointer to update
+     * @param self If true, the pointer will be slightly lower to look better from the users position
+     */
+    update(info: PointerInfo, self: boolean) {
         if (this.line) this.line.setEnabled(info.active);
         this.sphere.setEnabled(info.active);
         if (!info.active) return;
@@ -162,7 +176,10 @@ class Pointer {
         this.sphere.position = Utils.createVector(info.target);
     }
 
-    removeFromScene(): void {
+    /**
+     * Remove the meshes from the scene
+     */
+    removeFromScene() {
         this.scene.removeMesh(this.line);
         this.scene.removeMesh(this.sphere);
     }

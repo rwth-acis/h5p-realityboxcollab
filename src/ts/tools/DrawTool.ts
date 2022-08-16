@@ -5,7 +5,6 @@ import { RealityBoxCollab } from "../RealityboxCollab";
 import { Utils } from "../utils/Utils";
 import { AbstractMultiTool, SubTool } from "./AbstractMultiTool";
 
-
 export class DrawTool extends AbstractMultiTool {
 
     static readonly DEFAULT_COLOR = new BABYLON.Color3(1, 0, 0); // Red
@@ -23,7 +22,11 @@ export class DrawTool extends AbstractMultiTool {
     uiPanel: any;
     picker: ColorPicker;
 
-    // Color picker: https://www.babylonjs-playground.com/#91I2RE#1
+    /**
+     * Construct a DrawTool
+     * @param instance The main instance of RealityboxCollab 
+     * @param container The container for the multi tool
+     */
     constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Draw Tool", "fa-solid fa-pen", container, [
             { name: "Mat Paint", icon: "fa-solid fa-paintbrush" },
@@ -42,7 +45,7 @@ export class DrawTool extends AbstractMultiTool {
         this.createColorPicker();
     }
 
-    onSubToolSwitched(subtool: SubTool): void {
+    onSubToolSwitched(subtool: SubTool) {
         if (subtool) {
             this.instance.paintViewMode.toolbar.activateTool(this.instance.paintViewMode);
             this.uiPanel.isVisible = true;
@@ -63,11 +66,9 @@ export class DrawTool extends AbstractMultiTool {
                 else if (e.type == BABYLON.PointerEventTypes.POINTERUP && e.event.button == 0) {
                     this.draw = false;
                 }
-                else if (e.type == BABYLON.PointerEventTypes.POINTERMOVE && this.draw) {
-                    if (this.active) {
-                        if (this.activeTool == this.subtools[0]) this.drawMat(scene);
-                        if (this.activeTool == this.subtools[1]) this.drawAir(scene);
-                    }
+                else if (e.type == BABYLON.PointerEventTypes.POINTERMOVE && this.draw && this.active) {
+                    if (this.activeTool == this.subtools[0]) this.drawMat(scene);
+                    if (this.activeTool == this.subtools[1]) this.drawAir(scene);
                 }
             });
             this.initTools = true;
@@ -81,7 +82,7 @@ export class DrawTool extends AbstractMultiTool {
     }
 
 
-    drawAir(scene: BABYLON.Scene) {
+    private drawAir(scene: BABYLON.Scene) {
         let pick = this.pickDrawPoint(scene);
 
         let pos = pick.ray.origin.add(pick.ray.direction.scale(1));
@@ -94,9 +95,9 @@ export class DrawTool extends AbstractMultiTool {
         this.writeDrawInfo();
     }
 
-    drawMat(scene: BABYLON.Scene) {
+    private drawMat(scene: BABYLON.Scene) {
         let pick = this.pickDrawPoint(scene);
-        
+
         let texCoordinates = pick.getTextureCoordinates();
         if (!texCoordinates) return;
 
@@ -110,11 +111,11 @@ export class DrawTool extends AbstractMultiTool {
         ctx.fillStyle = `rgb(${c.r * 255}, ${c.g * 255}, ${c.b * 255})`;
         ctx.fill();
 
-        if (this.syncIn <= 0) this.syncIn = 10; // Avoid lags
+        if (this.syncIn <= 0) this.syncIn = 10; // Avoid lags, sync every 10 frames
         this.instance.paintViewMode.texture.update();
     }
 
-    updateLine(index: number): void {
+    private updateLine(index: number) {
         const scene = this.instance.babylonViewer.scene;
         const line = this.sharedDrawInformation.lines[index];
 
@@ -139,7 +140,10 @@ export class DrawTool extends AbstractMultiTool {
         this.lineMeshes[index].material = mat;
     }
 
-    override onRoomChanged(): void {
+    /**
+     * Remove line meshes
+     */
+    override onRoomChanged() {
         this.lineMeshes.forEach(m => this.instance.babylonViewer.scene.removeMesh(m));
         this.lineMeshes = [];
         this.sharedDrawInformation = undefined; // Reset
@@ -154,7 +158,10 @@ export class DrawTool extends AbstractMultiTool {
         }
     }
 
-    private updateSharedTexture(): void {
+    /**
+     * Update the drawing information in case another user has updated it
+     */
+    private updateSharedTexture() {
         let data = this.currentRoom.doc.getMap().get("DrawToolTexture") as SharedDrawInformation;
         if (data && (!this.sharedDrawInformation || this.sharedDrawInformation.lastUpdate != data.lastUpdate)) {
             this.sharedDrawInformation = data;
@@ -172,6 +179,9 @@ export class DrawTool extends AbstractMultiTool {
         }
     }
 
+    /**
+     * Write out the draw information to the other user
+     */
     private writeDrawInfo() {
         const ctx = this.instance.paintViewMode.texture.getContext();
         const size = this.instance.paintViewMode.texture.getSize();
@@ -196,6 +206,9 @@ export class DrawTool extends AbstractMultiTool {
         this.currentRoom.doc.getMap().set("DrawToolTexture", this.sharedDrawInformation);
     }
 
+    /**
+     * Create the UI for the color picker
+     */
     private createColorPicker() {
         let ui = AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.instance.babylonViewer.scene as any);
 
@@ -218,6 +231,10 @@ export class DrawTool extends AbstractMultiTool {
         this.uiPanel.addControl(this.picker);
     }
 
+    /**
+     * Update the color picker depending on the XR State
+     * @param inXR Whether the instance is currently in XR
+     */
     setPickerState(inXR: boolean) {
         const n = inXR ? 400 : 150;
         this.uiPanel.height = n + "px";
@@ -227,17 +244,26 @@ export class DrawTool extends AbstractMultiTool {
     }
 }
 
+/**
+ * Shared Information for all draw tools synced between the users (general, not per user)
+ */
 interface SharedDrawInformation {
     texture: Texture;
     lastUpdate: number;
     lines: Line[];
 }
 
+/**
+ * Represents a line of the draw tool
+ */
 interface Line {
     path: BABYLON.Vector3[];
     color: BABYLON.Color3;
 }
 
+/**
+ * TextureInformation to sync to the other users
+ */
 interface Texture {
     width: number;
     height: number;

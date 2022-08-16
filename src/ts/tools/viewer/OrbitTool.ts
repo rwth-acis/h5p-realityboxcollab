@@ -18,29 +18,29 @@ export class OrbitTool extends AbstractTool {
     /**
      * Reenables the input of the camera
      */
-    override onActivate(): void {
+    override onActivate() {
         if (!this.inputDisabled) this.enableInput();
     }
 
     /**
      * Disables the input of the camera, so it does nopt move while other tools / cameras are used
      */
-    override onDeactivate(): void {
+    override onDeactivate() {
         this.disableInput();
     }
 
-    override onRoomChanged(): void { }
+    override onRoomChanged() { }
 
-    disableInput(): void {
+    disableInput() {
         (this.camera.inputs.attached.pointers as any).buttons = [];
     }
 
-    forceDisableInput(): void {
+    forceDisableInput() {
         this.inputDisabled = true;
         this.disableInput();
     }
 
-    enableInput(): void {
+    enableInput() {
         this.inputDisabled = false;
         (this.camera.inputs.attached.pointers as any).buttons = [0, 1, 2];
     }

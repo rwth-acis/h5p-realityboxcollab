@@ -16,6 +16,11 @@ export class AnnotationTool extends AbstractMultiTool {
     lastPosition: BABYLON.Vector3;
     annotations: Y.Map<RemoteAnnotation>;
 
+    /**
+     * Construct an AnnotationTool
+     * @param instance The main instance of RealityboxCollab 
+     * @param container The container for the multi tool
+     */
     constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Annotation Tool", "fa-solid fa-note-sticky", container, [
             { name: "Move", icon: "fa-solid fa-arrows-up-down-left-right" },
@@ -24,6 +29,7 @@ export class AnnotationTool extends AbstractMultiTool {
         ], s => s.canUseAnnotationTool);
 
         this.instance.babylonViewer.scene.registerBeforeRender(() => {
+            // Listen for position changes through the gizmos on the active annotation
             if (this.activeAnnotation && !Utils.vectorEquals(this.activeAnnotation.drawing.position, this.lastPosition)) {
                 this.onPositionChanged();
                 this.updateAnnotation(this.activeAnnotation);
@@ -34,7 +40,7 @@ export class AnnotationTool extends AbstractMultiTool {
     override onActivate() {
         const babylonBox = this.instance.babylonViewer.babylonBox;
 
-        // Prevent default behavior (RealityBoxs WebXR is not used anyway)
+        // Prevent default behavior (RealityBox's WebXR is not used anyway)
         babylonBox.webXR.inWebXR = true;
         if (!this.callbackRegistered) {
             babylonBox.on('annotation picked', (a: any) => { if (this.active) this.onAnnotationPicked(a.data) });
@@ -69,7 +75,7 @@ export class AnnotationTool extends AbstractMultiTool {
     }
 
     override onDeactivate() {
-        (this.instance.babylonViewer.babylonBox as any).webXR.inWebXR = false;
+        this.instance.babylonViewer.babylonBox.webXR.inWebXR = false;
         this.selectAnnotation(null);
         this.onChange();
         super.onDeactivate();

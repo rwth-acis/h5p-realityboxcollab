@@ -26,7 +26,7 @@ export abstract class AbstractTool extends NetworkListener {
     /**
      * Called whenever the tool gets activated by the user or the toolbar
      */
-    abstract onActivate(): void
+    abstract onActivate(): void;
 
     /**
      * Called when the tool gets deactivated
@@ -49,7 +49,7 @@ export abstract class AbstractTool extends NetworkListener {
      * Called by the toolbar when initializing
      * @param toolbar The toolbar reference
      */
-    init(toolbar: Toolbar): void {
+    init(toolbar: Toolbar) {
         this.toolbar = toolbar;
     }
 }

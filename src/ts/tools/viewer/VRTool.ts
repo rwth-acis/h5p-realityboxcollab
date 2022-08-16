@@ -12,7 +12,7 @@ export class VRTool extends AbstractXRView {
         super(instance, XRState.VR, "VR View", "fa-solid fa-vr-cardboard", "immersive-vr", "local-floor");
     }
 
-    onXREnter(): void {}
+    onXREnter() {}
     
-    onXRExit(): void { }
+    onXRExit() { }
 }

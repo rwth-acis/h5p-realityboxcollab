@@ -12,8 +12,8 @@ export class ARTool extends AbstractXRView {
         super(instance, XRState.AR, "AR View", "fa-solid fa-mobile-screen", "immersive-ar", "unbounded");
     }
 
-    onXREnter(): void {}
+    onXREnter() {}
 
-    onXRExit(): void {}
+    onXRExit() {}
 
 }

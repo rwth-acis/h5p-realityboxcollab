@@ -77,7 +77,7 @@ export class BabylonViewer extends NetworkListener {
      * @param newState The new state
      * @param ex The XR experience (will be used of the XR GUI)
      */
-    onXRStateChanged(newState: XRState, ex: BABYLON.WebXRDefaultExperience): void {
+    onXRStateChanged(newState: XRState, ex: BABYLON.WebXRDefaultExperience) {
         this.xrState = newState;
         this.xrGui.forEach(g => g.onXRStateChanged(newState, ex));
     }
@@ -109,7 +109,7 @@ export class BabylonViewer extends NetworkListener {
     /**
      * Called on every frame before rendering. Handles the updates for the user meshes.
      */
-    private onRender(): void {
+    private onRender() {
         // Annotations sometimes change
         for (let a of this.instance.realitybox.viewer._babylonBox.getAnnotations()) {
             a.drawing.parent = this.baseNode;
@@ -145,7 +145,7 @@ export class BabylonViewer extends NetworkListener {
     /**
      * When the room changes, all userMeshes are removed. The new meshes will be created automatically in the update loop.
      */
-    onRoomChanged(): void {
+    onRoomChanged() {
         this.userMeshes.forEach(mesh => {
             this.scene.removeMesh(mesh.mesh);
         });
@@ -155,7 +155,7 @@ export class BabylonViewer extends NetworkListener {
     /**
      * Listens for setting changes to check whether annotations are currently enabled
      */
-    override onSettingsChanged(): void {
+    override onSettingsChanged() {
         if (this.currentRoom.roomInfo.settings.annotationEnabled) this.babylonBox.showAllAnnotations();
         else this.babylonBox.hideAllAnnotations();
     }

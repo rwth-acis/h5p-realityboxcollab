@@ -11,9 +11,9 @@ export class NormalViewMode extends AbstractTool {
         super("Normal", "fa-solid fa-earth-americas");
     }
 
-    onActivate(): void { }
-    onDeactivate(): void { }
-    onRoomChanged(): void { }
+    onActivate() { }
+    onDeactivate() { }
+    onRoomChanged() { }
 
 }
 
@@ -28,18 +28,18 @@ export class PaintViewMode extends AbstractTool {
         this.initPaint();
     }
 
-    onActivate(): void {
+    onActivate() {
         forMeshes(this.babylonViewer, mesh => {
             this.oldMaterials.set(mesh, mesh.material);
             mesh.material = this.material;
         });
     }
 
-    onDeactivate(): void {
+    onDeactivate() {
         forMeshes(this.babylonViewer, mesh => mesh.material = this.oldMaterials.get(mesh));
     }
 
-    onRoomChanged(): void {
+    onRoomChanged() {
         this.initPaint();
     }
 
@@ -70,15 +70,15 @@ export class WireframeViewMode extends AbstractTool {
         super("Wireframe", "fa-solid fa-border-none");
     }
 
-    onActivate(): void { 
+    onActivate() { 
         forMeshes(this.babylonViewer, m => m.material.wireframe = true);
     }
 
-    onDeactivate(): void { 
+    onDeactivate() { 
         forMeshes(this.babylonViewer, m => m.material.wireframe = false);
     }
 
-    onRoomChanged(): void { }
+    onRoomChanged() { }
 
 }
 

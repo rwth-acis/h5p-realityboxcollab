@@ -70,7 +70,7 @@ export abstract class AbstractXRView extends AbstractTool {
     /**
      * If in an XR session, exit it
      */
-    override onDeactivate(): void {
+    override onDeactivate() {
         if (this.experience) {
             this.experience.baseExperience.exitXRAsync();
             this.instance.babylonViewer.onXRStateChanged(XRState.NONE, this.experience);
@@ -79,7 +79,7 @@ export abstract class AbstractXRView extends AbstractTool {
         this.experience = null;
     }
 
-    override onRoomChanged(): void { }
+    override onRoomChanged() { }
 
     /**
      * Hides all annotations of Realitybox and calls {@link AbstractXRView.onXREnter}

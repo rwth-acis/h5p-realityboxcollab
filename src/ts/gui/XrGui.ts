@@ -27,7 +27,7 @@ export class XrGui {
      * @param state The new state of this instance 
      * @param experience Reference to the XR experience
      */
-    onXRStateChanged(state: XRState, experience: BABYLON.WebXRDefaultExperience): void {
+    onXRStateChanged(state: XRState, experience: BABYLON.WebXRDefaultExperience) {
         this.xrGuiPanel.isVisible = state != XRState.NONE;
         this.instance.drawTool.setPickerState(state != XRState.NONE);
         this.currentState = state;
@@ -119,7 +119,7 @@ export class XrGui {
     /**
      * Creates the fullscreen UI used to render the buttons for the toolbar
      */
-    private createXRGui(): void {
+    private createXRGui() {
         let xrGui = AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene as any);
         this.xrGuiPanel = new StackPanel();
         this.xrGuiPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
@@ -174,7 +174,7 @@ export class XrGui {
     /**
      * Updates the XR Gui with respect to the current {@link XRState}
      */
-    private updatePanel(): void {
+    private updatePanel() {
         this.xrGuiPanel.left = this.currentState == XRState.AR ? "20px" : "1000px";
         this.xrGuiPanel.top = this.currentState == XRState.AR ? "20px" : "500px";
 
