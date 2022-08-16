@@ -52,9 +52,9 @@ export class PointerTool extends AbstractMultiTool {
                 // Create pointer
                 if (!pointer) this.pointers.set(username, pointer = new Pointer(this.instance.babylonViewer, this.mat, scene));
 
-                pointer.update(user.pointer);
+                pointer.update(user.pointer, username === this.currentRoom.user.username);
             }
-            else if (pointer) {
+            else if (pointer) { // Remove cached pointer
                 this.pointers.delete(username);
                 pointer.removeFromScene();
             }
@@ -80,7 +80,6 @@ export class PointerTool extends AbstractMultiTool {
         const model = this.instance.realitybox.viewer._babylonBox.model.env;
 
         let pos = cam.position.clone();
-        pos.y -= 0.5;
         let hit: BABYLON.PickingInfo;
         if (this.activeTool == this.subtools[0]) {
             hit = this.instance.inputManager.pickWithPointer();
@@ -141,13 +140,16 @@ class Pointer {
         this.sphere.material = this.mat;
     }
 
-    update(info: PointerInfo): void {
+    update(info: PointerInfo, self: boolean): void {
         if (this.line) this.line.setEnabled(info.active);
         this.sphere.setEnabled(info.active);
         if (!info.active) return;
 
+        let pos = Utils.createVector(info.pos);
+        if (self) pos.y -= 0.2;
+
         this.line = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: [Utils.createVector(info.pos), Utils.createVector(info.target)],
+            path: [pos, Utils.createVector(info.target)],
             radius: 0.005,
             updatable: true,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE,

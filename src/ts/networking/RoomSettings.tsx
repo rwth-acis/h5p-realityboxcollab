@@ -65,7 +65,7 @@ export const DEFAULT_SETTINGS: RoomSettings = {
  * The settings as gui elements with their callbacks to get / update the current value
  */
 export const SETTINGS: SettingsGuiElement[] = [
-    new SettingsGuiElement("Annotations", SettingsType.Checkbox, s => s.annotationEnabled, (s, v) => s.annotationEnabled = v),
+    new SettingsGuiElement("Show Annotations", SettingsType.Checkbox, s => s.annotationEnabled, (s, v) => s.annotationEnabled = v),
     new SettingsGuiElement("Hide non-host users", SettingsType.Checkbox, s => s.onlySeeHosts, (s, v) => s.onlySeeHosts = v),
     new SettingsGuiElement("Users can use...", SettingsType.Heading),
     new SettingsGuiElement("Chat", SettingsType.Checkbox, s => s.canUseChat, (s, v) => s.canUseChat = v),
