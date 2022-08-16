@@ -30,8 +30,9 @@ H5P = H5P || {};
 export class RealityBoxCollab {
 
     public static readonly EVALUATION_MODE: boolean = true;
-    public static readonly EVALUATION_SERVER: string = "http://buche.informatik.rwth-aachen.de:8080";
-    public static readonly SIGNALING_SERVER: string = RealityBoxCollab.EVALUATION_MODE ? "ws://buche.informatik.rwth-aachen.de:8529" : "ws://localhost:1234";
+    public static readonly EVALUATION_SERVER: string = "https://buche.informatik.rwth-aachen.de:8080";
+    public static readonly SIGNALING_SERVER: string = RealityBoxCollab.EVALUATION_MODE ? "wss://buche.informatik.rwth-aachen.de:8529" : "ws://localhost:1234";
+    //public static readonly SIGNALING_SERVER: string = RealityBoxCollab.EVALUATION_MODE ? "ws://localhost:8081/signal" : "ws://localhost:1234";
 
     // Tools
     drawTool: DrawTool;

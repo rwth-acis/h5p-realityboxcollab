@@ -20,7 +20,6 @@ export class RoomManager {
                 this.rooms = this.doc.getMap("rooms");
             }
             else if (event.status === "disconnected") {
-
             }
         });
     }
