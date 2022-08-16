@@ -17,6 +17,9 @@ export class NormalViewMode extends AbstractTool {
 
 }
 
+/**
+ * The paint view mode lets the users see what is painted using the DrawTool
+ */
 export class PaintViewMode extends AbstractTool {
 
     texture: BABYLON.DynamicTexture;
@@ -64,6 +67,9 @@ export class PaintViewMode extends AbstractTool {
 
 }
 
+/**
+ * The Wireframe ViewMode shows a wireframe view of the scene using the normal babylonjs functionality 
+ */
 export class WireframeViewMode extends AbstractTool {
 
     constructor(private babylonViewer: BabylonViewer) {

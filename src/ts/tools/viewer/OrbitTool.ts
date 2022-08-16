@@ -7,6 +7,10 @@ export class OrbitTool extends AbstractTool {
     camera: BABYLON.ArcRotateCamera;
     inputDisabled: boolean = false;
 
+    /**
+     * Construct an OrbitTool
+     * @param instance The main instance of RealityboxCollab 
+     */
     constructor(private instance: RealityBoxCollab) {
         super("Orbit Tool", "fa-solid fa-circle-notch");
         this.camera = this.instance.babylonViewer.scene.cameras[0] as BABYLON.ArcRotateCamera;

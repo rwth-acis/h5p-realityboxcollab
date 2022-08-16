@@ -17,6 +17,11 @@ export class PointerTool extends AbstractMultiTool {
     /** Maps the usernames to the pointer instances */
     pointers: Map<string, Pointer> = new Map<string, Pointer>();
 
+    /**
+     * Construct a PointerTool
+     * @param instance The main instance of RealityboxCollab 
+     * @param container The container for the multi tool
+     */
     constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Pointer Tool", "fa-solid fa-person-chalkboard", container, [
             { name: "Pointer", icon: "fa-solid fa-arrow-pointer" },

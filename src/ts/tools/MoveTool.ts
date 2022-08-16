@@ -6,6 +6,11 @@ export class MoveTool extends AbstractMultiTool {
 
     gizmoManager: BABYLON.GizmoManager;
 
+    /**
+     * Construct a MoveTool
+     * @param instance The main instance of RealityboxCollab 
+     * @param container The container for the multi tool
+     */
     constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Move Tool", "fa-solid fa-arrows-up-down-left-right",
             container,
@@ -46,6 +51,11 @@ export class MoveTool extends AbstractMultiTool {
 
     }
 
+    /**
+     * Create a GizmoManager
+     * @param scene The scene to attach to
+     * @returns The GizmoManager
+     */
     static createGizmosManager(scene: BABYLON.Scene): BABYLON.GizmoManager {
         let layer = new BABYLON.UtilityLayerRenderer(scene); // Fixes unknown bug in babylonjs
         let gizmoManager = new BABYLON.GizmoManager(scene, 1, layer, layer);
@@ -59,6 +69,10 @@ export class MoveTool extends AbstractMultiTool {
         g.scaleRatio = 2;
     }
 
+    /**
+     * Returns whether the MoveTools gizmo is currently hovered over
+     * @returns true, if it is currently hovered over or being dragged
+     */
     isHovered(): boolean {
         if (!this.gizmoManager) return false;
 

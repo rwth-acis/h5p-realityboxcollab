@@ -224,7 +224,7 @@ export class DrawTool extends AbstractMultiTool {
         this.picker.value = DrawTool.DEFAULT_COLOR;
         this.setPickerState(false);
         this.picker.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        this.picker.onValueChangedObservable.add((value: BABYLON.Color3) => { // value is a color3
+        this.picker.onValueChangedObservable.add((value: BABYLON.Color3) => {
             this.drawColor = value;
         });
 

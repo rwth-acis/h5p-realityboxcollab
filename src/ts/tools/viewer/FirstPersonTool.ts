@@ -15,6 +15,10 @@ export class FirstPersonTool extends AbstractTool {
     moveable: boolean;
     cursor: boolean;
 
+     /**
+     * Construct a FirstPersonTool which allo2ws the user to control the camera using the mouse and the WASD keys
+     * @param instance The main instance of RealityboxCollab 
+     */
     constructor(private instance: RealityBoxCollab) {
         super("First Person Tool", "fa-solid fa-eye");
     }
