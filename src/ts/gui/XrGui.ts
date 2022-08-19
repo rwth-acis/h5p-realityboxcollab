@@ -34,17 +34,19 @@ export class XrGui {
         this.updatePanel();
 
         this.experience = experience;
-        this.experience.input.onControllerAddedObservable.clear();
+        if (state == XRState.VR) {
+            this.experience.input.onControllerAddedObservable.clear();
 
-        this.experience.input.onControllerAddedObservable.add((evt) => {
-            if (evt.inputSource.handedness === "right") {
-                this.rightController = evt;
-            }
-            else if (evt.inputSource.handedness === "left") {
-                this.leftController = evt;
-            }
-            this.initController(evt);
-        });
+            this.experience.input.onControllerAddedObservable.add((evt) => {
+                if (evt.inputSource.handedness === "right") {
+                    this.rightController = evt;
+                }
+                else if (evt.inputSource.handedness === "left") {
+                    this.leftController = evt;
+                }
+                this.initController(evt);
+            });
+        }
     }
 
     /**
@@ -126,7 +128,7 @@ export class XrGui {
         this.xrGuiPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         xrGui.addControl(this.xrGuiPanel);
 
-        this.xrGuiPanel.isVisible = true;//false;
+        this.xrGuiPanel.isVisible = false;
     }
 
     /**
@@ -167,7 +169,10 @@ export class XrGui {
         button.paddingTop = "20px";
         button.color = active ? "red" : "black";
         button.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-        button.onPointerClickObservable.add(callback);
+        button.onPointerClickObservable.add(() => {
+            console.log("XXXXXXXXX");
+            callback();
+        });
         return button;
     }
 

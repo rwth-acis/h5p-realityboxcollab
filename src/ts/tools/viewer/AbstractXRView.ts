@@ -36,7 +36,6 @@ export abstract class AbstractXRView extends AbstractTool {
         if (!this.experience) await this.createXR();
 
         let supported = await this.experience.baseExperience.sessionManager.isSessionSupportedAsync(this.mode);
-        console.log(supported);
         if (!supported) {
             Popups.alert("This type of XR mode is not supported in your browser or you do not have a proper device connected");
             if (this.active) this.toolbar.deactivateActiveTool();

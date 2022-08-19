@@ -155,7 +155,7 @@ export class RealityBoxCollab {
         // Navigation modes
         let viewTools: AbstractTool[] = [this.orbitTool, this.vrTool];
         if (!Utils.isMobile) viewTools = [this.firstPersonTool, ...viewTools];
-        if (Utils.isMobile) viewTools.push(new ARTool(this));
+        viewTools.push(new ARTool(this));
         this.navigationToolbar = new Toolbar(container, "collabViewToolbar", true, viewTools);
 
         // ViewModes
