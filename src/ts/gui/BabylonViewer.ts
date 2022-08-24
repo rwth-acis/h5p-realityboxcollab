@@ -112,6 +112,13 @@ export class BabylonViewer extends NetworkListener {
     private onRender() {
         // Annotations sometimes change
         for (let a of this.instance.realitybox.viewer._babylonBox.getAnnotations()) {
+            // Workaround for moodle, bc of other version of babylonbox
+            if (document.location.toString().indexOf("597") > 0) {
+                a.drawing.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
+            }
+            else {
+                a.drawing.scaling = new BABYLON.Vector3(0.015, 0.015, 0.015);
+            }
             a.drawing.parent = this.baseNode;
         }
 

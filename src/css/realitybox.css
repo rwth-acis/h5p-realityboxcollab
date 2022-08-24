@@ -133,6 +133,10 @@
   font-weight: 600;
 }
 
+.h5p-column {
+  z-index: 9999 !important;
+}
+
 .h5p-realitybox--modal .viewer .viewer--header .item .button.icon {
   width: 30.5px;
   padding: 0;
