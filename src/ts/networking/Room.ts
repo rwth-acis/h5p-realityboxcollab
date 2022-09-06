@@ -75,7 +75,9 @@ export class Room {
             l.onRoomChanged();
         }
 
-        this.sendRoomMessage(`User ${this.user.username} joined the room`);
+        if (this.roomInfo.settings.joinLeaveMessages) {
+            this.sendRoomMessage(`User ${this.user.username} joined the room`);
+        }
 
         this.manager.rooms.observe(() => {
             if (this.isLocal) return;
@@ -101,7 +103,11 @@ export class Room {
     disconnect() {
         if (this.isLocal) throw new Error("Cannot disconnect from the local room");
 
-        this.sendRoomMessage(`User ${this.user.username} left the room`);
+        console.log(this.roomInfo);
+        if (this.roomInfo.settings.joinLeaveMessages) {
+            this.sendRoomMessage(`User ${this.user.username} left the room`);
+        }
+
         this.users.delete(this.user.username);
         this.wsProvider.disconnect();
         this.onDisconnect();
@@ -176,7 +182,7 @@ export class Room {
         if (r) Popups.alert(r);
         return r == null;
     }
-    
+
     static checkCharacters(str: string): boolean {
         return /[\w_\d]+/.test(str);
     }

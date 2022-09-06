@@ -42,6 +42,7 @@ export interface RoomSettings {
     canUseAnnotationTool: boolean;
     canUsePenTool: boolean;
     annotationEnabled: boolean;
+    joinLeaveMessages: boolean;
 }
 
 export const DEFAULT_SETTINGS: RoomSettings = {
@@ -50,11 +51,13 @@ export const DEFAULT_SETTINGS: RoomSettings = {
     canUsePointerTool: true,
     canUseAnnotationTool: true,
     canUsePenTool: true,
-    annotationEnabled: true
+    annotationEnabled: true,
+    joinLeaveMessages: true
 }
 
 export const SETTINGS: SettingsGuiElement[] = [
     new SettingsGuiElement("Annotations", SettingsType.Checkbox, s => s.annotationEnabled, (s, v) => s.annotationEnabled = v),
+    new SettingsGuiElement("Join / Leave Messages", SettingsType.Checkbox, s => s.joinLeaveMessages, (s, v) => s.joinLeaveMessages = v),
     new SettingsGuiElement("Users can use...", SettingsType.Heading),
     new SettingsGuiElement("Chat", SettingsType.Checkbox, s => s.canUseChat, (s, v) => s.canUseChat = v),
     new SettingsGuiElement("Pointer Tool", SettingsType.Checkbox, s => s.canUsePointerTool, (s, v) => s.canUsePointerTool = v),
