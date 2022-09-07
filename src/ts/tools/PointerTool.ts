@@ -17,6 +17,11 @@ export class PointerTool extends AbstractMultiTool {
     /** Maps the usernames to the pointer instances */
     pointers: Map<string, Pointer> = new Map<string, Pointer>();
 
+    /**
+     * Construct a PointerTool
+     * @param instance The main instance of RealityboxCollab 
+     * @param container The container for the multi tool
+     */
     constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Pointer Tool", "fa-solid fa-person-chalkboard", container, [
             { name: "Pointer", icon: "fa-solid fa-arrow-pointer" },
@@ -32,7 +37,7 @@ export class PointerTool extends AbstractMultiTool {
         });
     }
 
-    override onSubToolSwitched(subtool: SubTool): void {
+    override onSubToolSwitched(subtool: SubTool) {
 
     }
 
@@ -52,9 +57,9 @@ export class PointerTool extends AbstractMultiTool {
                 // Create pointer
                 if (!pointer) this.pointers.set(username, pointer = new Pointer(this.instance.babylonViewer, this.mat, scene));
 
-                pointer.update(user.pointer);
+                pointer.update(user.pointer, username === this.currentRoom.user.username);
             }
-            else if (pointer) {
+            else if (pointer) { // Remove cached pointer
                 this.pointers.delete(username);
                 pointer.removeFromScene();
             }
@@ -75,12 +80,11 @@ export class PointerTool extends AbstractMultiTool {
      * Updates the pointer of this user
      * @param scene The babylon scene of this instance
      */
-    private updateOwnPointer(scene: BABYLON.Scene): void {
+    private updateOwnPointer(scene: BABYLON.Scene) {
         const cam = scene.activeCamera;
         const model = this.instance.realitybox.viewer._babylonBox.model.env;
 
         let pos = cam.position.clone();
-        pos.y -= 0.5;
         let hit: BABYLON.PickingInfo;
         if (this.activeTool == this.subtools[0]) {
             hit = this.instance.inputManager.pickWithPointer();
@@ -105,7 +109,7 @@ export class PointerTool extends AbstractMultiTool {
     /**
      * Removes the users pointer
      */
-    override onDeactivate(): void {
+    override onDeactivate() {
         this.currentRoom.user.pointer = undefined;
         this.currentRoom.onUserUpdated();
         super.onDeactivate();
@@ -114,7 +118,7 @@ export class PointerTool extends AbstractMultiTool {
     /**
      * Removes all pointers
      */
-    override onRoomChanged(): void {
+    override onRoomChanged() {
         this.pointers.forEach(p => p.removeFromScene());
         this.pointers.clear();
     }
@@ -130,10 +134,19 @@ export interface PointerInfo {
     active: boolean;
 }
 
+/**
+ * Represents the visual pointer for the {@link PointerTool}
+ */
 class Pointer {
     line: BABYLON.Mesh;
     sphere: BABYLON.Mesh;
 
+    /**
+     * Create an instance of a pointer which consists of a line and a sphere
+     * @param babylonViewer The babylonviewer instance to get the base node
+     * @param mat The material to use for the pointer
+     * @param scene The scene of the instance
+     */
     constructor(private babylonViewer: BabylonViewer, private mat: BABYLON.Material, private scene: BABYLON.Scene) {
         this.sphere = BABYLON.MeshBuilder.CreateSphere("pointerBall", {
             diameter: 0.05
@@ -141,13 +154,21 @@ class Pointer {
         this.sphere.material = this.mat;
     }
 
-    update(info: PointerInfo): void {
+    /**
+     * Update the pointer
+     * @param info The pointer info of the pointer to update
+     * @param self If true, the pointer will be slightly lower to look better from the users position
+     */
+    update(info: PointerInfo, self: boolean) {
         if (this.line) this.line.setEnabled(info.active);
         this.sphere.setEnabled(info.active);
         if (!info.active) return;
 
+        let pos = Utils.createVector(info.pos);
+        if (self) pos.y -= 0.2;
+
         this.line = BABYLON.MeshBuilder.CreateTube("tube", {
-            path: [Utils.createVector(info.pos), Utils.createVector(info.target)],
+            path: [pos, Utils.createVector(info.target)],
             radius: 0.005,
             updatable: true,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE,
@@ -160,7 +181,10 @@ class Pointer {
         this.sphere.position = Utils.createVector(info.target);
     }
 
-    removeFromScene(): void {
+    /**
+     * Remove the meshes from the scene
+     */
+    removeFromScene() {
         this.scene.removeMesh(this.line);
         this.scene.removeMesh(this.sphere);
     }

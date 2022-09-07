@@ -6,6 +6,11 @@ export class MoveTool extends AbstractMultiTool {
 
     gizmoManager: BABYLON.GizmoManager;
 
+    /**
+     * Construct a MoveTool
+     * @param instance The main instance of RealityboxCollab 
+     * @param container The container for the multi tool
+     */
     constructor(private instance: RealityBoxCollab, container: JQuery) {
         super("Move Tool", "fa-solid fa-arrows-up-down-left-right",
             container,
@@ -17,7 +22,7 @@ export class MoveTool extends AbstractMultiTool {
             s => s.canUseMoveTool);
     }
 
-    override onSubToolSwitched(tool: SubTool): void {
+    override onSubToolSwitched(tool: SubTool) {
         const scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
 
         if (!this.gizmoManager) this.gizmoManager = MoveTool.createGizmosManager(scene);
@@ -26,8 +31,6 @@ export class MoveTool extends AbstractMultiTool {
         this.gizmoManager.positionGizmoEnabled = (tool == this.subtools[0]);
         this.gizmoManager.rotationGizmoEnabled = (tool == this.subtools[1]);
         this.gizmoManager.scaleGizmoEnabled = (tool == this.subtools[2]);
-
-        console.log(this.gizmoManager);
 
         // Sizes
         if (this.gizmoManager.gizmos.positionGizmo) this.modfiyGizmo(this.gizmoManager.gizmos.positionGizmo);
@@ -39,15 +42,20 @@ export class MoveTool extends AbstractMultiTool {
         this.gizmoManager.attachToNode(this.instance.babylonViewer.baseNode);
     }
 
-    override onDeactivate(): void {
+    override onDeactivate() {
         super.onDeactivate();
         this.gizmoManager.attachToMesh(null);
     }
 
-    override onRoomChanged(): void {
+    override onRoomChanged() {
 
     }
 
+    /**
+     * Create a GizmoManager
+     * @param scene The scene to attach to
+     * @returns The GizmoManager
+     */
     static createGizmosManager(scene: BABYLON.Scene): BABYLON.GizmoManager {
         let layer = new BABYLON.UtilityLayerRenderer(scene); // Fixes unknown bug in babylonjs
         let gizmoManager = new BABYLON.GizmoManager(scene, 1, layer, layer);
@@ -61,6 +69,10 @@ export class MoveTool extends AbstractMultiTool {
         g.scaleRatio = 2;
     }
 
+    /**
+     * Returns whether the MoveTools gizmo is currently hovered over
+     * @returns true, if it is currently hovered over or being dragged
+     */
     isHovered(): boolean {
         if (!this.gizmoManager) return false;
 

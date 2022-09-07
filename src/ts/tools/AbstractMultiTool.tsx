@@ -28,24 +28,24 @@ export abstract class AbstractMultiTool extends AbstractTool {
     </div>
   }
 
-  toolClicked(tool: SubTool): void {
+  toolClicked(tool: SubTool) {
     if (this.active) {
       this.activeTool = tool;
       this.render();
     }
   }
 
-  override onActivate(): void {
+  override onActivate() {
     this.activeTool = this.subtools[0];
     this.render();
   }
 
-  override onDeactivate(): void {
+  override onDeactivate() {
     ReactDOM.render(<></>, this.element);
     this.onSubToolSwitched(null);
   }
 
-  private render(): void {
+  private render() {
     ReactDOM.render(this.createElement(), this.element);
     this.onSubToolSwitched(this.activeTool);
   }

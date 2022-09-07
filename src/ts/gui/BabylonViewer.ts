@@ -77,11 +77,14 @@ export class BabylonViewer extends NetworkListener {
      * @param newState The new state
      * @param ex The XR experience (will be used of the XR GUI)
      */
-    onXRStateChanged(newState: XRState, ex: BABYLON.WebXRDefaultExperience): void {
+    onXRStateChanged(newState: XRState, ex: BABYLON.WebXRDefaultExperience) {
         this.xrState = newState;
         this.xrGui.forEach(g => g.onXRStateChanged(newState, ex));
     }
 
+    /**
+     * Scales the model such that the maximum extend of all axis is 1m
+     */
     private adjustModelScale() {
         for (let m of this.models) {
             let max = new BABYLON.Vector3(0, 0, 0);
@@ -106,9 +109,16 @@ export class BabylonViewer extends NetworkListener {
     /**
      * Called on every frame before rendering. Handles the updates for the user meshes.
      */
-    private onRender(): void {
+    private onRender() {
         // Annotations sometimes change
         for (let a of this.instance.realitybox.viewer._babylonBox.getAnnotations()) {
+            // Workaround for moodle, bc of other version of babylonbox
+            if (document.location.toString().indexOf("597") > 0) {
+                a.drawing.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
+            }
+            else {
+                a.drawing.scaling = new BABYLON.Vector3(0.015, 0.015, 0.015);
+            }
             a.drawing.parent = this.baseNode;
         }
 
@@ -124,6 +134,7 @@ export class BabylonViewer extends NetworkListener {
 
                 if (!user.position) return; // If position is set, than all are set
 
+                mesh.mesh.setEnabled(user.role != Role.USER || !this.currentRoom.roomInfo.settings.onlySeeHosts);
                 mesh.mesh.position = user.position;
             });
 
@@ -141,7 +152,7 @@ export class BabylonViewer extends NetworkListener {
     /**
      * When the room changes, all userMeshes are removed. The new meshes will be created automatically in the update loop.
      */
-    onRoomChanged(): void {
+    onRoomChanged() {
         this.userMeshes.forEach(mesh => {
             this.scene.removeMesh(mesh.mesh);
         });
@@ -151,7 +162,7 @@ export class BabylonViewer extends NetworkListener {
     /**
      * Listens for setting changes to check whether annotations are currently enabled
      */
-    override onSettingsChanged(): void {
+    override onSettingsChanged() {
         if (this.currentRoom.roomInfo.settings.annotationEnabled) this.babylonBox.showAllAnnotations();
         else this.babylonBox.hideAllAnnotations();
     }

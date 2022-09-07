@@ -15,6 +15,6 @@ export abstract class NetworkListener {
     /**
      * Called by the room whenever the settings object is changed
      */
-    onSettingsChanged(): void {};
+    onSettingsChanged() {};
 
 }

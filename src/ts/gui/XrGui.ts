@@ -27,26 +27,32 @@ export class XrGui {
      * @param state The new state of this instance 
      * @param experience Reference to the XR experience
      */
-    onXRStateChanged(state: XRState, experience: BABYLON.WebXRDefaultExperience): void {
+    onXRStateChanged(state: XRState, experience: BABYLON.WebXRDefaultExperience) {
         this.xrGuiPanel.isVisible = state != XRState.NONE;
         this.instance.drawTool.setPickerState(state != XRState.NONE);
         this.currentState = state;
         this.updatePanel();
 
         this.experience = experience;
-        this.experience.input.onControllerAddedObservable.clear();
+        if (state == XRState.VR) {
+            this.experience.input.onControllerAddedObservable.clear();
 
-        this.experience.input.onControllerAddedObservable.add((evt) => {
-            if (evt.inputSource.handedness === "right") {
-                this.rightController = evt;
-            }
-            else if (evt.inputSource.handedness === "left") {
-                this.leftController = evt;
-            }
-            this.initController(evt);
-        });
+            this.experience.input.onControllerAddedObservable.add((evt) => {
+                if (evt.inputSource.handedness === "right") {
+                    this.rightController = evt;
+                }
+                else if (evt.inputSource.handedness === "left") {
+                    this.leftController = evt;
+                }
+                this.initController(evt);
+            });
+        }
     }
 
+    /**
+     * Called on the left and right controller as soon as they are added
+     * @param controller The controller
+     */
     private initController(controller: BABYLON.WebXRInputSource) {
         controller.onMotionControllerInitObservable.add((data, state) => {
             controller.motionController.getAllComponentsOfType("button").forEach(c => {
@@ -60,6 +66,12 @@ export class XrGui {
         });
     }
 
+    /**
+     * Called when a button of a controller has been changed
+     * @param id The id of the button which has changed
+     * @param down Whether the button is currently down
+     * @param controller The controller with the button which has changed
+     */
     private onButtonStateChanged(id: string, down: boolean, controller: BABYLON.WebXRInputSource) {
         if ((id === "b-button" || id === "y-button") && down) { // Cycle tools
             this.selectTool(false);
@@ -71,10 +83,18 @@ export class XrGui {
         }
     }
 
+    /**
+     * Get the current main controller
+     * @returns The active controller
+     */
     getActiveController(): BABYLON.WebXRInputSource {
         return this.rightController; // At the moment fixed at right controller
     }
 
+    /**
+     * Selects the next or previous tool (including subtools of {@link AbstractMultiTool})
+     * @param forward If true, the next tool will be select, else the previous (loops back when reaching the first / last tool)
+     */
     private selectTool(forward: boolean) {
         const offset = forward ? 1 : -1;
         let active = this.toolbar.activeTool;
@@ -98,16 +118,24 @@ export class XrGui {
         }
     }
 
-    private createXRGui(): void {
+    /**
+     * Creates the fullscreen UI used to render the buttons for the toolbar
+     */
+    private createXRGui() {
         let xrGui = AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene as any);
         this.xrGuiPanel = new StackPanel();
         this.xrGuiPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         this.xrGuiPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         xrGui.addControl(this.xrGuiPanel);
 
-        this.xrGuiPanel.isVisible = true;//false;
+        this.xrGuiPanel.isVisible = false;
     }
 
+    /**
+     * Create the buttons for a {@link AbstractTool}
+     * @param tool The tool to create the buttons for
+     * @returns One button for the tool itself and buttons for the subtools, if the tool is a {@link AbstractMultiTool} and currently active
+     */
     private createTool(tool: AbstractTool): Button[] {
         let subs: Button[] = [];
         if (tool instanceof AbstractMultiTool && tool.active) {
@@ -125,6 +153,13 @@ export class XrGui {
         }), ...subs];
     }
 
+    /**
+     * Create a button for a tool / subtool
+     * @param name The name to display
+     * @param active Whether the tool is currently active
+     * @param callback The function called, when the button has been pressed
+     * @returns The button instance
+     */
     private createButton(name: string, active: boolean, callback: () => void): Button {
         var button = Button.CreateSimpleButton("but", name);
         button.width = this.currentState == XRState.AR ? 0.5 : 0.15;
@@ -134,11 +169,17 @@ export class XrGui {
         button.paddingTop = "20px";
         button.color = active ? "red" : "black";
         button.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-        button.onPointerClickObservable.add(callback);
+        button.onPointerClickObservable.add(() => {
+            console.log("XXXXXXXXX");
+            callback();
+        });
         return button;
     }
 
-    private updatePanel(): void {
+    /**
+     * Updates the XR Gui with respect to the current {@link XRState}
+     */
+    private updatePanel() {
         this.xrGuiPanel.left = this.currentState == XRState.AR ? "20px" : "1000px";
         this.xrGuiPanel.top = this.currentState == XRState.AR ? "20px" : "500px";
 

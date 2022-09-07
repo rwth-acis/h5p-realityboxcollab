@@ -82,7 +82,7 @@ export class Toolbar extends AbstractGuiElement {
     }
 
     /**
-     * Only deactives the active tool, without any further updates including view changes
+     * Only deactivates the active tool, without any further updates including view changes
      */
     private deactivateActiveRaw() {
         this.activeTool.active = false;

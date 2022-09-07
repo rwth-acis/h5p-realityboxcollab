@@ -1,9 +1,9 @@
 {
   "title": "RealityBox Collab",
-  "description": "",
+  "description": "RealityboxCollab",
   "majorVersion": 1,
   "minorVersion": 1,
-  "patchVersion": 7,
+  "patchVersion": 8,
   "runnable": 1,
   "author": "Konstantin Kühlem",
   "license": "MIT",
@@ -27,7 +27,7 @@
     {
       "machineName": "H5P.Realitybox",
       "majorVersion": 1,
-      "minorVersion": 0
+      "minorVersion": 2
     },
      {
        "machineName": "H5P.BabylonBox",
@@ -36,8 +36,8 @@
      },
      {
        "machineName": "H5P.KewArCode",
-       "majorVersion": 1,
-       "minorVersion": 0
+       "majorVersion": 0,
+       "minorVersion": 2
      }
   ],
   "editorDependencies": [

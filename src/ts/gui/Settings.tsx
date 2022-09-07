@@ -7,6 +7,7 @@ import { Utils } from '../utils/Utils';
 import { AbstractGuiElement } from './AbstractGuiElement';
 import { Popups } from './popup/Popups';
 import React = require('react');
+import * as $ from 'jquery';
 
 /**
  * Settings GUI Element
@@ -20,15 +21,32 @@ export class Settings extends AbstractGuiElement {
   }
 
   override createElement(): ReactElement {
-    return <div id='collabSettings' className='guiElement'>
-      <h1 className='elementHeading'>Settings</h1>
-      {this.currentRoom.isLocal &&
-        this.viewNotInRoom()
-      }
-      {!this.currentRoom.isLocal &&
-        this.viewInRoom()
-      }
+    return <div>
+      <Accordion defaultActiveKey="0" id='collabSettings' className='guiElement settingsOpen' onSelect={e => this.expansionChanged(e)}>
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>Settings</Accordion.Header>
+          <Accordion.Body>
+            {this.currentRoom.isLocal &&
+              this.viewNotInRoom()
+            }
+            {!this.currentRoom.isLocal &&
+              this.viewInRoom()
+            }
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
     </div>
+  }
+
+  private expansionChanged(e: any) {
+    if (e != null) { // Open
+      $("#collabSettings").addClass("settingsOpen");
+      $("#collabSettings").removeClass("settingsClosed");
+    }
+    else {
+      $("#collabSettings").removeClass("settingsOpen");
+      $("#collabSettings").addClass("settingsClosed");
+    }
   }
 
   /**
@@ -81,11 +99,14 @@ export class Settings extends AbstractGuiElement {
     </>;
   }
 
+  /**
+   * Show select to make other user co-host
+   */
   private coHost() {
     let users: User[] = [];
-    this.currentRoom.users.forEach(u => {if (u.role != Role.HOST && u.role != Role.CO_HOST) users.push(u)});
+    this.currentRoom.users.forEach(u => { if (u.role != Role.HOST && u.role != Role.CO_HOST) users.push(u) });
     if (users.length == 0) {
-      Popups.alert("There is no suer in the room, who is not CO-Host already");
+      Popups.alert("There is no user in the room, who is not CO-Host already");
       return;
     }
 
@@ -96,6 +117,9 @@ export class Settings extends AbstractGuiElement {
     });
   }
 
+  /**
+   * Update view and register listeners to see, when users join or leave
+   */
   onRoomChanged() {
     super.updateView();
 
@@ -107,6 +131,9 @@ export class Settings extends AbstractGuiElement {
     });
   }
 
+  /**
+   * Update the view if settings have changed
+   */
   override onSettingsChanged() {
     super.updateView();
   }

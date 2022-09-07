@@ -15,11 +15,15 @@ export class FirstPersonTool extends AbstractTool {
     moveable: boolean;
     cursor: boolean;
 
+     /**
+     * Construct a FirstPersonTool which allo2ws the user to control the camera using the mouse and the WASD keys
+     * @param instance The main instance of RealityboxCollab 
+     */
     constructor(private instance: RealityBoxCollab) {
         super("First Person Tool", "fa-solid fa-eye");
     }
 
-    override onActivate(): void {
+    override onActivate() {
         const scene = this.instance.realitybox.viewer._babylonBox.scene;
         const oldCamera = scene.cameras[0];
 
@@ -32,7 +36,7 @@ export class FirstPersonTool extends AbstractTool {
         scene.activeCamera = this.camera;
     }
 
-    createComponents(): void {
+    createComponents() {
         let scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
 
         this.camera = new BABYLON.FreeCamera("First Person Camera", new BABYLON.Vector3(), scene, false);
@@ -80,7 +84,7 @@ export class FirstPersonTool extends AbstractTool {
         });
     }
 
-    computeDirection(dir: BABYLON.Vector3, a: number, b: number, ref: BABYLON.Vector3): void {
+    computeDirection(dir: BABYLON.Vector3, a: number, b: number, ref: BABYLON.Vector3) {
         if (this.instance.inputManager.isKeyDown(a) !== this.instance.inputManager.isKeyDown(b)) { // A xor D
             let v = this.camera.getDirection(ref);
             if (this.instance.inputManager.isKeyDown(b)) {
@@ -90,12 +94,12 @@ export class FirstPersonTool extends AbstractTool {
         }
     }
 
-    override onDeactivate(): void {
+    override onDeactivate() {
         const scene: BABYLON.Scene = this.instance.realitybox.viewer._babylonBox.scene;
         scene.activeCamera = scene.cameras[0]; // Reactivate camera
     }
 
-    override onRoomChanged(): void {
+    override onRoomChanged() {
 
     }
 }

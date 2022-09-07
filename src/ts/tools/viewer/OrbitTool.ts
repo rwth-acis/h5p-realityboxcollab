@@ -7,6 +7,10 @@ export class OrbitTool extends AbstractTool {
     camera: BABYLON.ArcRotateCamera;
     inputDisabled: boolean = false;
 
+    /**
+     * Construct an OrbitTool
+     * @param instance The main instance of RealityboxCollab 
+     */
     constructor(private instance: RealityBoxCollab) {
         super("Orbit Tool", "fa-solid fa-circle-notch");
         this.camera = this.instance.babylonViewer.scene.cameras[0] as BABYLON.ArcRotateCamera;
@@ -15,29 +19,32 @@ export class OrbitTool extends AbstractTool {
         this.disableInput();
     }
 
-    override onActivate(): void {
-        if (!this.inputDisabled)
-            this.enableInput();
+    /**
+     * Reenables the input of the camera
+     */
+    override onActivate() {
+        if (!this.inputDisabled) this.enableInput();
     }
 
-    override onDeactivate(): void {
+    /**
+     * Disables the input of the camera, so it does nopt move while other tools / cameras are used
+     */
+    override onDeactivate() {
         this.disableInput();
     }
 
-    override onRoomChanged(): void {
+    override onRoomChanged() { }
 
-    }
-
-    disableInput(): void {
+    disableInput() {
         (this.camera.inputs.attached.pointers as any).buttons = [];
     }
 
-    forceDisableInput(): void {
+    forceDisableInput() {
         this.inputDisabled = true;
         this.disableInput();
     }
 
-    enableInput(): void {
+    enableInput() {
         this.inputDisabled = false;
         (this.camera.inputs.attached.pointers as any).buttons = [0, 1, 2];
     }
