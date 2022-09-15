@@ -20,5 +20,8 @@ RealityboxCollab depends on [h5p-realitybox](https://github.com/rwth-acis/h5p-re
 
 # Debugging environment
 
+## Drupal
+It is recommended to use Drupal as an debugging environment. Instructions on how to set up Drupal via docker, enable H5P, and link local repositiories can be found here: https://h5p.org/development-environment-docker.
+
 ## Signaling Server
 Run `npm run server` to start a debugging signaling server locally on port `1234`
